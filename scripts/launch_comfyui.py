@@ -13,6 +13,7 @@ is preserved:
 Usage:
   python scripts\launch_comfyui.py                                        # 4090 primary, port 8188
   python scripts\launch_comfyui.py --port 8189 --primary-gpu "RTX 5090"   # 5090 primary
+  python scripts\launch_comfyui.py -- --vram-headroom 3 --cpu-vae          # pass flags to ComfyUI
   python scripts\launch_comfyui.py --print-devices                       # show CUDA order only
 """
 
@@ -88,6 +89,12 @@ def main() -> int:
         print(f"launch list: {cuda_list}")
         return 0
 
+    # argparse.REMAINDER preserves the conventional `--` delimiter. It is a
+    # launcher-only delimiter and must not be forwarded to ComfyUI itself.
+    extra_args = list(args.extra_args)
+    if extra_args and extra_args[0] == "--":
+        extra_args = extra_args[1:]
+
     print(f"CUDA devices: {', '.join(names)}")
     print(f"Primary: {args.primary_gpu} (CUDA index {primary_idx}) -> --cuda-device {cuda_list}")
     cmd = [
@@ -99,7 +106,7 @@ def main() -> int:
         str(args.port),
         "--cuda-device",
         cuda_list,
-    ] + args.extra_args
+    ] + extra_args
     return subprocess.call(cmd)
 
 
