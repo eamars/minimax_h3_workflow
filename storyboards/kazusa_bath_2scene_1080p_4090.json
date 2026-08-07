@@ -56,9 +56,9 @@
       "--cpu-vae",
       "--fp32-vae",
       "--vram-headroom",
-      "3",
+      "1",
       "--reserve-vram",
-      "2",
+      "0",
       "--async-offload",
       "4"
     ]

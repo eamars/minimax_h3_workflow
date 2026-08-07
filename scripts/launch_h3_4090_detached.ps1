@@ -29,8 +29,8 @@ $comfyArguments = @(
     '--disable-smart-memory',
     '--cpu-vae',
     '--fp32-vae',
-    '--vram-headroom', '3',
-    '--reserve-vram', '2',
+    '--vram-headroom', '1',
+    '--reserve-vram', '0',
     '--async-offload', '4'
 ) -join ' '
 

@@ -79,7 +79,7 @@ OFFLOAD_NOTE = """## Two-scene H3 storyboard practice
 
 **Transition 2 — audio:** each generated soundtrack is trimmed to 5.0 seconds and joined with `AudioConcat` in `after` mode. This keeps the two sound beds contiguous instead of restarting an untrimmed 5.1667-second H3 segment.
 
-**RAM/offload guards:** the shared text encoder uses `CLIPLoaderGGUFDynamicVRAM`; `H3FreeTextEncoder` evicts it after each prompt is encoded; Scene 1 uses the ref2va Q8 model and Scene 2 uses the smaller local fl2va U16G model. Run `scripts\\launch_h3_4090_offload.ps1`, which applies `--disable-smart-memory --cpu-vae --fp32-vae --vram-headroom 3 --reserve-vram 2 --async-offload 4`. `--fp32-vae` is required here because the MiniMax video VAE's CPU linear layers reject float32 activations with fp16 weights.
+**RAM/offload guards:** the shared text encoder uses `CLIPLoaderGGUFDynamicVRAM`; `H3FreeTextEncoder` evicts it after each prompt is encoded; Scene 1 uses the ref2va Q8 model and Scene 2 uses the smaller local fl2va U16G model. Run `scripts\\launch_h3_4090_offload.ps1`, which applies `--disable-smart-memory --cpu-vae --fp32-vae --vram-headroom 1 --reserve-vram 0 --async-offload 4`. `--fp32-vae` is required here because the MiniMax video VAE's CPU linear layers reject float32 activations with fp16 weights.
 
 The prompt is adult and non-graphic: it permits explicit adult nudity as a fine-art bath study and excludes sexual activity."""
 
@@ -642,7 +642,7 @@ def build_manifest() -> dict:
             {"id": "audio_continuity", "from": "scene_1.audio_0_5s", "to": "scene_2.audio_0_5s", "assembly": "AudioConcat(direction=after)"},
         ],
         "continuity_locks": ["same adult character identity", "same bathhouse geometry", "same camera axis and lens", "same lantern and dusk lighting", "same water level and steam direction"],
-        "offload": {"launcher": "scripts/launch_h3_4090_offload.ps1", "clip_loader": "CLIPLoaderGGUFDynamicVRAM", "text_encoder_eviction": "H3FreeTextEncoder after each conditioning node", "vae_dtype": "fp32 on CPU", "recommended_args": ["--disable-smart-memory", "--cpu-vae", "--fp32-vae", "--vram-headroom", "3", "--reserve-vram", "2", "--async-offload", "4"]},
+        "offload": {"launcher": "scripts/launch_h3_4090_offload.ps1", "clip_loader": "CLIPLoaderGGUFDynamicVRAM", "text_encoder_eviction": "H3FreeTextEncoder after each conditioning node", "vae_dtype": "fp32 on CPU", "recommended_args": ["--disable-smart-memory", "--cpu-vae", "--fp32-vae", "--vram-headroom", "1", "--reserve-vram", "0", "--async-offload", "4"]},
         "prompts": {"scene_1": SCENE_1_PROMPT, "scene_2": SCENE_2_PROMPT},
     }
 
