@@ -1,0 +1,63 @@
+# Operating-system and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local environments and Python caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local secrets and machine-specific configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.token
+
+# The ComfyUI runtime is a separate nested checkout with model weights,
+# custom nodes, a virtual environment, and user data. Recreate it with the
+# setup scripts; do not vendor it in this workflow repository.
+/ComfyUI/
+
+# Generated runtime state and logs
+logs/
+outputs/
+output/
+temp/
+tmp/
+cache/
+*.log
+*.db
+*.sqlite
+*.sqlite3
+
+# Downloaded model/checkpoint artifacts
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.gguf
+*.onnx
+*.vae
+
+# Rendered media is reproducible from the tracked workflows and prompts.
+# Force-add an intentional review asset when it is needed in Git.
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.avi

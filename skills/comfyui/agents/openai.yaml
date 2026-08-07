@@ -1,0 +1,4 @@
+interface:
+  display_name: "ComfyUI Workflow Design"
+  short_description: "Design and run reproducible ComfyUI workflows"
+  default_prompt: "Use $comfyui to design, validate, and run a reproducible ComfyUI video workflow."
