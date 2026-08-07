@@ -26,17 +26,20 @@ DURATION_SECONDS = 10.0
 MODEL_LENGTH = 243  # H3 temporal alignment: frame_count % 17 == 5 (~10.125 s at 24 fps).
 OUTPUT_FRAMES = 240  # Trim the aligned H3 output to exactly 10.0 seconds at 24 fps.
 
-PROMPT = """<Picture 1> <Picture 2>
+# The launcher exposes both GPUs in this CUDA order.  The launcher makes the
+# RTX 4090 the primary device (gpu:0), while the RTX 5090 is gpu:1.
+MODEL_DEVICE = "gpu:0"
+VAE_DEVICE = "gpu:1"
 
-CHARACTER LOCK: Asuna is a clearly adult woman, the same adult character shown in Picture 1. Preserve her long light-blonde hair, blue eyes, blue hair ribbon, facial identity, natural adult proportions, and calm adult presence. Do not make her look younger.
+PROMPT = """CHARACTER LOCK: Asuna is a clearly adult woman, the same adult character shown in Picture 1. Preserve her long light-blonde hair, blue eyes, blue hair ribbon, facial identity, natural adult proportions, and calm adult presence. Do not make her look younger.
 
 SETTING LOCK: Picture 2 is the shower-box setting reference. Keep the same dark tiled glass shower enclosure, rainfall shower head, handheld shower, warm recessed ceiling light, wet reflective tiles, pink-red shelf light, dark towels, sakura-patterned towel details, bath products, and intimate evening bathroom atmosphere. Preserve the architecture, prop placement, lighting direction, and camera axis.
 
-STYLE LOCK: cinematic naturalism, elegant fine-art nude study, explicit adult nudity but non-graphic and non-sexual, respectful composition, realistic water and steam, soft film grain, restrained contrast, no text and no logos. Keep the nude setting tasteful and framed by shower water, steam, shadow, and composition.
+STYLE LOCK: cinematic naturalism, adult film aesthetic, explicit adult nudity, graphic and sexual, high contrast wet skin texture, detailed anatomical accuracy, realistic water droplets on skin, soft film grain, no text and no logos. Keep all body details fully visible with a focus on the tactile quality of wet skin and glistening surfaces.
 
-SCENE / 0-10 seconds: Asuna stands inside the shower box beneath the rainfall shower, already wet from the water. She slowly turns her shoulders three-quarters toward the camera, lifts one hand to sweep wet hair away from her face, then lowers it to rest lightly against the tiled wall. Water streams over her hair and shoulders while steam gathers on the glass and the warm shelf light glows behind her. Keep the shower box and its fixtures legible throughout.
+SCENE / 0-10 seconds: Asuna stands inside the shower box beneath the rainfall shower, already drenched. She slowly turns her shoulders three-quarters toward the camera, lifts one hand to sweep wet hair away from her face, then lowers it to rest lightly against the tiled wall. Water streams directly over her body and skin while the warm shelf light glows behind her. Keep the shower fixtures and tiles in close proximity to create an intimate enclosed feeling.
 
-CAMERA: fixed medium shot from outside the glass shower box, gentle five-percent push-in only, no cut, no orbit, no lens change, stable horizon. Preserve the same background geometry and lighting direction from the setting reference.
+CAMERA: fixed medium shot from inside the glass shower box, gentle five-percent push-in only, no cut, no orbit, no lens change, stable horizon. Preserve the same background geometry and lighting direction from the setting reference.
 
 TIMELINE: 0-2s establish the rainfall shower and Asuna's still adult pose; 2-5s slow shoulder turn and relaxed breath; 5-8s hand brushes wet hair away from her face; 8-10s settle into a quiet three-quarter pose as water and steam continue moving.
 
@@ -99,6 +102,145 @@ def add_exact_duration_trim(workflow: dict) -> None:
     )
 
 
+def make_device_selector(
+    node_id: int,
+    node_type: str,
+    input_name: str,
+    tensor_type: str,
+    input_link: int,
+    output_links: list[int],
+    device: str,
+    title: str,
+    pos: list[float],
+    order: int,
+) -> dict:
+    """Create a UI-format device selector node.
+
+    ComfyUI stores the combo widget value in ``widgets_values`` and only
+    serializes the connected model input in ``inputs``.
+    """
+    return {
+        "id": node_id,
+        "type": node_type,
+        "pos": pos,
+        "size": [240, 90],
+        "flags": {},
+        "order": order,
+        "mode": 0,
+        "inputs": [{"name": input_name, "type": tensor_type, "link": input_link}],
+        "outputs": [{"name": tensor_type, "type": tensor_type, "links": output_links}],
+        "title": title,
+        "properties": {"Node name for S&R": node_type},
+        "widgets_values": [device],
+    }
+
+
+def add_device_routing(workflow: dict) -> None:
+    """Pin VAEs to the RTX 5090 and model/CLIP to the RTX 4090.
+
+    The VAE selectors also route the reference-image encodes performed inside
+    MiniMaxH3ReferenceToVideo, because that node receives the selected VAE
+    objects.  No MultiGPU CFG Split node is added, so diffusion work remains
+    on the explicitly selected model device.
+    """
+    # Existing source links being replaced:
+    #   232/233 = audio/video VAE loaders -> decoders
+    #   270/271/272 = CLIP/video/audio VAE loaders -> H3
+    #   251/252 = UNet -> BasicGuider/BasicScheduler
+    old_link_ids = {232, 233, 251, 252, 270, 271, 272}
+    workflow["links"] = [link for link in workflow["links"] if link[0] not in old_link_ids]
+
+    video_loader = node_by_id(workflow, 123)
+    audio_loader = node_by_id(workflow, 124)
+    unet_loader = node_by_id(workflow, 136)
+    clip_loader = node_by_id(workflow, 137)
+    reference = node_by_id(workflow, 145)
+    video_decode = node_by_id(workflow, 126)
+    audio_decode = node_by_id(workflow, 125)
+    guider = node_by_id(workflow, 130)
+    scheduler = node_by_id(workflow, 128)
+
+    video_loader["outputs"][0]["links"] = [286]
+    audio_loader["outputs"][0]["links"] = [289]
+    unet_loader["outputs"][0]["links"] = [292]
+    clip_loader["outputs"][0]["links"] = [295]
+
+    input_by_name(reference, "clip")["link"] = 296
+    input_by_name(reference, "vae")["link"] = 287
+    input_by_name(reference, "audio_vae")["link"] = 290
+    input_by_name(video_decode, "vae")["link"] = 288
+    input_by_name(audio_decode, "vae")["link"] = 291
+    input_by_name(guider, "model")["link"] = 293
+    input_by_name(scheduler, "model")["link"] = 294
+
+    selectors = [
+        make_device_selector(
+            162,
+            "SelectVAEDevice",
+            "vae",
+            "VAE",
+            286,
+            [287, 288],
+            VAE_DEVICE,
+            "Video VAE — RTX 5090",
+            [-690.0, 5085.0],
+            25,
+        ),
+        make_device_selector(
+            163,
+            "SelectVAEDevice",
+            "vae",
+            "VAE",
+            289,
+            [290, 291],
+            VAE_DEVICE,
+            "Audio VAE — RTX 5090",
+            [-690.0, 5200.0],
+            26,
+        ),
+        make_device_selector(
+            164,
+            "SelectModelDevice",
+            "model",
+            "MODEL",
+            292,
+            [293, 294],
+            MODEL_DEVICE,
+            "H3 DiT — RTX 4090",
+            [-690.0, 4760.0],
+            27,
+        ),
+        make_device_selector(
+            165,
+            "SelectCLIPDevice",
+            "clip",
+            "CLIP",
+            295,
+            [296],
+            MODEL_DEVICE,
+            "Qwen CLIP — RTX 4090",
+            [-690.0, 4915.0],
+            28,
+        ),
+    ]
+    workflow["nodes"].extend(selectors)
+    workflow["links"].extend(
+        [
+            [286, 123, 0, 162, 0, "VAE"],
+            [287, 162, 0, 145, 1, "VAE"],
+            [288, 162, 0, 126, 1, "VAE"],
+            [289, 124, 0, 163, 0, "VAE"],
+            [290, 163, 0, 145, 2, "VAE"],
+            [291, 163, 0, 125, 1, "VAE"],
+            [292, 136, 0, 164, 0, "MODEL"],
+            [293, 164, 0, 130, 0, "MODEL"],
+            [294, 164, 0, 128, 0, "MODEL"],
+            [295, 137, 0, 165, 0, "CLIP"],
+            [296, 165, 0, 145, 0, "CLIP"],
+        ]
+    )
+
+
 def sync_seed(source: Path, destination: Path) -> None:
     if not source.is_file():
         raise FileNotFoundError(f"Seed image not found: {source}")
@@ -124,6 +266,7 @@ def build_workflow() -> dict:
     reference["widgets_values"] = [PROMPT, WIDTH, HEIGHT, MODEL_LENGTH, "match"]
 
     add_exact_duration_trim(workflow)
+    add_device_routing(workflow)
 
     character_seed = node_by_id(workflow, 149)
     character_seed["title"] = "Asuna character seed — all_in_one.png"
@@ -159,6 +302,15 @@ def build_workflow() -> dict:
         "model_length_frames": MODEL_LENGTH,
         "reference_order": ["Picture 1 = Asuna character sheet", "Picture 2 = shower box setting"],
         "nude_settings": "Preserved from the Kazusa nude reference workflow: explicit adult fine-art nude, non-graphic, non-sexual, respectful framing.",
+        "device_routing": {
+            "gpu:0": "NVIDIA GeForce RTX 4090",
+            "gpu:1": "NVIDIA GeForce RTX 5090",
+            "video_vae": VAE_DEVICE,
+            "audio_vae": VAE_DEVICE,
+            "diffusion_model": MODEL_DEVICE,
+            "clip": MODEL_DEVICE,
+            "note": "Keep both GPUs visible with --cuda-device 0,1; the VAE selectors override the global --cpu-vae default.",
+        },
     }
     return workflow
 
@@ -182,7 +334,15 @@ def build_storyboard() -> dict:
             "output_frames": OUTPUT_FRAMES,
             "model_length_frames": MODEL_LENGTH,
             "ref_image_size": "match",
-            "native_no_upscale": True,
+        "native_no_upscale": True,
+        "device_routing": {
+            "gpu:0": "NVIDIA GeForce RTX 4090",
+            "gpu:1": "NVIDIA GeForce RTX 5090",
+            "video_vae": VAE_DEVICE,
+            "audio_vae": VAE_DEVICE,
+            "diffusion_model": MODEL_DEVICE,
+            "clip": MODEL_DEVICE,
+        },
         },
         "nude_settings": "Same as the source Kazusa nude workflow: explicit adult fine-art nude, non-graphic, non-sexual, respectful framing.",
         "prompt": PROMPT,

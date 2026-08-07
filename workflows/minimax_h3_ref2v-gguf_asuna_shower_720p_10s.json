@@ -1,8 +1,8 @@
 {
   "id": "asuna-shower-ref2v-720p-10s",
   "revision": 0,
-  "last_node_id": 161,
-  "last_link_id": 285,
+  "last_node_id": 165,
+  "last_link_id": 296,
   "nodes": [
     {
       "id": 126,
@@ -29,7 +29,7 @@
         {
           "name": "vae",
           "type": "VAE",
-          "link": 233
+          "link": 288
         }
       ],
       "outputs": [
@@ -62,7 +62,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 252
+          "link": 294
         }
       ],
       "outputs": [
@@ -162,7 +162,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 251
+          "link": 293
         },
         {
           "name": "conditioning",
@@ -353,7 +353,7 @@
         {
           "name": "vae",
           "type": "VAE",
-          "link": 232
+          "link": 291
         }
       ],
       "outputs": [
@@ -412,7 +412,7 @@
           "name": "CLIP",
           "type": "CLIP",
           "links": [
-            270
+            295
           ]
         }
       ],
@@ -452,8 +452,7 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            233,
-            271
+            286
           ]
         }
       ],
@@ -491,8 +490,7 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            232,
-            272
+            289
           ]
         }
       ],
@@ -530,8 +528,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            251,
-            252
+            292
           ]
         }
       ],
@@ -718,17 +715,17 @@
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 270
+          "link": 296
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 271
+          "link": 287
         },
         {
           "name": "audio_vae",
           "type": "VAE",
-          "link": 272
+          "link": 290
         },
         {
           "label": "ref_image_0",
@@ -1025,25 +1022,164 @@
         0.0,
         10.0
       ]
+    },
+    {
+      "id": 162,
+      "type": "SelectVAEDevice",
+      "pos": [
+        -690.0,
+        5085.0
+      ],
+      "size": [
+        240,
+        90
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 286
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            287,
+            288
+          ]
+        }
+      ],
+      "title": "Video VAE — RTX 5090",
+      "properties": {
+        "Node name for S&R": "SelectVAEDevice"
+      },
+      "widgets_values": [
+        "gpu:1"
+      ]
+    },
+    {
+      "id": 163,
+      "type": "SelectVAEDevice",
+      "pos": [
+        -690.0,
+        5200.0
+      ],
+      "size": [
+        240,
+        90
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 289
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            290,
+            291
+          ]
+        }
+      ],
+      "title": "Audio VAE — RTX 5090",
+      "properties": {
+        "Node name for S&R": "SelectVAEDevice"
+      },
+      "widgets_values": [
+        "gpu:1"
+      ]
+    },
+    {
+      "id": 164,
+      "type": "SelectModelDevice",
+      "pos": [
+        -690.0,
+        4760.0
+      ],
+      "size": [
+        240,
+        90
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 292
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            293,
+            294
+          ]
+        }
+      ],
+      "title": "H3 DiT — RTX 4090",
+      "properties": {
+        "Node name for S&R": "SelectModelDevice"
+      },
+      "widgets_values": [
+        "gpu:0"
+      ]
+    },
+    {
+      "id": 165,
+      "type": "SelectCLIPDevice",
+      "pos": [
+        -690.0,
+        4915.0
+      ],
+      "size": [
+        240,
+        90
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 295
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            296
+          ]
+        }
+      ],
+      "title": "Qwen CLIP — RTX 4090",
+      "properties": {
+        "Node name for S&R": "SelectCLIPDevice"
+      },
+      "widgets_values": [
+        "gpu:0"
+      ]
     }
   ],
   "links": [
-    [
-      232,
-      124,
-      0,
-      125,
-      1,
-      "VAE"
-    ],
-    [
-      233,
-      123,
-      0,
-      126,
-      1,
-      "VAE"
-    ],
     [
       234,
       131,
@@ -1109,22 +1245,6 @@
       "LATENT"
     ],
     [
-      251,
-      136,
-      0,
-      130,
-      0,
-      "MODEL"
-    ],
-    [
-      252,
-      136,
-      0,
-      128,
-      0,
-      "MODEL"
-    ],
-    [
       265,
       145,
       1,
@@ -1163,30 +1283,6 @@
       145,
       10,
       "INT"
-    ],
-    [
-      270,
-      137,
-      0,
-      145,
-      0,
-      "CLIP"
-    ],
-    [
-      271,
-      123,
-      0,
-      145,
-      1,
-      "VAE"
-    ],
-    [
-      272,
-      124,
-      0,
-      145,
-      2,
-      "VAE"
     ],
     [
       277,
@@ -1235,6 +1331,94 @@
       132,
       1,
       "AUDIO"
+    ],
+    [
+      286,
+      123,
+      0,
+      162,
+      0,
+      "VAE"
+    ],
+    [
+      287,
+      162,
+      0,
+      145,
+      1,
+      "VAE"
+    ],
+    [
+      288,
+      162,
+      0,
+      126,
+      1,
+      "VAE"
+    ],
+    [
+      289,
+      124,
+      0,
+      163,
+      0,
+      "VAE"
+    ],
+    [
+      290,
+      163,
+      0,
+      145,
+      2,
+      "VAE"
+    ],
+    [
+      291,
+      163,
+      0,
+      125,
+      1,
+      "VAE"
+    ],
+    [
+      292,
+      136,
+      0,
+      164,
+      0,
+      "MODEL"
+    ],
+    [
+      293,
+      164,
+      0,
+      130,
+      0,
+      "MODEL"
+    ],
+    [
+      294,
+      164,
+      0,
+      128,
+      0,
+      "MODEL"
+    ],
+    [
+      295,
+      137,
+      0,
+      165,
+      0,
+      "CLIP"
+    ],
+    [
+      296,
+      165,
+      0,
+      145,
+      0,
+      "CLIP"
     ]
   ],
   "groups": [
@@ -1334,7 +1518,16 @@
         "Picture 1 = Asuna character sheet",
         "Picture 2 = shower box setting"
       ],
-      "nude_settings": "Preserved from the Kazusa nude reference workflow: explicit adult fine-art nude, non-graphic, non-sexual, respectful framing."
+      "nude_settings": "Preserved from the Kazusa nude reference workflow: explicit adult fine-art nude, non-graphic, non-sexual, respectful framing.",
+      "device_routing": {
+        "gpu:0": "NVIDIA GeForce RTX 4090",
+        "gpu:1": "NVIDIA GeForce RTX 5090",
+        "video_vae": "gpu:1",
+        "audio_vae": "gpu:1",
+        "diffusion_model": "gpu:0",
+        "clip": "gpu:0",
+        "note": "Keep both GPUs visible with --cuda-device 0,1; the VAE selectors override the global --cpu-vae default."
+      }
     }
   },
   "version": 0.4
