@@ -50,9 +50,11 @@
     "launcher": "scripts/launch_h3_4090_offload.ps1",
     "clip_loader": "CLIPLoaderGGUFDynamicVRAM",
     "text_encoder_eviction": "H3FreeTextEncoder after each conditioning node",
+    "vae_dtype": "fp32 on CPU",
     "recommended_args": [
       "--disable-smart-memory",
       "--cpu-vae",
+      "--fp32-vae",
       "--vram-headroom",
       "3",
       "--reserve-vram",

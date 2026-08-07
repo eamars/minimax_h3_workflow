@@ -2,7 +2,7 @@
   "id": "kazusa-ref2v-gguf-nude-10s",
   "revision": 0,
   "last_node_id": 184,
-  "last_link_id": 324,
+  "last_link_id": 325,
   "nodes": [
     {
       "id": 126,
@@ -1502,7 +1502,9 @@
         {
           "name": "GUIDER",
           "type": "GUIDER",
-          "links": []
+          "links": [
+            325
+          ]
         }
       ],
       "title": "Scene 2 Guider",
@@ -1607,7 +1609,7 @@
         {
           "name": "guider",
           "type": "GUIDER",
-          "link": null
+          "link": 325
         },
         {
           "name": "sampler",
@@ -2121,7 +2123,7 @@
       "title": "README: 4090 offload and continuity",
       "properties": {},
       "widgets_values": [
-        "## Two-scene H3 storyboard practice\n\n**Output:** 2 connected scenes × 5.0 seconds = 240 frames at 24 fps, final 1920×1080 MP4.\n\n**Generation canvas:** both H3 passes run at 864×480. The final `ImageScale` node performs the 1920×1080 resize after the two scene batches are joined, which avoids the memory cost of native 1080p H3 sampling on a 24 GB RTX 4090.\n\n**Transition 1 — visual:** Scene 1 frame 119 is extracted as a one-frame handoff and fed to Scene 2's `first_frame` input. Scene 2's first output frame is removed during assembly, preventing a duplicate frame while preserving the exact five-second boundary.\n\n**Transition 2 — audio:** each generated soundtrack is trimmed to 5.0 seconds and joined with `AudioConcat` in `after` mode. This keeps the two sound beds contiguous instead of restarting an untrimmed 5.1667-second H3 segment.\n\n**RAM/offload guards:** the shared text encoder uses `CLIPLoaderGGUFDynamicVRAM`; `H3FreeTextEncoder` evicts it after each prompt is encoded; Scene 1 uses the ref2va Q8 model and Scene 2 uses the smaller local fl2va U16G model. Run `scripts\\launch_h3_4090_offload.ps1`, which applies `--disable-smart-memory --cpu-vae --vram-headroom 3 --reserve-vram 2 --async-offload 4`.\n\nThe prompt is adult and non-graphic: it permits explicit adult nudity as a fine-art bath study and excludes sexual activity."
+        "## Two-scene H3 storyboard practice\n\n**Output:** 2 connected scenes × 5.0 seconds = 240 frames at 24 fps, final 1920×1080 MP4.\n\n**Generation canvas:** both H3 passes run at 864×480. The final `ImageScale` node performs the 1920×1080 resize after the two scene batches are joined, which avoids the memory cost of native 1080p H3 sampling on a 24 GB RTX 4090.\n\n**Transition 1 — visual:** Scene 1 frame 119 is extracted as a one-frame handoff and fed to Scene 2's `first_frame` input. Scene 2's first output frame is removed during assembly, preventing a duplicate frame while preserving the exact five-second boundary.\n\n**Transition 2 — audio:** each generated soundtrack is trimmed to 5.0 seconds and joined with `AudioConcat` in `after` mode. This keeps the two sound beds contiguous instead of restarting an untrimmed 5.1667-second H3 segment.\n\n**RAM/offload guards:** the shared text encoder uses `CLIPLoaderGGUFDynamicVRAM`; `H3FreeTextEncoder` evicts it after each prompt is encoded; Scene 1 uses the ref2va Q8 model and Scene 2 uses the smaller local fl2va U16G model. Run `scripts\\launch_h3_4090_offload.ps1`, which applies `--disable-smart-memory --cpu-vae --fp32-vae --vram-headroom 3 --reserve-vram 2 --async-offload 4`. `--fp32-vae` is required here because the MiniMax video VAE's CPU linear layers reject float32 activations with fp16 weights.\n\nThe prompt is adult and non-graphic: it permits explicit adult nudity as a fine-art bath study and excludes sexual activity."
       ],
       "color": "#222",
       "bgcolor": "#000"
@@ -2655,6 +2657,14 @@
       92,
       0,
       "VIDEO"
+    ],
+    [
+      325,
+      169,
+      0,
+      172,
+      1,
+      "GUIDER"
     ]
   ],
   "groups": [
