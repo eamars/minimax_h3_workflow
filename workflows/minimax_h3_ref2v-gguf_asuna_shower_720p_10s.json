@@ -1,8 +1,8 @@
 {
   "id": "asuna-shower-ref2v-720p-10s",
   "revision": 0,
-  "last_node_id": 156,
-  "last_link_id": 278,
+  "last_node_id": 161,
+  "last_link_id": 285,
   "nodes": [
     {
       "id": 126,
@@ -36,9 +36,7 @@
         {
           "name": "IMAGE",
           "type": "IMAGE",
-          "links": [
-            240
-          ]
+          "links": []
         }
       ],
       "properties": {
@@ -236,13 +234,13 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 240
+          "link": 284
         },
         {
           "name": "audio",
           "shape": 7,
           "type": "AUDIO",
-          "link": 241
+          "link": 285
         }
       ],
       "outputs": [
@@ -362,9 +360,7 @@
         {
           "name": "AUDIO",
           "type": "AUDIO",
-          "links": [
-            241
-          ]
+          "links": []
         }
       ],
       "properties": {
@@ -950,6 +946,85 @@
       ],
       "color": "#432",
       "bgcolor": "#653"
+    },
+    {
+      "id": 160,
+      "type": "ImageFromBatch",
+      "pos": [
+        1820,
+        4620
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 282
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            284
+          ]
+        }
+      ],
+      "title": "Trim video to exact 10.0 seconds",
+      "properties": {
+        "Node name for S&R": "ImageFromBatch"
+      },
+      "widgets_values": [
+        0,
+        240
+      ]
+    },
+    {
+      "id": 161,
+      "type": "TrimAudioDuration",
+      "pos": [
+        1820,
+        4920
+      ],
+      "size": [
+        270,
+        130
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 283,
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            285
+          ]
+        }
+      ],
+      "title": "Trim audio to exact 10.0 seconds",
+      "properties": {
+        "Node name for S&R": "TrimAudioDuration"
+      },
+      "widgets_values": [
+        0.0,
+        10.0
+      ]
     }
   ],
   "links": [
@@ -1000,22 +1075,6 @@
       129,
       3,
       "SIGMAS"
-    ],
-    [
-      240,
-      126,
-      0,
-      132,
-      0,
-      "IMAGE"
-    ],
-    [
-      241,
-      125,
-      0,
-      132,
-      1,
-      "AUDIO"
     ],
     [
       243,
@@ -1144,6 +1203,38 @@
       145,
       4,
       "IMAGE"
+    ],
+    [
+      282,
+      126,
+      0,
+      160,
+      0,
+      "IMAGE"
+    ],
+    [
+      283,
+      125,
+      0,
+      161,
+      0,
+      "AUDIO"
+    ],
+    [
+      284,
+      160,
+      0,
+      132,
+      0,
+      "IMAGE"
+    ],
+    [
+      285,
+      161,
+      0,
+      132,
+      1,
+      "AUDIO"
     ]
   ],
   "groups": [
@@ -1237,6 +1328,7 @@
       "resolution_note": "H3 canvas alignment uses 1280x736 as the nearest valid 720p-class 16:9 canvas; native generation, no upscale node.",
       "fps": 24,
       "duration_seconds_nominal": 10.0,
+      "output_frames": 240,
       "model_length_frames": 243,
       "reference_order": [
         "Picture 1 = Asuna character sheet",

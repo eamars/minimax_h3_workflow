@@ -23,6 +23,7 @@
     "resolution_label": "720p-class native H3 canvas",
     "fps": 24,
     "duration_seconds_nominal": 10.0,
+    "output_frames": 240,
     "model_length_frames": 243,
     "ref_image_size": "match",
     "native_no_upscale": true

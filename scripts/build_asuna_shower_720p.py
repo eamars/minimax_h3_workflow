@@ -24,6 +24,7 @@ HEIGHT = 736  # H3 requires 32-pixel canvas alignment; this is its 720p-class 16
 FPS = 24
 DURATION_SECONDS = 10.0
 MODEL_LENGTH = 243  # H3 temporal alignment: frame_count % 17 == 5 (~10.125 s at 24 fps).
+OUTPUT_FRAMES = 240  # Trim the aligned H3 output to exactly 10.0 seconds at 24 fps.
 
 PROMPT = """<Picture 1> <Picture 2>
 
@@ -50,6 +51,54 @@ def input_by_name(node: dict, name: str) -> dict:
     return next(item for item in node["inputs"] if item["name"] == name)
 
 
+def add_exact_duration_trim(workflow: dict) -> None:
+    """Trim H3's 243 aligned frames/audio samples to an exact 10 seconds."""
+    template_workflow = json.loads(
+        (ROOT / "workflows" / "minimax_h3_ref2v-gguf_kazusa_bath_2scene_1080p_4090.json").read_text(encoding="utf-8")
+    )
+    video_trim = copy.deepcopy(node_by_id(template_workflow, 162))
+    audio_trim = copy.deepcopy(node_by_id(template_workflow, 164))
+    video_trim.update(
+        {
+            "id": 160,
+            "title": "Trim video to exact 10.0 seconds",
+            "order": 20,
+            "widgets_values": [0, OUTPUT_FRAMES],
+        }
+    )
+    video_trim["inputs"][0]["link"] = 282
+    video_trim["outputs"][0]["links"] = [284]
+    audio_trim.update(
+        {
+            "id": 161,
+            "title": "Trim audio to exact 10.0 seconds",
+            "order": 21,
+            "widgets_values": [0.0, DURATION_SECONDS],
+        }
+    )
+    audio_trim["inputs"][0]["link"] = 283
+    audio_trim["outputs"][0]["links"] = [285]
+    workflow["nodes"].extend([video_trim, audio_trim])
+
+    video_decode = node_by_id(workflow, 126)
+    video_decode["outputs"][0]["links"] = []
+    audio_decode = node_by_id(workflow, 125)
+    audio_decode["outputs"][0]["links"] = []
+    create_video = node_by_id(workflow, 132)
+    input_by_name(create_video, "images")["link"] = 284
+    input_by_name(create_video, "audio")["link"] = 285
+
+    workflow["links"] = [link for link in workflow["links"] if link[0] not in {240, 241}]
+    workflow["links"].extend(
+        [
+            [282, 126, 0, 160, 0, "IMAGE"],
+            [283, 125, 0, 161, 0, "AUDIO"],
+            [284, 160, 0, 132, 0, "IMAGE"],
+            [285, 161, 0, 132, 1, "AUDIO"],
+        ]
+    )
+
+
 def sync_seed(source: Path, destination: Path) -> None:
     if not source.is_file():
         raise FileNotFoundError(f"Seed image not found: {source}")
@@ -73,6 +122,8 @@ def build_workflow() -> dict:
 
     reference = node_by_id(workflow, 145)
     reference["widgets_values"] = [PROMPT, WIDTH, HEIGHT, MODEL_LENGTH, "match"]
+
+    add_exact_duration_trim(workflow)
 
     character_seed = node_by_id(workflow, 149)
     character_seed["title"] = "Asuna character seed — all_in_one.png"
@@ -104,6 +155,7 @@ def build_workflow() -> dict:
         "resolution_note": "H3 canvas alignment uses 1280x736 as the nearest valid 720p-class 16:9 canvas; native generation, no upscale node.",
         "fps": FPS,
         "duration_seconds_nominal": DURATION_SECONDS,
+        "output_frames": OUTPUT_FRAMES,
         "model_length_frames": MODEL_LENGTH,
         "reference_order": ["Picture 1 = Asuna character sheet", "Picture 2 = shower box setting"],
         "nude_settings": "Preserved from the Kazusa nude reference workflow: explicit adult fine-art nude, non-graphic, non-sexual, respectful framing.",
@@ -127,6 +179,7 @@ def build_storyboard() -> dict:
             "resolution_label": "720p-class native H3 canvas",
             "fps": FPS,
             "duration_seconds_nominal": DURATION_SECONDS,
+            "output_frames": OUTPUT_FRAMES,
             "model_length_frames": MODEL_LENGTH,
             "ref_image_size": "match",
             "native_no_upscale": True,
