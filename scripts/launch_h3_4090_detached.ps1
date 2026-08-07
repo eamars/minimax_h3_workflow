@@ -5,12 +5,18 @@ param(
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $comfyPython = Join-Path $repoRoot 'ComfyUI\.venv\Scripts\python.exe'
 $launcher = Join-Path $repoRoot 'scripts\launch_comfyui.py'
+$dtypePatch = Join-Path $repoRoot 'scripts\apply_h3_vae_dtype_patch.py'
 $logDirectory = Join-Path $repoRoot 'logs'
 $stdoutPath = Join-Path $logDirectory 'comfyui_takeover.stdout.log'
 $stderrPath = Join-Path $logDirectory 'comfyui_takeover.stderr.log'
 
 if (-not (Test-Path -LiteralPath $comfyPython)) {
     throw "ComfyUI virtual-environment Python was not found at $comfyPython"
+}
+
+& $comfyPython $dtypePatch
+if ($LASTEXITCODE -ne 0) {
+    throw "The MiniMax H3 CPU-VAE dtype patch could not be applied"
 }
 
 New-Item -ItemType Directory -Force -Path $logDirectory | Out-Null
