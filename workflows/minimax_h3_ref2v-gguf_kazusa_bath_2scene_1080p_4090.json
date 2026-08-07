@@ -1,0 +1,2760 @@
+{
+  "id": "kazusa-ref2v-gguf-nude-10s",
+  "revision": 0,
+  "last_node_id": 184,
+  "last_link_id": 324,
+  "nodes": [
+    {
+      "id": 126,
+      "type": "VAEDecode",
+      "pos": [
+        1504.3436741920136,
+        4982.84180850804
+      ],
+      "size": [
+        230,
+        60
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 249
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 233
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            282,
+            283
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 128,
+      "type": "BasicScheduler",
+      "pos": [
+        754.3436741920119,
+        5232.84180850804
+      ],
+      "size": [
+        370,
+        130
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 252
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SIGMAS",
+          "type": "SIGMAS",
+          "links": [
+            237
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BasicScheduler"
+      },
+      "widgets_values": [
+        "simple",
+        20,
+        1
+      ]
+    },
+    {
+      "id": 129,
+      "type": "SamplerCustomAdvanced",
+      "pos": [
+        1174.343674192014,
+        4992.84180850804
+      ],
+      "size": [
+        230,
+        326
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "noise",
+          "type": "NOISE",
+          "link": 234
+        },
+        {
+          "name": "guider",
+          "type": "GUIDER",
+          "link": 235
+        },
+        {
+          "name": "sampler",
+          "type": "SAMPLER",
+          "link": 236
+        },
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 237
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 265
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "LATENT",
+          "links": [
+            249,
+            250
+          ]
+        },
+        {
+          "name": "denoised_output",
+          "type": "LATENT",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SamplerCustomAdvanced"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 130,
+      "type": "BasicGuider",
+      "pos": [
+        754.3436741920119,
+        4952.84180850804
+      ],
+      "size": [
+        360,
+        60
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 251
+        },
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 288
+        }
+      ],
+      "outputs": [
+        {
+          "name": "GUIDER",
+          "type": "GUIDER",
+          "links": [
+            235
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BasicGuider"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 131,
+      "type": "RandomNoise",
+      "pos": [
+        754.3436741920119,
+        4792.84180850804
+      ],
+      "size": [
+        360,
+        90
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "NOISE",
+          "type": "NOISE",
+          "links": [
+            234
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RandomNoise"
+      },
+      "widgets_values": [
+        258027117257533,
+        "randomize"
+      ]
+    },
+    {
+      "id": 132,
+      "type": "CreateVideo",
+      "pos": [
+        1834.3436741920134,
+        5022.84180850804
+      ],
+      "size": [
+        270,
+        110
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 314
+        },
+        {
+          "name": "audio",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": 315
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            316
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CreateVideo"
+      },
+      "widgets_values": [
+        24,
+        8
+      ],
+      "title": "Scene 1 Preview — 5.0s"
+    },
+    {
+      "id": 92,
+      "type": "SaveVideo",
+      "pos": [
+        2174.95681408446,
+        4719.961416797485
+      ],
+      "size": [
+        1030,
+        1915.6470588235295
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 324
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "video/MiniMax_H3_Kazusa_Bath_2Scene_1080p_4090",
+        "auto",
+        "auto"
+      ],
+      "color": "#322",
+      "bgcolor": "#533",
+      "title": "Final Output — 1080p / 10.0s"
+    },
+    {
+      "id": 127,
+      "type": "KSamplerSelect",
+      "pos": [
+        754.3436741920119,
+        5082.84180850804
+      ],
+      "size": [
+        370,
+        70
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "SAMPLER",
+          "type": "SAMPLER",
+          "links": [
+            236,
+            303
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerSelect"
+      },
+      "widgets_values": [
+        "er_sde"
+      ]
+    },
+    {
+      "id": 125,
+      "type": "VAEDecodeAudio",
+      "pos": [
+        1506.7710342526511,
+        5087.132601356264
+      ],
+      "size": [
+        230,
+        60
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 250
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 232
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            284
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecodeAudio"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 139,
+      "type": "MarkdownNote",
+      "pos": [
+        -2323.3744829392867,
+        4708.756011366197
+      ],
+      "size": [
+        440,
+        740
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note: Model Links",
+      "properties": {},
+      "widgets_values": [
+        "## Model Links\n\n**custom node**\n- [molbal/comfyui-gguf](https://github.com/molbal/ComfyUI-GGUF)\n\n**vae**\n\n- [minimax_h3_video_vae_fp16.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_video_vae_fp16.safetensors)\n- [minimax_h3_audio_vae_fp32.safetensors](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_audio_vae_fp32.safetensors)\n\n**diffusion_models**\n\n- [huggingface.co/molbal/MiniMax-H3-GGUF](https://huggingface.co/molbal/MiniMax-H3-GGUF/tree/main)\n\n**text_encoders**\n\n- [qwen3vl_32b_h3_ultra_uncensored_heretic_int8_convrot.safetensors](https://huggingface.co/ethanfel/Qwen3-VL-32B-Ultra-Heretic-H3-ComfyUI-INT8-ConvRot/resolve/main/qwen3vl_32b_h3_ultra_uncensored_heretic_int8_convrot.safetensors)\n\n\n## Model Storage Location\n\n```\n📂 ComfyUI/\n├── 📂 models/\n│   ├── 📂 vae/\n│   │   ├── minimax_h3_video_vae_fp16.safetensors\n│   │   └── minimax_h3_audio_vae_fp32.safetensors\n│   ├── 📂 diffusion_models/\n│   │   └── minimax_h3_ref2va_Q4_0.gguf  (for 12GB VRAM)\n│   │   └── minimax_h3_ref2va_U16G.gguf  (for 16GB VRAM)\n│   │   └── minimax_h3_ref2va_Q8_CR.gguf (for 24GB VRAM)\n│   └── 📂 text_encoders/\n│       └── qwen3vl_32b_h3_ultra_uncensored_heretic_int8_convrot.safetensors\n```\n"
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 137,
+      "type": "CLIPLoaderGGUFDynamicVRAM",
+      "pos": [
+        -1022.0311215232053,
+        4917.89254646706
+      ],
+      "size": [
+        640,
+        120
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            270,
+            287,
+            289,
+            297
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoaderGGUFDynamicVRAM"
+      },
+      "widgets_values": [
+        "qwen3vl_32b_h3_ultra_uncensored_heretic_int8_convrot.safetensors",
+        "minimax"
+      ],
+      "title": "Shared Qwen3-VL — Dynamic VRAM"
+    },
+    {
+      "id": 123,
+      "type": "VAELoader",
+      "pos": [
+        -1020.6617865074021,
+        5085.821367299085
+      ],
+      "size": [
+        640,
+        70
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            233,
+            271,
+            290,
+            306
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader",
+        "models": [
+          {
+            "name": "minimax_h3_video_vae_fp16.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_video_vae_fp16.safetensors",
+            "directory": "vae"
+          }
+        ]
+      },
+      "widgets_values": [
+        "minimax_h3_video_vae_fp16.safetensors"
+      ]
+    },
+    {
+      "id": 124,
+      "type": "VAELoader",
+      "pos": [
+        -1016.2472764139726,
+        5202.644810402357
+      ],
+      "size": [
+        650,
+        70
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            232,
+            272,
+            308
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader",
+        "models": [
+          {
+            "name": "minimax_h3_audio_vae_fp32.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_audio_vae_fp32.safetensors",
+            "directory": "vae"
+          }
+        ]
+      },
+      "widgets_values": [
+        "minimax_h3_audio_vae_fp32.safetensors"
+      ]
+    },
+    {
+      "id": 136,
+      "type": "UnetLoaderGGUFDynamicVRAM",
+      "pos": [
+        -1016.9095808335373,
+        4763.985265163634
+      ],
+      "size": [
+        643.942726048325,
+        81.51696798516332
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            251,
+            252
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UnetLoaderGGUFDynamicVRAM"
+      },
+      "widgets_values": [
+        "minimax-h3-ref2va-Q8_CR.gguf"
+      ],
+      "title": "Scene 1 DiT — ref2va Q8 / Dynamic VRAM"
+    },
+    {
+      "id": 146,
+      "type": "MarkdownNote",
+      "pos": [
+        -1859.2928017442407,
+        4712.1383561981675
+      ],
+      "size": [
+        450,
+        889.6875
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note: MiniMax H3",
+      "properties": {},
+      "widgets_values": [
+        "## MiniMax H3\n\n[MiniMax H3](https://www.minimax.io/blog/minimax-h3) is MiniMax's general-purpose, omni-modal generation model. It jointly understands text, image, video, and audio, and generates video with **native stereo audio**: voice, sound effects, and music are modeled jointly in a single forward pass, not layered on afterward. Output is up to 2K resolution, 24fps, and up to about 15 seconds.\n\n## About this workflow\n\nThis template runs the **reference-to-video (ref2va)** task using the `MiniMaxH3ReferenceToVideo` node. It takes any mix of reference images, videos, and standalone audio, and weaves them into the generation to lock in a character's identity, a style, a motion, a camera move, or a voice.\n\n**Key inputs**\n\n- **ref_images / ref_videos / ref_video_audios / ref_audios**: up to 9 reference images, 3 reference videos (each may carry its own paired soundtrack), and 3 standalone reference audio clips\n- **prompt**: reference the inputs by tag, in the exact order they were connected, for example `<Picture 1>`, `<Video 1>`, `<Audio 1>`, then describe the target scene, motion, and audio\n- **ref_image_size**: `match` scales references down to the generation's resolution (faster); `max` keeps up to a 2048px short edge for stronger identity fidelity, at the cost of speed since reference tokens ride along every sampling step\n- **width / height**: set via Resolution Selector.\n- **duration (seconds)**: converted to a valid frame `length` by the Math Expression node\n\n**Sampling and decode**\n\n- Sampler: `res_multistep`. `beta` or `normal` scheduler tends to outperform `simple` for reference-heavy prompts like this one\n- The sampler's joint audio+video `LATENT` output feeds directly into both `VAEDecode` (video, `minimax_h3_video_vae_fp16`) and `VAEDecodeAudio` (audio, `minimax_h3_audio_vae_fp32`); each decode node automatically pulls its own half out of the packed latent. `CreateVideo` then muxes the two into a single MP4 with synced sound\n- The diffusion model here is `minimax_h3_ref2va_pruned_int8_convrot.safetensors`, a different set of weights from the `fl2va` model used by the t2v/i2v templates\n\nRef2va's output is very sensitive to prompt wording; matching the reference tags precisely and being explicit about which reference drives which part of the shot tends to work best."
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 115,
+      "type": "ResolutionSelector",
+      "pos": [
+        269.26181922740705,
+        5191.593811441275
+      ],
+      "size": [
+        402.66949525276414,
+        126
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "links": [
+            267,
+            291
+          ]
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": [
+            268,
+            292
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ResolutionSelector"
+      },
+      "widgets_values": [
+        "16:9 (Widescreen)",
+        0.4,
+        32
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 134,
+      "type": "ComfyMathExpression",
+      "pos": [
+        571.1097699230227,
+        5379.903716627046
+      ],
+      "size": [
+        360,
+        160
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "a",
+          "name": "values.a",
+          "type": "FLOAT,INT,BOOLEAN",
+          "link": 248
+        },
+        {
+          "label": "b",
+          "name": "values.b",
+          "shape": 7,
+          "type": "FLOAT,INT,BOOLEAN",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "FLOAT",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            269,
+            293
+          ]
+        },
+        {
+          "name": "BOOL",
+          "type": "BOOLEAN",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ComfyMathExpression"
+      },
+      "widgets_values": [
+        "max(5, round(a * 24)) + (5 - (max(5, round(a * 24)) % 17)) % 17"
+      ]
+    },
+    {
+      "id": 135,
+      "type": "PrimitiveFloat",
+      "pos": [
+        277.8450779036221,
+        5364.316647409635
+      ],
+      "size": [
+        270,
+        70
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "FLOAT",
+          "type": "FLOAT",
+          "links": [
+            248
+          ]
+        }
+      ],
+      "title": "Float (duration)",
+      "properties": {
+        "Node name for S&R": "PrimitiveFloat"
+      },
+      "widgets_values": [
+        5.0
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 145,
+      "type": "MiniMaxH3ReferenceToVideo",
+      "pos": [
+        260.5160090397379,
+        4758.560140515044
+      ],
+      "size": [
+        410,
+        404
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 270
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 271
+        },
+        {
+          "name": "audio_vae",
+          "type": "VAE",
+          "link": 272
+        },
+        {
+          "label": "ref_image_0",
+          "name": "ref_images.ref_image_0",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 277
+        },
+        {
+          "label": "ref_image_1",
+          "name": "ref_images.ref_image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 278
+        },
+        {
+          "label": "ref_image_2",
+          "name": "ref_images.ref_image_2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 279
+        },
+        {
+          "label": "ref_image_3",
+          "name": "ref_images.ref_image_3",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 280
+        },
+        {
+          "label": "ref_image_4",
+          "name": "ref_images.ref_image_4",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 281
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": 267
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": 268
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "widget": {
+            "name": "length"
+          },
+          "link": 269
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            285
+          ]
+        },
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            265
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ReferenceToVideo"
+      },
+      "widgets_values": [
+        "<Picture 1> <Picture 2> <Picture 3> <Picture 4> <Picture 5>\n\nCONTINUITY LOCK: Kazusa is a clearly adult woman in her mid-twenties, the same person shown in all five reference pictures. Preserve her facial identity, short dark damp hair, natural proportions, skin tone, and calm adult presence. Do not make her look younger.\n\nWORLD LOCK: a single warm, steamy Japanese-inspired bathhouse at dusk; the same dark teal glazed tile, pale stone soaking pool, cedar trim, brass lantern, low amber practical light, wet floor reflections, drifting steam, and soft blue dusk visible through the high window. Keep the architecture, prop placement, lighting direction, color palette, lens, and camera axis fixed for the next shot.\n\nSTYLE LOCK: cinematic naturalism, elegant fine-art nude study, explicit adult nudity but non-graphic and non-sexual, respectful composition, realistic water and steam, soft film grain, restrained contrast, no text and no logos. Intimate atmosphere comes from light, steam, breath, and stillness rather than sexual activity.\n\nSCENE 1 / 0-5 seconds: Kazusa is already seated in the stone bath, three-quarter rear medium shot, shoulders and upper back above the water while steam and the pool edge naturally obscure intimate areas. She lowers her shoulders into the hot water, exhales, and rests one hand on the stone rim. A small ripple travels across the water as the steam curls past the lantern.\n\nCAMERA: locked camera axis and framing, gentle five-percent push-in only, no cut, no orbit, no lens change, stable horizon. Keep the bathhouse background legible behind the steam.\n\nTIMELINE: 0-2s settle into the water; 2-4s slow exhale and hand settling on the rim; 4-5s hold a quiet three-quarter rear pose with a slight turn of the head toward screen-left.\n\nEXIT FRAME: at exactly 5 seconds, hold the same seated pose, water level, head angle, lantern position, steam density, and camera framing for the next shot to continue from this frame.\n\nAUDIO: continuous bathhouse room tone, soft steam hiss, gentle hot-water trickle and droplets, subtle tiled-room echo, quiet natural breathing; no dialogue, no vocals, no music.",
+        864,
+        480,
+        124,
+        "match"
+      ],
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "Scene 1 — Reference-to-Video / 5s"
+    },
+    {
+      "id": 149,
+      "type": "LoadImage",
+      "pos": [
+        -292.9444654862285,
+        4732.811316948395
+      ],
+      "size": [
+        396.1422296149567,
+        326
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            277
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Kazusa Reference 1",
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "kazusa_seed_1.png",
+        "image"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 140,
+      "type": "MarkdownNote",
+      "pos": [
+        -1388.1126561747012,
+        4707.6523627924935
+      ],
+      "size": [
+        311.69225934899896,
+        717.4700138836661
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note: Size Settings Reference",
+      "properties": {},
+      "widgets_values": [
+        "| megapixels | Aspect | Output (multiple=32) |\n|---|---|---|\n| 0.2 | 16:9 | 608 x 352 |\n| 0.3 | 16:9 | 736 x 416 |\n| 0.4 | 16:9 | 864 x 480 |\n| 0.5 | 16:9 | 960 x 544 |\n| 0.6 | 16:9 | 1056 x 608 |\n| 0.7 | 16:9 | 1152 x 640 |\n| 0.8 | 16:9 | 1216 x 672 |\n| 0.9 | 16:9 | 1280 x 736 |\n| 0.98 | 16:9 | 1344 x 768 |\n| 1.0 | 16:9 | 1376 x 768 |\n| 1.2 | 16:9 | 1504 x 832 |\n| 1.5 | 16:9 | 1664 x 928 |\n| 1.8 | 16:9 | 1824 x 1024 |\n| 2.0 | 16:9 | 1920 x 1088 |\n"
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 155,
+      "type": "MarkdownNote",
+      "pos": [
+        -319.1502021819864,
+        4562.082306510342
+      ],
+      "size": [
+        514.7629232993013,
+        88
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note: Size Settings Reference",
+      "properties": {},
+      "widgets_values": [
+        "## ℹ️ You may add other references by duplicating the nodes below."
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 156,
+      "type": "LoadImage",
+      "pos": [
+        -292.9444654862285,
+        5092.811316948395
+      ],
+      "size": [
+        396.1422296149567,
+        326
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            278
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Kazusa Reference 2",
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "kazusa_seed_2.png",
+        "image"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 157,
+      "type": "LoadImage",
+      "pos": [
+        -292.9444654862285,
+        5452.811316948395
+      ],
+      "size": [
+        396.1422296149567,
+        326
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            279
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Kazusa Reference 3",
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "kazusa_seed_3.png",
+        "image"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 158,
+      "type": "LoadImage",
+      "pos": [
+        -292.9444654862285,
+        5812.811316948395
+      ],
+      "size": [
+        396.1422296149567,
+        326
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            280
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Kazusa Reference 4",
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "kazusa_seed_4.png",
+        "image"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 159,
+      "type": "LoadImage",
+      "pos": [
+        -292.9444654862285,
+        6172.811316948395
+      ],
+      "size": [
+        396.1422296149567,
+        326
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            281
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Kazusa Reference 5",
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "kazusa_seed_5.png",
+        "image"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 160,
+      "type": "H3ConditionStrength",
+      "pos": [
+        760,
+        4630
+      ],
+      "size": [
+        330,
+        150
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 285
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            286
+          ]
+        }
+      ],
+      "title": "Scene 1 Anchor Strength",
+      "properties": {
+        "Node name for S&R": "H3ConditionStrength"
+      },
+      "widgets_values": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "id": 161,
+      "type": "H3FreeTextEncoder",
+      "pos": [
+        1120,
+        4630
+      ],
+      "size": [
+        340,
+        100
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 286
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 287
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            288
+          ]
+        }
+      ],
+      "title": "Scene 1 — Evict Text Encoder",
+      "properties": {
+        "Node name for S&R": "H3FreeTextEncoder"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 162,
+      "type": "ImageFromBatch",
+      "pos": [
+        1820,
+        4620
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 282
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            314,
+            317
+          ]
+        }
+      ],
+      "title": "Scene 1 Frames 0–119 (5.0s)",
+      "properties": {
+        "Node name for S&R": "ImageFromBatch"
+      },
+      "widgets_values": [
+        0,
+        120
+      ]
+    },
+    {
+      "id": 163,
+      "type": "ImageFromBatch",
+      "pos": [
+        1820,
+        4770
+      ],
+      "size": [
+        300,
+        120
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 283
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            294
+          ]
+        }
+      ],
+      "title": "Transition 1 — Scene 1 Frame 119",
+      "properties": {
+        "Node name for S&R": "ImageFromBatch"
+      },
+      "widgets_values": [
+        119,
+        1
+      ]
+    },
+    {
+      "id": 164,
+      "type": "TrimAudioDuration",
+      "pos": [
+        1820,
+        4920
+      ],
+      "size": [
+        270,
+        130
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 284,
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            315,
+            320
+          ]
+        }
+      ],
+      "title": "Scene 1 Audio — 5.0s",
+      "properties": {
+        "Node name for S&R": "TrimAudioDuration"
+      },
+      "widgets_values": [
+        0.0,
+        5.0
+      ]
+    },
+    {
+      "id": 165,
+      "type": "UnetLoaderGGUFDynamicVRAM",
+      "pos": [
+        2600,
+        4620
+      ],
+      "size": [
+        650,
+        90
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            299,
+            300
+          ]
+        }
+      ],
+      "title": "Scene 2 DiT — fl2va U16G / Dynamic VRAM",
+      "properties": {
+        "Node name for S&R": "UnetLoaderGGUFDynamicVRAM"
+      },
+      "widgets_values": [
+        "minimax_h3_fl2va_pruned_fp8_U16G.gguf"
+      ]
+    },
+    {
+      "id": 166,
+      "type": "MiniMaxH3ImageToVideo",
+      "pos": [
+        2600,
+        4780
+      ],
+      "size": [
+        470,
+        360
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 289
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 290
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": 291
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": 292
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "link": 293
+        },
+        {
+          "name": "first_frame",
+          "type": "IMAGE",
+          "link": 294,
+          "shape": 7
+        },
+        {
+          "name": "last_frame",
+          "type": "IMAGE",
+          "link": null,
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            295
+          ]
+        },
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            301
+          ]
+        }
+      ],
+      "title": "Scene 2 — First-frame continuation / 5s",
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ImageToVideo"
+      },
+      "widgets_values": [
+        "CONTINUITY HANDOFF: the supplied first frame is the exact final handoff frame from Scene 1. Begin on that same adult Kazusa, same seated pose, same bathhouse pixels, same water level, same lantern, same steam, same camera axis and lens. Do not reset the composition, wardrobe state, anatomy, age, lighting, or background.\n\nCHARACTER LOCK: Kazusa is a clearly adult woman in her mid-twenties with the same face, short dark damp hair, natural proportions, skin tone, and calm adult presence. Preserve identity frame-to-frame; do not make her look younger.\n\nWORLD LOCK: continue the same warm, steamy Japanese-inspired bathhouse at dusk with dark teal glazed tile, pale stone soaking pool, cedar trim, brass lantern, low amber practical light, wet floor reflections, drifting steam, and soft blue dusk through the high window. No new room, props, architecture, or lighting direction.\n\nSTYLE LOCK: cinematic naturalism, elegant fine-art nude study, explicit adult nudity but non-graphic and non-sexual, respectful composition, realistic water and steam, soft film grain, restrained contrast, no text and no logos. Keep the mood quiet and observational rather than sexual.\n\nSCENE 2 / 5-10 seconds: continue without a cut. Kazusa slowly turns her head a few degrees toward the camera, lifts her wet hand to brush a clear path through condensation on the nearby tile, then lets the hand return to the stone rim. Steam briefly reveals and hides the same shoulder and back contours while small ripples carry the motion through the bath.\n\nCAMERA: identical camera axis, focal length, framing, height, and gentle five-percent push-in established in Scene 1; no jump, no orbit, no reframing. Preserve the background geometry and lantern placement.\n\nTIMELINE: 5-7s slow head turn and breath; 7-9s hand clears condensation and steam shifts; 9-10s settle into a still adult portrait pose that could continue into another shot.\n\nAUDIO: continue the exact Scene 1 atmosphere with no restart: same steam hiss, water trickle, tiled-room echo, quiet breathing, and soft ripples; no dialogue, no vocals, no music.",
+        864,
+        480,
+        124
+      ]
+    },
+    {
+      "id": 167,
+      "type": "H3ConditionStrength",
+      "pos": [
+        3140,
+        4780
+      ],
+      "size": [
+        330,
+        150
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 295
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            296
+          ]
+        }
+      ],
+      "title": "Scene 2 Keyframe Strength",
+      "properties": {
+        "Node name for S&R": "H3ConditionStrength"
+      },
+      "widgets_values": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "id": 168,
+      "type": "H3FreeTextEncoder",
+      "pos": [
+        3500,
+        4780
+      ],
+      "size": [
+        340,
+        100
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 296
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 297
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            298
+          ]
+        }
+      ],
+      "title": "Scene 2 — Evict Text Encoder",
+      "properties": {
+        "Node name for S&R": "H3FreeTextEncoder"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 169,
+      "type": "BasicGuider",
+      "pos": [
+        3900,
+        4780
+      ],
+      "size": [
+        360,
+        70
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 299
+        },
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 298
+        }
+      ],
+      "outputs": [
+        {
+          "name": "GUIDER",
+          "type": "GUIDER",
+          "links": []
+        }
+      ],
+      "title": "Scene 2 Guider",
+      "properties": {
+        "Node name for S&R": "BasicGuider"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 170,
+      "type": "BasicScheduler",
+      "pos": [
+        3900,
+        4930
+      ],
+      "size": [
+        370,
+        130
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 300
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SIGMAS",
+          "type": "SIGMAS",
+          "links": [
+            304
+          ]
+        }
+      ],
+      "title": "Scene 2 Scheduler",
+      "properties": {
+        "Node name for S&R": "BasicScheduler"
+      },
+      "widgets_values": [
+        "simple",
+        20,
+        1
+      ]
+    },
+    {
+      "id": 171,
+      "type": "RandomNoise",
+      "pos": [
+        3900,
+        5130
+      ],
+      "size": [
+        360,
+        90
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "NOISE",
+          "type": "NOISE",
+          "links": [
+            302
+          ]
+        }
+      ],
+      "title": "Scene 2 Seed",
+      "properties": {
+        "Node name for S&R": "RandomNoise"
+      },
+      "widgets_values": [
+        258027117257534,
+        "fixed"
+      ]
+    },
+    {
+      "id": 172,
+      "type": "SamplerCustomAdvanced",
+      "pos": [
+        4320,
+        4780
+      ],
+      "size": [
+        240,
+        330
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "noise",
+          "type": "NOISE",
+          "link": 302
+        },
+        {
+          "name": "guider",
+          "type": "GUIDER",
+          "link": null
+        },
+        {
+          "name": "sampler",
+          "type": "SAMPLER",
+          "link": 303
+        },
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 304
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 301
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "LATENT",
+          "links": [
+            305,
+            307
+          ]
+        },
+        {
+          "name": "denoised_output",
+          "type": "LATENT",
+          "links": []
+        }
+      ],
+      "title": "Scene 2 Sampler",
+      "properties": {
+        "Node name for S&R": "SamplerCustomAdvanced"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 173,
+      "type": "VAEDecode",
+      "pos": [
+        4620,
+        4780
+      ],
+      "size": [
+        230,
+        60
+      ],
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 305
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 306
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            309
+          ]
+        }
+      ],
+      "title": "Scene 2 Video Decode",
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 174,
+      "type": "VAEDecodeAudio",
+      "pos": [
+        4620,
+        4900
+      ],
+      "size": [
+        230,
+        60
+      ],
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 307
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 308
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            310
+          ]
+        }
+      ],
+      "title": "Scene 2 Audio Decode",
+      "properties": {
+        "Node name for S&R": "VAEDecodeAudio"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 175,
+      "type": "ImageFromBatch",
+      "pos": [
+        4940,
+        4780
+      ],
+      "size": [
+        330,
+        120
+      ],
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 309
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            311,
+            318
+          ]
+        }
+      ],
+      "title": "Scene 2 Frames 1–120 (skip duplicate handoff)",
+      "properties": {
+        "Node name for S&R": "ImageFromBatch"
+      },
+      "widgets_values": [
+        1,
+        120
+      ]
+    },
+    {
+      "id": 176,
+      "type": "TrimAudioDuration",
+      "pos": [
+        4940,
+        4930
+      ],
+      "size": [
+        270,
+        130
+      ],
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 310,
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            312,
+            321
+          ]
+        }
+      ],
+      "title": "Scene 2 Audio — 5.0s",
+      "properties": {
+        "Node name for S&R": "TrimAudioDuration"
+      },
+      "widgets_values": [
+        0.0,
+        5.0
+      ]
+    },
+    {
+      "id": 177,
+      "type": "CreateVideo",
+      "pos": [
+        5320,
+        4780
+      ],
+      "size": [
+        280,
+        110
+      ],
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 311
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 312,
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            313
+          ]
+        }
+      ],
+      "title": "Scene 2 Preview — 5.0s",
+      "properties": {
+        "Node name for S&R": "CreateVideo"
+      },
+      "widgets_values": [
+        24,
+        8
+      ]
+    },
+    {
+      "id": 178,
+      "type": "SaveVideo",
+      "pos": [
+        5660,
+        4780
+      ],
+      "size": [
+        420,
+        160
+      ],
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 313
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "links": []
+        }
+      ],
+      "title": "Scene 2 Preview Output",
+      "properties": {
+        "Node name for S&R": "SaveVideo"
+      },
+      "widgets_values": [
+        "video/MiniMax_H3_Kazusa_Bath_Scene2_5s",
+        "auto",
+        "auto"
+      ]
+    },
+    {
+      "id": 179,
+      "type": "ImageBatch",
+      "pos": [
+        5320,
+        5160
+      ],
+      "size": [
+        300,
+        90
+      ],
+      "flags": {},
+      "order": 42,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 317
+        },
+        {
+          "name": "image2",
+          "type": "IMAGE",
+          "link": 318
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            319
+          ]
+        }
+      ],
+      "title": "Transition 1 — Join the two 5s image batches",
+      "properties": {
+        "Node name for S&R": "ImageBatch"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 180,
+      "type": "ImageScale",
+      "pos": [
+        5680,
+        5160
+      ],
+      "size": [
+        300,
+        150
+      ],
+      "flags": {},
+      "order": 43,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 319
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            322
+          ]
+        }
+      ],
+      "title": "Final 1080p Resize (CPU intermediate)",
+      "properties": {
+        "Node name for S&R": "ImageScale"
+      },
+      "widgets_values": [
+        "lanczos",
+        1920,
+        1080,
+        "disabled"
+      ]
+    },
+    {
+      "id": 181,
+      "type": "AudioConcat",
+      "pos": [
+        5320,
+        5360
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "flags": {},
+      "order": 44,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio1",
+          "type": "AUDIO",
+          "link": 320,
+          "shape": 7
+        },
+        {
+          "name": "audio2",
+          "type": "AUDIO",
+          "link": 321,
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            323
+          ]
+        }
+      ],
+      "title": "Transition 2 — Append Scene 2 audio",
+      "properties": {
+        "Node name for S&R": "AudioConcat"
+      },
+      "widgets_values": [
+        "after"
+      ]
+    },
+    {
+      "id": 182,
+      "type": "CreateVideo",
+      "pos": [
+        6060,
+        5160
+      ],
+      "size": [
+        300,
+        110
+      ],
+      "flags": {},
+      "order": 45,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 322
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 323,
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            324
+          ]
+        }
+      ],
+      "title": "Final Video — 10.0s / 1920×1080",
+      "properties": {
+        "Node name for S&R": "CreateVideo"
+      },
+      "widgets_values": [
+        24,
+        8
+      ]
+    },
+    {
+      "id": 183,
+      "type": "SaveVideo",
+      "pos": [
+        2180,
+        4620
+      ],
+      "size": [
+        420,
+        160
+      ],
+      "flags": {},
+      "order": 46,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 316
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "links": []
+        }
+      ],
+      "title": "Scene 1 Preview Output",
+      "properties": {
+        "Node name for S&R": "SaveVideo"
+      },
+      "widgets_values": [
+        "video/MiniMax_H3_Kazusa_Bath_Scene1_5s",
+        "auto",
+        "auto"
+      ]
+    },
+    {
+      "id": 184,
+      "type": "MarkdownNote",
+      "pos": [
+        2200,
+        5360
+      ],
+      "size": [
+        520,
+        820
+      ],
+      "flags": {},
+      "order": 47,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "README: 4090 offload and continuity",
+      "properties": {},
+      "widgets_values": [
+        "## Two-scene H3 storyboard practice\n\n**Output:** 2 connected scenes × 5.0 seconds = 240 frames at 24 fps, final 1920×1080 MP4.\n\n**Generation canvas:** both H3 passes run at 864×480. The final `ImageScale` node performs the 1920×1080 resize after the two scene batches are joined, which avoids the memory cost of native 1080p H3 sampling on a 24 GB RTX 4090.\n\n**Transition 1 — visual:** Scene 1 frame 119 is extracted as a one-frame handoff and fed to Scene 2's `first_frame` input. Scene 2's first output frame is removed during assembly, preventing a duplicate frame while preserving the exact five-second boundary.\n\n**Transition 2 — audio:** each generated soundtrack is trimmed to 5.0 seconds and joined with `AudioConcat` in `after` mode. This keeps the two sound beds contiguous instead of restarting an untrimmed 5.1667-second H3 segment.\n\n**RAM/offload guards:** the shared text encoder uses `CLIPLoaderGGUFDynamicVRAM`; `H3FreeTextEncoder` evicts it after each prompt is encoded; Scene 1 uses the ref2va Q8 model and Scene 2 uses the smaller local fl2va U16G model. Run `scripts\\launch_h3_4090_offload.ps1`, which applies `--disable-smart-memory --cpu-vae --vram-headroom 3 --reserve-vram 2 --async-offload 4`.\n\nThe prompt is adult and non-graphic: it permits explicit adult nudity as a fine-art bath study and excludes sexual activity."
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    }
+  ],
+  "links": [
+    [
+      232,
+      124,
+      0,
+      125,
+      1,
+      "VAE"
+    ],
+    [
+      233,
+      123,
+      0,
+      126,
+      1,
+      "VAE"
+    ],
+    [
+      234,
+      131,
+      0,
+      129,
+      0,
+      "NOISE"
+    ],
+    [
+      235,
+      130,
+      0,
+      129,
+      1,
+      "GUIDER"
+    ],
+    [
+      236,
+      127,
+      0,
+      129,
+      2,
+      "SAMPLER"
+    ],
+    [
+      237,
+      128,
+      0,
+      129,
+      3,
+      "SIGMAS"
+    ],
+    [
+      248,
+      135,
+      0,
+      134,
+      0,
+      "FLOAT"
+    ],
+    [
+      249,
+      129,
+      0,
+      126,
+      0,
+      "LATENT"
+    ],
+    [
+      250,
+      129,
+      0,
+      125,
+      0,
+      "LATENT"
+    ],
+    [
+      251,
+      136,
+      0,
+      130,
+      0,
+      "MODEL"
+    ],
+    [
+      252,
+      136,
+      0,
+      128,
+      0,
+      "MODEL"
+    ],
+    [
+      265,
+      145,
+      1,
+      129,
+      4,
+      "LATENT"
+    ],
+    [
+      267,
+      115,
+      0,
+      145,
+      8,
+      "INT"
+    ],
+    [
+      268,
+      115,
+      1,
+      145,
+      9,
+      "INT"
+    ],
+    [
+      269,
+      134,
+      1,
+      145,
+      10,
+      "INT"
+    ],
+    [
+      270,
+      137,
+      0,
+      145,
+      0,
+      "CLIP"
+    ],
+    [
+      271,
+      123,
+      0,
+      145,
+      1,
+      "VAE"
+    ],
+    [
+      272,
+      124,
+      0,
+      145,
+      2,
+      "VAE"
+    ],
+    [
+      277,
+      149,
+      0,
+      145,
+      3,
+      "IMAGE"
+    ],
+    [
+      278,
+      156,
+      0,
+      145,
+      4,
+      "IMAGE"
+    ],
+    [
+      279,
+      157,
+      0,
+      145,
+      5,
+      "IMAGE"
+    ],
+    [
+      280,
+      158,
+      0,
+      145,
+      6,
+      "IMAGE"
+    ],
+    [
+      281,
+      159,
+      0,
+      145,
+      7,
+      "IMAGE"
+    ],
+    [
+      282,
+      126,
+      0,
+      162,
+      0,
+      "IMAGE"
+    ],
+    [
+      283,
+      126,
+      0,
+      163,
+      0,
+      "IMAGE"
+    ],
+    [
+      284,
+      125,
+      0,
+      164,
+      0,
+      "AUDIO"
+    ],
+    [
+      285,
+      145,
+      0,
+      160,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      286,
+      160,
+      0,
+      161,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      287,
+      137,
+      0,
+      161,
+      1,
+      "CLIP"
+    ],
+    [
+      288,
+      161,
+      0,
+      130,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      289,
+      137,
+      0,
+      166,
+      0,
+      "CLIP"
+    ],
+    [
+      290,
+      123,
+      0,
+      166,
+      1,
+      "VAE"
+    ],
+    [
+      291,
+      115,
+      0,
+      166,
+      2,
+      "INT"
+    ],
+    [
+      292,
+      115,
+      1,
+      166,
+      3,
+      "INT"
+    ],
+    [
+      293,
+      134,
+      1,
+      166,
+      4,
+      "INT"
+    ],
+    [
+      294,
+      163,
+      0,
+      166,
+      5,
+      "IMAGE"
+    ],
+    [
+      295,
+      166,
+      0,
+      167,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      296,
+      167,
+      0,
+      168,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      297,
+      137,
+      0,
+      168,
+      1,
+      "CLIP"
+    ],
+    [
+      298,
+      168,
+      0,
+      169,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      299,
+      165,
+      0,
+      169,
+      0,
+      "MODEL"
+    ],
+    [
+      300,
+      165,
+      0,
+      170,
+      0,
+      "MODEL"
+    ],
+    [
+      301,
+      166,
+      1,
+      172,
+      4,
+      "LATENT"
+    ],
+    [
+      302,
+      171,
+      0,
+      172,
+      0,
+      "NOISE"
+    ],
+    [
+      303,
+      127,
+      0,
+      172,
+      2,
+      "SAMPLER"
+    ],
+    [
+      304,
+      170,
+      0,
+      172,
+      3,
+      "SIGMAS"
+    ],
+    [
+      305,
+      172,
+      0,
+      173,
+      0,
+      "LATENT"
+    ],
+    [
+      306,
+      123,
+      0,
+      173,
+      1,
+      "VAE"
+    ],
+    [
+      307,
+      172,
+      0,
+      174,
+      0,
+      "LATENT"
+    ],
+    [
+      308,
+      124,
+      0,
+      174,
+      1,
+      "VAE"
+    ],
+    [
+      309,
+      173,
+      0,
+      175,
+      0,
+      "IMAGE"
+    ],
+    [
+      310,
+      174,
+      0,
+      176,
+      0,
+      "AUDIO"
+    ],
+    [
+      311,
+      175,
+      0,
+      177,
+      0,
+      "IMAGE"
+    ],
+    [
+      312,
+      176,
+      0,
+      177,
+      1,
+      "AUDIO"
+    ],
+    [
+      313,
+      177,
+      0,
+      178,
+      0,
+      "VIDEO"
+    ],
+    [
+      314,
+      162,
+      0,
+      132,
+      0,
+      "IMAGE"
+    ],
+    [
+      315,
+      164,
+      0,
+      132,
+      1,
+      "AUDIO"
+    ],
+    [
+      316,
+      132,
+      0,
+      183,
+      0,
+      "VIDEO"
+    ],
+    [
+      317,
+      162,
+      0,
+      179,
+      0,
+      "IMAGE"
+    ],
+    [
+      318,
+      175,
+      0,
+      179,
+      1,
+      "IMAGE"
+    ],
+    [
+      319,
+      179,
+      0,
+      180,
+      0,
+      "IMAGE"
+    ],
+    [
+      320,
+      164,
+      0,
+      181,
+      0,
+      "AUDIO"
+    ],
+    [
+      321,
+      176,
+      0,
+      181,
+      1,
+      "AUDIO"
+    ],
+    [
+      322,
+      180,
+      0,
+      182,
+      0,
+      "IMAGE"
+    ],
+    [
+      323,
+      181,
+      0,
+      182,
+      1,
+      "AUDIO"
+    ],
+    [
+      324,
+      182,
+      0,
+      92,
+      0,
+      "VIDEO"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Models",
+      "bounding": [
+        -1052.8690415541166,
+        4689.698364195682,
+        700,
+        800
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "Sampling",
+      "bounding": [
+        724.3436741920119,
+        4672.84180850804,
+        700,
+        800
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 3,
+      "title": "Conditioning",
+      "bounding": [
+        239.7275282361449,
+        4673.343463123294,
+        467.35835651276426,
+        883.4756433511711
+      ],
+      "color": "#b58b2a",
+      "flags": {}
+    },
+    {
+      "id": 4,
+      "title": "Decoding and create video",
+      "bounding": [
+        1444.3436741920134,
+        4672.84180850804,
+        700,
+        800
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 5,
+      "title": "References",
+      "bounding": [
+        -327.26318789351046,
+        4665.348870896657,
+        532.5311468428913,
+        905.0441752344668
+      ],
+      "color": "#b58b2a",
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "frontendVersion": "1.47.11",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true,
+    "ds": {
+      "scale": 0.7248711870967834,
+      "offset": [
+        1934.309185249846,
+        -4346.600197787294
+      ]
+    },
+    "kazusa_bath_practice": {
+      "source_workflow": "minimax_h3_ref2v-gguf_kazusa_nude_10s.json",
+      "generation_canvas": [
+        864,
+        480
+      ],
+      "final_canvas": [
+        1920,
+        1080
+      ],
+      "fps": 24,
+      "scene_seconds": 5.0,
+      "scene_model_frames": 124,
+      "final_frames": 240,
+      "scene_2_handoff_source_frame": 119,
+      "scene_2_duplicate_frame_removed": true,
+      "offload_nodes": [
+        "UnetLoaderGGUFDynamicVRAM",
+        "CLIPLoaderGGUFDynamicVRAM",
+        "H3FreeTextEncoder"
+      ]
+    }
+  },
+  "version": 0.4
+}
