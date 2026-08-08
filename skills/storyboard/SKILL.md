@@ -1,213 +1,144 @@
 ---
 name: storyboard
-description: Turn a long story, screenplay, or video idea into a generation-ready storyboard of connected sequences, scenes, shots, prompts, continuity locks, keyframes, and ComfyUI handoffs. Use for long-form AI video planning, scene decomposition, character and world consistency, cinematic shot design, transition planning, and packaging scene-by-scene generation jobs.
+description: Convert a story, screenplay, treatment, scene idea, or reference pack into a generation-ready audiovisual storyboard for ComfyUI and MiniMax H3. Use for dramatic decomposition, directing intent, blocking, camera language, synchronized sound, continuity control, H3 prompt writing, keyframe planning, shot chaining, and machine-readable production handoffs.
 ---
 
-# Continuity storyboard planning
+# Continuity storyboard planner
 
-Translate story into visual decisions that a video model can execute and a
-ComfyUI pipeline can join. A storyboard is not a decorated synopsis: it is the
-contract between narrative intent, shot design, generation prompts, and the
-editorial handoff from one clip to the next.
+Direct the story rather than merely describing it. Treat the storyboard as the
+production contract between narrative intent, performance, camera, sound,
+editing, generation, and handoff.
 
-## Produce the planning package
+## Core rule
 
-Always produce these layers, even when the user asks only for a prompt:
+Action and camera are parallel timelines. Every action beat must say what the
+audience sees, while the camera track says how the audience experiences it.
 
-1. **Story brief:** logline, protagonist desire, obstacle, stakes, emotional
-   change, ending state, audience, format, aspect ratio, FPS, and target runtime.
-2. **Sequence map:** a small number of dramatic movements, each with a clear
-   purpose and turn.
-3. **Continuity bible:** canonical character, wardrobe, prop, location,
-   lighting, palette, camera language, sound, and negative constraints.
-4. **Scene cards:** one card per location/time/objective/turn unit.
-5. **Shot cards:** one card per visual beat or generation-sized clip.
-6. **Prompt packets:** reusable global anchors plus scene-specific action,
-   camera, timing, and audio instructions.
-7. **Handoff manifest:** exact tail/head frames, state, transition type, and
-   assembly parameters for ComfyUI.
+## Use this workflow
 
-Put the machine-readable fields in the schema from
-[scene-handoff-schema.md](references/scene-handoff-schema.md); keep prose only
-where it helps a human judge a creative choice.
+Follow these passes in order. Keep the human-facing plan compact, but do not
+skip a pass when the user asks for only a prompt.
 
-## Decompose the story
+1. **Intake and assumptions.** Extract the source type, premise, runtime,
+   platform, aspect ratio, frame rate, genre, tone, visual medium, language,
+   model/workflow constraints, references, endpoint frames, and safety limits.
+   Infer minor omissions and list them under **Assumptions**.
+2. **Story brief.** State the logline, protagonist, desire, obstacle, stakes,
+   central question, starting and ending states, emotional change, point of
+   view, audience experience, format, and target runtime.
+3. **Dramatic decomposition.** Map each scene as
+   objective -> obstacle -> action -> turn -> exit state. Group scenes into
+   sequences by dramatic movement, strategy, location cluster, or emotional
+   phase; do not divide the story into equal-duration clips.
+4. **Director’s treatment.** Decide point of view, audience distance,
+   information strategy, emotional camera arc, visual motifs, and dominant
+   camera energy before choosing coverage.
+5. **Spatial design and blocking.** Establish geography, axis, eyelines,
+   screen direction, subject marks, prop states, movement paths, and readable
+   entry/exit poses before placing the camera.
+6. **Shot and segment design.** Give every shot a dramatic job, information
+   change, emotional change, camera motivation, and readable exit state. Split
+   generation segments when duration, action complexity, camera position,
+   endpoint frames, or continuity risk requires a reset.
+7. **Generation routing.** Select the H3 family before writing the prompt.
+   Keep endpoint-frame modes separate from full-reference mode unless a tested
+   custom workflow explicitly supports both.
+8. **Prompt construction.** Assemble reference assignment, global style lock,
+   character/world lock, intent, entry state, blocking, visible action, camera,
+   timed beats, dialogue/diegetic sound, exit handoff, and exclusions. Then
+   render the H3-specific syntax.
+9. **Production handoff.** Export the prompt packet, references, workflow,
+   settings, deterministic paths, seed policy, media paths, tail/head frames,
+   transition type, and testable checks in a YAML or JSON manifest.
+10. **Acceptance review.** Reject any shot whose dramatic purpose, camera
+    motivation, reference job, speaker identity, continuity state, or model
+    routing is unclear.
 
-Use this hierarchy:
+Read the detailed guidance only when needed:
 
-`project -> sequence -> scene -> shot segment -> frame handoff`
+- [Directing, blocking, and continuity](references/directing-and-continuity.md)
+- [MiniMax H3 routing and prompt syntax](references/h3-prompting.md)
+- [Production cards, manifest, and acceptance review](references/production-schema.md)
 
-Apply the following tests:
+## Non-negotiable operating rules
 
-- Start a new **sequence** when the story enters a different dramatic movement.
-- Start a new **scene** when location, time, objective, obstacle, or emotional
-  state changes enough that the audience needs a new visual unit.
-- Start a new **shot segment** when camera position, subject action, or model
-  context must reset. Use one primary action and one dominant camera move per
-  generated segment unless the selected model has been tested with a timeline
-  prompt.
-- Create a **frame handoff** whenever the next segment should feel like a
-  continuation rather than a deliberate cut.
+- Describe observable actions and sounds. Replace abstract emotions with
+  visible behavior and replace vague camera language with a concrete move or
+  hold.
+- Give every camera move and edit a reason: orient, reveal, conceal, redirect
+  attention, alter emotional distance, register consequence, create rhythm, or
+  prepare a transition. Use a static shot when no move is motivated.
+- Keep a generation segment bounded: one primary performance arc, one dominant
+  camera move, one coherent location/lighting state, and one readable exit.
+- Declare every reference’s job, copied attributes, permitted variation, and
+  exclusions. Never say only “use the references.”
+- Write canonical identity, world, style, wardrobe, prop, and sound anchors
+  once; reuse them verbatim. Keep variable performance separate from immutable
+  continuity facts.
+- Preserve the 180-degree axis, screen direction, eyelines, lighting state,
+  and prop state unless the change is intentional and visible.
+- Use a cut when discontinuity is meaningful or generative continuity is
+  unreliable. Do not force a morph between editorially separate shots.
+- Use explicit handoffs: outgoing pose, gaze, prop state, lighting, camera
+  vector, screen direction, audio beat, and next opening state. Do not write
+  “make it seamless” without those conditions.
+- Keep dialogue, diegetic action sounds, ambience, and non-diegetic music in
+  their distinct fields. Use stable speaker IDs across shots.
+- Keep IDs stable across prompt revisions and renders:
+  SEQ01_SC02_SH03_SEG01.
 
-Give every unit a stable ID, for example `SEQ02_SC03_SH02`. Keep IDs stable when
-rewriting prompts so rendered files and manifests remain traceable.
+## Defaults and constraints
 
-For each scene, state the dramatic change as:
+Use these defaults unless the project or installed workflow says otherwise:
 
-`objective -> obstacle -> action -> turn -> exit state`
+~~~
+aspect_ratio: "16:9"
+fps: 24
+generation_segment_seconds: 5
+prompt_language: English
+draft_resolution: native_768_short_edge
+final_resolution: 2K_when_supported
+audio: native_stereo_32000_hz
+camera_energy: restrained
+music: none_unless_narratively_useful
+~~~
 
-If a scene has no change, compress it, use it as a visual breath, or identify
-the missing source of tension. Do not split a story into arbitrary equal-length
-clips; split at narrative and production boundaries.
+For MiniMax H3, request 4–15 second integer durations, record the actual frame
+count and effective duration after frame-grid snapping, and keep API-compatible
+prompt packets within 7000 characters unless the installed node documents a
+different limit.
 
-## Design a scene card
+## Required output order
 
-Record these fields:
+Unless the user explicitly requests prompt-only output, return:
 
-- **Story:** purpose, beat, objective, obstacle, turn, emotional entry/exit.
-- **World:** location, time, weather, geography, background anchors, props,
-  wardrobe, and what must not change.
-- **Subjects:** canonical identity tokens, pose, gaze, screen direction,
-  relationships, and state carried in from the previous shot.
-- **Cinematography:** shot size, angle, lens feel, camera position, movement,
-  composition, depth, lighting, palette, and transition intent.
-- **Action:** a short ordered list of visible beats with approximate timing.
-- **Audio:** dialogue, speaker, sound effects, ambience, music cue, and what
-  must continue across the seam.
-- **Generation:** mode (`t2v`, `i2v`, `first_last`, `reference`, `edit`), model
-  family, duration, endpoint images, references, seed policy, and acceptance
-  checks.
+1. Assumptions
+2. Story brief
+3. Sequence map
+4. Continuity bible and reference map
+5. Director’s treatment
+6. Scene and blocking cards
+7. Compact shot table
+8. Four-track beat timelines
+9. Final H3 prompt packet for each generation segment
+10. ComfyUI production manifest
+11. Acceptance checklist
 
-Describe visible actions, not abstract outcomes. Replace "show that she feels
-betrayed" with an observable choice such as "she lowers the letter, steps out
-of the light, and stops answering his gaze."
+For a short single-scene request, return at minimum the director intent,
+blocking, shot/beat timeline, final H3 prompt, settings, and handoff state.
 
-## Design shots for visual storytelling
+## Final internal check
 
-Choose a shot because it changes what the audience knows or feels. Use a small
-coverage vocabulary deliberately:
+Before finalizing, answer these questions for every shot:
 
-- establishing/wide for geography and stakes;
-- medium or over-the-shoulder for interaction and screen direction;
-- close-up for an irreversible emotional or narrative beat;
-- insert/detail for evidence, props, or a match-cut object;
-- reaction or held frame for consequence and pacing.
+1. Why does it exist?
+2. What changes during it?
+3. Whose experience controls the frame?
+4. What are the subjects doing at each beat?
+5. What is the camera doing at the same time, and why?
+6. What does the audience learn or feel?
+7. What exact state ends the shot?
+8. How does the next shot begin?
+9. What observable failure would cause rejection?
 
-Preserve screen geography within a scene. Establish the axis before crossing
-it; if the story needs a crossing, motivate it with a visible camera move or a
-neutralizing shot. Track the direction of travel, eyelines, hand used, prop
-state, and camera motion. Use a cut, not a generated morph, when discontinuity
-is the intended meaning.
-
-Plan duration from the action's readability and the model's tested range. Put
-the story beat near the middle of a clip when the next scene must inherit a
-stable pose; reserve the final frames for a clean handoff rather than motion
-blur, occlusion, or an expression still changing.
-
-## Lock continuity without freezing the story
-
-Separate **immutable anchors** from **variable performance**.
-
-Immutable anchors usually include:
-
-- character identity and distinguishing features;
-- wardrobe, carried props, environment architecture, and time of day;
-- art direction, palette, texture, aspect ratio, FPS, and rendering style;
-- camera grammar, lens feel, axis, and sound-world rules.
-
-Variable performance includes gesture, expression, blocking, camera movement,
-weather intensity, and local action. Change only a few variables per scene so a
-model has a plausible bridge between states.
-
-Reuse canonical anchor text verbatim. Add scene-specific state after the anchor
-instead of rewriting the character description with new synonyms. Pass a short
-continuity ledger forward:
-
-`where the subject is -> what the subject is doing -> what the camera is doing ->
-what must be true in the final stable frame -> what the next shot must begin with`
-
-Use reference images/videos/audio for a defined job. Prefer one strong identity
-reference and one environment/style reference over a pile of conflicting
-references. Label references in the same order used by the target model.
-
-## Write a generation prompt packet
-
-Build each packet in this order:
-
-```text
-GLOBAL STYLE LOCK: [canonical visual language, palette, aspect, rendering rules]
-CHARACTER / WORLD LOCK: [verbatim identity and environment anchors]
-SCENE STATE: [location, time, entry pose, prop state, emotional state]
-VISIBLE ACTION: [one ordered action arc; use concrete verbs]
-CAMERA: [framing, lens feel, angle, movement, screen direction]
-TEMPORAL BEATS: [only if the model supports timed beats; keep them sparse]
-AUDIO: [dialogue with speaker, ambience, SFX, music, continuation cue]
-EXIT / CONTINUITY: [final stable pose, gaze, object state, next-shot handoff]
-EXCLUSIONS: [unwanted identity changes, extra limbs, text errors, axis breaks]
-```
-
-Keep prompt responsibilities separate. The global lock should not contain new
-action; the scene block should not redefine the character; the exit block should
-not introduce an unplanned prop. For MiniMax H3, include audio in the same
-packet and use its reference tags exactly; for other models, adapt the packet to
-their conditioning interface instead of carrying H3 syntax over blindly.
-
-## Plan transitions between scenes
-
-Choose the transition before generating the two clips:
-
-- **continue:** reuse the last stable frame of the prior clip as the next
-  first-frame input;
-- **bridge:** generate a short first/last-frame transition from the prior tail
-  to the next target keyframe;
-- **cut:** end on a readable outgoing frame and begin on a deliberate incoming
-  frame; use when the story benefits from discontinuity;
-- **dissolve/optical flow:** use as editorial punctuation only after matching
-  geometry, FPS, and timing; it cannot repair a mismatched subject or scene;
-- **match cut:** end and begin on a common shape, motion vector, sound, or prop,
-  and record the shared motif in both shot cards.
-
-For a seamless continuation, specify the handoff state rather than saying
-"make it seamless." Name the exact outgoing frame, incoming pose, gaze, camera
-vector, screen direction, lighting, prop position, and audio beat. Avoid ending
-on an occluded face or a fast pan unless the next clip deliberately uses that
-occlusion or motion as the bridge.
-
-Read [transition-patterns.md](references/transition-patterns.md) when selecting
-the ComfyUI graph and when chaining more than two scenes.
-
-## Prepare the ComfyUI handoff
-
-For each shot segment, export:
-
-- a prompt packet and canonical anchor version;
-- source references with stable filenames;
-- target width, height, FPS, frame count, audio settings, and seed policy;
-- the generation mode and workflow JSON to run;
-- a scene output path and a tail-frame extraction path;
-- the next shot's required first frame or bridge target;
-- acceptance checks and a `pending`, `approved`, or `rejected` status.
-
-Generate sequentially when continuity matters: approve the prior tail before
-locking the next shot. Generate in parallel only for independent shots or when
-their entry keyframes have already been fixed. Preserve every source clip,
-bridge clip, extracted keyframe, workflow, prompt, and manifest so a single bad
-scene does not force a full rerender.
-
-## Review before generation
-
-Reject or revise a storyboard when:
-
-- a scene has no objective, obstacle, turn, or visual consequence;
-- a prompt asks for several unrelated locations, actions, or camera setups in
-  one short generation segment;
-- the next scene changes identity, wardrobe, geography, axis, or lighting without
-  an intentional transition;
-- the outgoing frame has no stable state that the next shot can inherit;
-- dialogue lacks a speaker or the audio cue has no timing/continuity note;
-- the requested duration, FPS, frame grid, or model mode is unspecified;
-- the handoff says "seamless" but contains no concrete state or endpoint.
-
-Return the final storyboard as a compact scene table plus the full manifest and
-prompt packets. Explain any creative tradeoff in one sentence per scene, not in
-a long unstructured narrative.
+If an answer is vague, revise the storyboard before generation.

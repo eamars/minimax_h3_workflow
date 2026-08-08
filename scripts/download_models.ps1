@@ -1,7 +1,7 @@
 # Download the quantized MiniMax H3 stack into ComfyUI\models (Step 3).
 # Usage:
-#   .\scripts\download_models.ps1                      # Q8_CR (RTX 5090 / 32 GB)
-#   .\scripts\download_models.ps1 -Quant U16G          # RTX 4090 / 24 GB
+#   .\scripts\download_models.ps1                      # Q8_CR (higher VRAM profile)
+#   .\scripts\download_models.ps1 -Quant U16G          # lower-VRAM profile
 #   .\scripts\download_models.ps1 -Quant Q4_0          # lowest VRAM
 # Downloads use huggingface_hub's Python API (huggingface-cli is deprecated
 # and no longer works with huggingface-hub >= 1.0).

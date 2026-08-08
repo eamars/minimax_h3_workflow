@@ -97,6 +97,13 @@ from `/object_info`, then submit the prompt graph. A scalar accidentally placed
 in an `IMAGE`, `VIDEO`, `LATENT`, or `AUDIO` input is a common cause of opaque
 runtime errors.
 
+When a script derives a workflow from a template, keep the template as the
+source of truth: load it, mutate named nodes and connections, recalculate node
+and link identifiers, and write the UI workflow, API workflow, and manifest
+together. Validate that every link endpoint and required node type still
+exists. Stage reference assets idempotently and refuse to overwrite an existing
+asset whose contents differ from the requested source.
+
 ### 5. Run a small proof first
 
 Queue a low-resolution, short-duration, low-step render with a fixed seed. Check
@@ -109,11 +116,11 @@ returned `prompt_id`, monitor `/ws` or poll `/history/{prompt_id}`, and collect
 the output filenames. See [api-and-debugging.md](references/api-and-debugging.md)
 for the request contract and failure checks.
 
-## MiniMax H3 in this workspace
+## MiniMax H3 adaptation
 
-When the local H3 nodes are available, use the live node schema and the checked-
-in `ComfyUI/comfy_extras/nodes_minimax_h3.py` as the version-specific authority.
-The current workspace implementation provides these patterns:
+When H3 nodes are available, use the installed node schema, model files, and
+workflow templates as the version-specific authority. Common patterns may
+include:
 
 - `MiniMaxH3ImageToVideo`: prompt plus optional `first_frame` and `last_frame`
   keyframes, returning conditioning and a packed video+audio latent;
@@ -128,14 +135,30 @@ Keep the H3 graph internally consistent:
 - Use the same task family and matching model weights. Do not substitute
   reference-to-video weights into a first/last-frame graph without checking the
   model card and node implementation.
-- Use the model's valid frame grid and FPS. The current H3 code uses 24 FPS and
-  frame counts of the form `17k + 5`; it also constrains the canvas to multiples
-  of 32 with a 768-short-edge/area policy. Re-query the node if the checkout
-  changes.
+- Derive the valid frame grid, FPS, spatial multiples, aspect-ratio limits, and
+  native resolution policy from the live node schema or model documentation.
+  Never assume that a duration in seconds maps to the exact requested frame
+  count. Record both the model-aligned generation length and the effective
+  output length.
+- When exact output timing is required, calculate the target video frame count
+  from the authoritative FPS, generate an aligned length that is accepted by
+  the model, then trim decoded video frames and audio separately before the
+  final video/audio mux. Validate the resulting frame count, duration, and
+  audio sample rate rather than trusting the nominal duration widget.
 - Keep video and audio VAEs paired with the H3 model. Treat a requested duration
   as approximate until the valid frame count is calculated.
 - For references, use exact ordinals and describe which reference controls which
   attribute. Do not attach a reference just because the node has an empty slot.
+- Discover available compute devices from the runtime and live selector options.
+  Route model, text encoder, and VAE components only through supported device
+  controls; do not assume a particular GPU ordinal. If an explicit device
+  route can silently fall back to another device, add a tested fail-closed
+  check or surface the fallback in validation output. Record the device mapping
+  used for the render and the launcher/environment assumptions that created it.
+- Treat reference staging, device routing, temporal alignment, trimming, and
+  muxing as part of the workflow contract. Preserve those steps in the graph or
+  builder and document their acceptance checks; do not hide them in an
+  undocumented manual workaround.
 
 The repository's `scripts/comfy_api_runner.py` can be used as a local runner
 when its assumptions match the installed node schema. Inspect or adapt it rather

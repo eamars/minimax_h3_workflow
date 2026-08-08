@@ -1,6 +1,6 @@
 """Convert a ComfyUI UI-format workflow JSON to the /prompt API format and run it.
 
-Workspace-local helper for the MiniMax H3 demo:
+Local helper for repeatable ComfyUI workflow execution:
   1. Reads a UI-format workflow export (*.json with "nodes"/"links").
   2. Converts it to the API prompt format (node id -> class_type/inputs),
      resolving widget parameter names from the live server's /object_info.
@@ -8,8 +8,8 @@ Workspace-local helper for the MiniMax H3 demo:
   4. POSTs to ComfyUI /prompt, polls /history, and reports output files.
 
 Usage:
-  python scripts/comfy_api_runner.py --workflow workflows/minimax_h3_t2v-gguf.json \
-      --port 8188 --prompt "..." --width 864 --height 480 --seconds 5 --steps 20
+  python scripts/comfy_api_runner.py --workflow path/to/workflow.json \
+      --port 8188 --prompt "..." --width WIDTH --height HEIGHT --seconds SECONDS --steps STEPS
 """
 
 from __future__ import annotations

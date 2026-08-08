@@ -1,6 +1,6 @@
 # MiniMax H3 + ComfyUI local setup (PowerShell 5.1+)
 # Installs ComfyUI into this workspace, creates a venv with CUDA 12.8
-# (Blackwell/RTX 5090 compatible) wheels, and clones the custom nodes
+# compatible wheels, and clones the custom nodes
 # needed for the GGUF path. Idempotent: existing folders are reused.
 $ErrorActionPreference = 'Stop'
 
@@ -52,5 +52,5 @@ Write-Host "[5/5] Installing GGUF dependency..."
 Write-Host ""
 Write-Host "Setup complete. Launch with:"
 Write-Host "  cd $Comfy"
-Write-Host "  python ..\scripts\launch_comfyui.py      # both GPUs visible; 4090 = cuda:0"
-Write-Host "  # manual: python main.py --listen 127.0.0.1 --port 8188 --cuda-device 0,1"
+Write-Host "  python ..\scripts\launch_comfyui.py --single-gpu   # first/selected GPU only"
+Write-Host "  # manual: python main.py --listen 127.0.0.1 --port 8188 --cuda-device 0"

@@ -44,6 +44,26 @@ cache/
 *.sqlite
 *.sqlite3
 
+# Local production material and generated edit artifacts
+workflows/
+storyboards/
+seeding_material/
+frames/
+renders/
+bridges/
+edit/
+prompts/
+manifests/
+audio/
+
+# One-off local diagnostics and machine-specific launch wrappers
+scripts/_probe_gpu.py
+scripts/build_*.py
+scripts/launch_h3_*.ps1
+
+# Local-only skills not part of the public toolkit
+skills/plot-architect/
+
 # Downloaded model/checkpoint artifacts
 *.safetensors
 *.ckpt
