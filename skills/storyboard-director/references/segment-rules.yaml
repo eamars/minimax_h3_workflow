@@ -1,4 +1,4 @@
-version: 2
+version: 3
 planning_model_version: 2
 time_domains:
   scene_time: narrative_action_clock
@@ -27,8 +27,16 @@ generation_handoffs:
   endpoint_policies: [none, moving_endpoint, stable_tail, approved_entry_reference, bridge_endpoints]
   editorial_mechanism_forbidden: true
 continuity:
-  required: [invariants, expected_deltas, forbidden_deltas]
+  required: [invariants, expected_deltas, forbidden_deltas, limb_states, prop_states]
   identity_environment_state_must_survive_framing_changes: true
+  authoritative_registry: exactly_one
+  embedded_snapshot_policy: id_reference_or_exact_interactive_payload
+  interactive_actions_require: [before_contact, contact_or_transfer, after_contact]
+environment_lock:
+  required_fields: [environment_profile_id, source_asset_id, enforcement, required_landmarks, forbidden_inventions, unknown_regions, negative_space_rule]
+  enforcement: hard_reference_no_expansion
+  camera_position_change_does_not_expand_environment: true
+  forbidden_architecture_must_be_preserved: true
 creative_acceptance:
   every_shot: [plot_trace, purpose, coverage_function, geography, staging, typed_camera, continuity_in, continuity_out, editorial_boundary_links]
   every_segment: [duration, scene_time, source_time, record_time, entry_state, performance_arc, camera_interval_map, four_tracks, exit_state, generation_handoff, traceability, predicates]

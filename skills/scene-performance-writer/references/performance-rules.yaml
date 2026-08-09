@@ -1,4 +1,4 @@
-version: 1
+version: 2
 id_patterns:
   performance_beat: '^SEQ[0-9]{2,}_SC[0-9]{2,}_B[0-9]{2,}_PB[0-9]{2,}$'
   dialogue_cue: '^SEQ[0-9]{2,}_SC[0-9]{2,}_DLG[0-9]{2,}$'
@@ -8,7 +8,19 @@ continuity:
   wetness: [unknown, dry, damp, wet, dripping, saturated]
   clothing: [unknown, dry, damp, wet, soaked, changed]
   hand: [unknown, free, occupied, contact, transferring]
-  transfer_rule: Require an explicit action and adjacent snapshots.
+  limb:
+    ids: [HAND_L, HAND_R]
+    sides: [left, right]
+    states: [unknown, free, occupied, contact, transferring]
+    required_fields: [limb_id, side, state, holding_prop_id, contact_target]
+    both_sides_required_for_single_subject: true
+    unqualified_hand_text_is_insufficient: true
+  transfer_rule: Require an explicit action, declared owner, and adjacent before/contact/after snapshots.
+  interactive_contact_rule:
+    applies_to: [door, door_hardware, selector, towel, towel_rail, outer_layer, handheld_shower, fixture]
+    required_sequence: [before_contact, contact_or_transfer, after_contact]
+    unknown_hardware: declare_performance_choice_without_canonizing_geometry
+    same_limb_multi_prop_without_transfer: forbidden
   reaction_rule: Require reaction after trigger unless interruption is declared.
 timing:
   duration_exclusive_minimum: 0

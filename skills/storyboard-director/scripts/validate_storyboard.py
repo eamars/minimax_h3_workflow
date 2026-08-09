@@ -48,6 +48,8 @@ CAMERA_MOTION_TYPES = {
     "rack_focus",
     "compound",
 }
+LIMB_STATES = {"unknown", "free", "occupied", "contact", "transferring"}
+LIMB_SIDES = {"left", "right"}
 LEGACY_SEGMENT_FIELDS = {
     "primary_performance_arc",
     "dominant_camera_move",
@@ -98,6 +100,65 @@ def require_list(value: object, field: str, minimum: int = 1) -> list:
     return value
 
 
+def validate_environment_lock(lock: object) -> dict:
+    require(isinstance(lock, dict), "ENVIRONMENT_LOCK_MISSING", "director_treatment.environment_lock is required")
+    required = {"environment_profile_id", "source_asset_id", "enforcement", "required_landmarks", "allowed_features", "forbidden_inventions", "unknown_regions", "negative_space_rule"}
+    require(required <= set(lock), "ENVIRONMENT_LOCK_MISSING", f"environment lock missing {sorted(required - set(lock))}")
+    require(lock.get("enforcement") == "hard_reference_no_expansion", "ENVIRONMENT_LOCK_MISSING", "environment lock must use hard_reference_no_expansion")
+    for field in ("required_landmarks", "allowed_features", "forbidden_inventions"):
+        value = lock.get(field)
+        require(isinstance(value, list) and value and all(isinstance(item, str) and item.strip() for item in value), "ENVIRONMENT_LOCK_MISSING", f"environment lock {field} must be non-empty")
+    require(isinstance(lock.get("unknown_regions"), list), "ENVIRONMENT_LOCK_MISSING", "environment lock unknown_regions must be a list")
+    require(isinstance(lock.get("negative_space_rule"), str) and lock["negative_space_rule"].strip(), "ENVIRONMENT_LOCK_MISSING", "environment lock needs a negative_space_rule")
+    positive = {item.strip().lower() for field in ("required_landmarks", "allowed_features") for item in lock[field]}
+    forbidden = {item.strip().lower() for item in lock["forbidden_inventions"]}
+    require(not positive & forbidden, "ENVIRONMENT_FEATURE_FORBIDDEN", f"environment lock overlaps positive and forbidden features: {sorted(positive & forbidden)}")
+    return lock
+
+
+def _normalise_environment_text(value: object) -> str:
+    if isinstance(value, dict):
+        return " ".join(_normalise_environment_text(item) for item in value.values())
+    if isinstance(value, list):
+        return " ".join(_normalise_environment_text(item) for item in value)
+    return str(value).lower().replace("_", " ")
+
+
+def _forbidden_term_groups(lock: dict) -> list[set[str]]:
+    groups: list[set[str]] = []
+    for value in lock["forbidden_inventions"]:
+        alternatives = str(value).lower().replace("/", " or ").split(" or ")
+        for alternative in alternatives:
+            tokens = {token for token in re.findall(r"[a-z0-9]+", alternative.replace("_", " ")) if token not in {"or", "and", "the", "a", "an"}}
+            if tokens:
+                groups.append(tokens)
+    return groups
+
+
+def validate_environment_projection(package: dict, lock: dict) -> None:
+    geography = package["scene_geography"]
+    texts: list[tuple[str, str]] = []
+    for index, landmark in enumerate(geography.get("landmarks", [])):
+        if landmark.get("confidence") != "unknown":
+            texts.append((f"scene_geography.landmarks[{index}]", _normalise_environment_text({"kind": landmark.get("kind"), "description": landmark.get("description")})))
+    for index, zone in enumerate(geography.get("zones", [])):
+        texts.append((f"scene_geography.zones[{index}]", _normalise_environment_text({key: zone.get(key) for key in ("zone_id", "kind", "description", "entrances", "exits", "obstacles")})))
+    for index, relation in enumerate(geography.get("relations", [])):
+        texts.append((f"scene_geography.relations[{index}]", _normalise_environment_text(relation)))
+    for shot in package.get("shots", []):
+        shot_id = shot.get("shot_id", "unknown-shot")
+        staging = shot.get("staging", {})
+        texts.append((f"{shot_id}.staging", _normalise_environment_text({key: staging.get(key) for key in ("subject_positions", "action_path", "eyelines", "entry_exit")})))
+        camera = shot.get("camera", {}).get("setup", {})
+        texts.append((f"{shot_id}.camera", _normalise_environment_text({key: camera.get(key) for key in ("position", "orientation", "composition")})))
+    for label, text in texts:
+        for tokens in _forbidden_term_groups(lock):
+            if all(re.search(rf"\b{re.escape(token)}\b", text) for token in tokens):
+                require(False, "ENVIRONMENT_FEATURE_FORBIDDEN", f"{label} describes forbidden environment feature: {' '.join(sorted(tokens))}")
+    views = geography.get("reference_views", [])
+    require(any(isinstance(view, dict) and view.get("asset_id") == lock["source_asset_id"] for view in views), "ENVIRONMENT_LOCK_MISSING", "scene geography must retain the environment profile source view")
+
+
 def validate_v1(package: dict) -> None:
     required = {"artifact", "director_treatment", "shots", "generation_segments", "handoffs", "creative_acceptance_tests"}
     require(required <= set(package), "V1_FIELD_MISSING", f"missing {sorted(required - set(package))}")
@@ -118,7 +179,7 @@ def validate_v1(package: dict) -> None:
 
 def validate_state(state: object, field: str) -> None:
     require(isinstance(state, dict), "CONTINUITY_STATE_INVALID", f"{field} must be an object")
-    required = {"snapshot_id", "character_states", "environment_state", "prop_states", "sound_state", "invariants", "expected_deltas", "forbidden_deltas"}
+    required = {"snapshot_id", "character_states", "environment_state", "prop_states", "limb_states", "sound_state", "invariants", "expected_deltas", "forbidden_deltas"}
     require(required <= set(state), "CONTINUITY_STATE_INCOMPLETE", f"{field} missing {sorted(required - set(state))}")
     require(isinstance(state["snapshot_id"], str) and state["snapshot_id"], "CONTINUITY_STATE_INVALID", f"{field}.snapshot_id is required")
     require(isinstance(state["character_states"], list), "CONTINUITY_STATE_INVALID", f"{field}.character_states must be a list")
@@ -128,6 +189,20 @@ def validate_state(state: object, field: str) -> None:
             require(character.get(key), "CONTINUITY_STATE_INVALID", f"{field}.character_states[{index}].{key} is required")
     require(isinstance(state["environment_state"], dict), "CONTINUITY_STATE_INVALID", f"{field}.environment_state must be an object")
     require(isinstance(state["prop_states"], list), "CONTINUITY_STATE_INVALID", f"{field}.prop_states must be a list")
+    limbs = state["limb_states"]
+    require(isinstance(limbs, list) and len(limbs) >= 2, "LIMB_CONTINUITY_MISSING", f"{field}.limb_states must contain both sides")
+    limb_ids: set[str] = set()
+    sides: set[str] = set()
+    for index, limb in enumerate(limbs):
+        require(isinstance(limb, dict), "LIMB_CONTINUITY_MISSING", f"{field}.limb_states[{index}] must be an object")
+        for key in ("limb_id", "side", "state", "holding_prop_id", "contact_target"):
+            require(key in limb, "LIMB_CONTINUITY_MISSING", f"{field}.limb_states[{index}].{key} is required")
+        require(isinstance(limb["limb_id"], str) and limb["limb_id"] and limb["limb_id"] not in limb_ids, "LIMB_CONTINUITY_MISSING", f"{field}.limb_states has a missing or duplicate limb_id")
+        require(limb["side"] in LIMB_SIDES, "LIMB_CONTINUITY_MISSING", f"{field}.limb_states[{index}].side is invalid")
+        require(limb["state"] in LIMB_STATES, "LIMB_CONTINUITY_MISSING", f"{field}.limb_states[{index}].state is invalid")
+        limb_ids.add(limb["limb_id"])
+        sides.add(limb["side"])
+    require(sides == LIMB_SIDES, "LIMB_CONTINUITY_MISSING", f"{field}.limb_states must cover left and right")
     require(isinstance(state["sound_state"], dict), "CONTINUITY_STATE_INVALID", f"{field}.sound_state must be an object")
     require_list(state["invariants"], f"{field}.invariants", minimum=1)
     require(isinstance(state["expected_deltas"], list), "CONTINUITY_STATE_INVALID", f"{field}.expected_deltas must be a list")
@@ -543,6 +618,11 @@ def validate_continuity(package: dict, shots: list[dict], segments: list[dict]) 
         embedded.extend([(f"{segment['segment_id']}.entry_state", segment["entry_state"]), (f"{segment['segment_id']}.exit_state", segment["exit_state"])])
     for label, state in embedded:
         require(state["snapshot_id"] in registry_by_id, "CONTINUITY_REGISTRY_REFERENCE_MISSING", f"{label} references an unregistered snapshot")
+        canonical = registry_by_id[state["snapshot_id"]]
+        for field in ("prop_states", "limb_states"):
+            require(state.get(field) == canonical.get(field), "CONTINUITY_SNAPSHOT_PAYLOAD_MISMATCH", f"{label}.{field} differs from authoritative snapshot {state['snapshot_id']}")
+        if "environment_profile_id" in state.get("environment_state", {}) or "environment_profile_id" in canonical.get("environment_state", {}):
+            require(state.get("environment_state", {}).get("environment_profile_id") == canonical.get("environment_state", {}).get("environment_profile_id"), "CONTINUITY_SNAPSHOT_PAYLOAD_MISMATCH", f"{label}.environment_state differs from authoritative snapshot {state['snapshot_id']}")
     ordered_segments = sorted(segments, key=lambda item: float(item["record_time"]["start_seconds"]))
     for previous, current in zip(ordered_segments, ordered_segments[1:]):
         require(previous["exit_state"]["snapshot_id"] == current["entry_state"]["snapshot_id"], "CONTINUITY_SNAPSHOT_LINK_INVALID", f"{previous['segment_id']} does not hand its exit snapshot to {current['segment_id']}")
@@ -560,10 +640,12 @@ def validate_v2(package: dict) -> None:
     treatment = package.get("director_treatment")
     require(isinstance(treatment, dict), "DIRECTOR_TREATMENT_MISSING", "director_treatment is required")
     require(treatment.get("camera_position_policy") == "allowed_to_change_between_shots", "CAMERA_POSITION_POLICY_INVALID", "camera position changes must be explicitly allowed by treatment")
+    validate_environment_lock(treatment.get("environment_lock"))
     migration = package.get("migration")
     if isinstance(migration, dict):
         require(migration.get("status") == "complete", "MIGRATION_REVIEW_REQUIRED", "migrated v2 packages remain blocked until creative fields are reviewed")
     geography = validate_geography(package.get("scene_geography"))
+    validate_environment_projection(package, treatment["environment_lock"])
     shots_by_id, shots = validate_shots(package, geography)
     validate_boundaries(package, shots_by_id, shots)
     segments = require_list(package.get("generation_segments"), "generation_segments")

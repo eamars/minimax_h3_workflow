@@ -64,7 +64,7 @@ templates:
     mapping: mappings/h3_r2va_api.mapping.yaml
     supported_modes: [R2VA]
     required_nodes: [LoadImage, CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ReferenceToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
-    input_bindings: [prompt, reference_0_path, reference_image_size, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+    input_bindings: [prompt, ordered_reference_assets, reference_image_size, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
   - <<: *utility_defaults
     template_id: still-keyframe-v1
     file: templates/still_keyframe_api.json

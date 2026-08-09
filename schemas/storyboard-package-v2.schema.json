@@ -8,12 +8,13 @@
     "planning_model_version": {"const": 2},
     "director_treatment": {
       "type": "object",
-      "required": ["dramatic_engine", "visual_grammar", "coverage_strategy", "camera_position_policy"],
+      "required": ["dramatic_engine", "visual_grammar", "coverage_strategy", "camera_position_policy", "environment_lock"],
       "properties": {
         "dramatic_engine": {"type": "string", "minLength": 1},
         "visual_grammar": {"type": "string", "minLength": 1},
         "coverage_strategy": {"type": "string", "minLength": 1},
         "camera_position_policy": {"const": "allowed_to_change_between_shots"},
+        "environment_lock": {"$ref": "common-defs.schema.json#/$defs/environmentLock"},
         "coverage_policy": {"type": "object"},
         "allow_same_phase_overlap": {"type": "boolean"}
       },

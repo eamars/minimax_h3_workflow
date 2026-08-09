@@ -1,9 +1,9 @@
-version: 2
+version: 3
 hashing:
   source_assets: {algorithm: SHA-256, input: raw_file_bytes, output_format: '^sha256:[0-9a-f]{64}$'}
 roles:
   subject_identity: {controls: [identity, proportions, facial_structure, hair, stable_design]}
-  environment_architecture: {controls: [architecture, spatial_layout, fixtures, persistent_materials, observable_landmarks, geography_evidence]}
+  environment_architecture: {controls: [architecture, spatial_layout, fixtures, persistent_materials, observable_landmarks, geography_evidence, allowed_features, forbidden_inventions, unknown_features, negative_space]}
   style_rendering: {controls: [rendering, palette, lighting_language, texture_language]}
   wardrobe: {controls: [garment_design, material, color, accessories]}
   prop: {controls: [object_shape, object_material, object_markings]}
@@ -19,6 +19,14 @@ canon_extraction:
   visual_redesign: forbidden
   inferred_story_meaning: forbidden
   incidental_person: must_not_transfer_unless_explicit_subject
+  environment_profile:
+    enforcement: hard_reference_no_expansion
+    required_fields: [profile_id, source_asset_id, required_landmarks, allowed_features, forbidden_inventions, unknown_features, negative_space_rule]
+    positive_lock: required_landmarks_and_allowed_features
+    negative_lock: forbidden_inventions
+    unknown_handling: preserve_unknown_and_do_not_complete
+    partial_landmark_rule: do_not_promote_partial_edges_to_full_fixtures
+    camera_position: storyboard_owned
   geography:
     confidence_values: [exact, inferred, unknown]
     unknown_handling: preserve_unknown_and_route_to_storyboard

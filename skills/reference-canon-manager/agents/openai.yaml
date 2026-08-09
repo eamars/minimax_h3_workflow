@@ -1,6 +1,6 @@
 interface:
   display_name: "Reference & Canon Manager"
   short_description: "Lock seed assets into traceable canon"
-  default_prompt: "Use $reference-canon-manager to map these seed assets into a conflict-aware canon lock for the video plan."
+  default_prompt: "Use $reference-canon-manager to map these seed assets into a conflict-aware canon lock and hard environment projection for the video plan. Preserve unknown space and forbid unapproved room expansion."
 policy:
   allow_implicit_invocation: true

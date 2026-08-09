@@ -31,9 +31,11 @@ Produce authoritative `scene-performance.yaml`, readable `scene-text.md`, and `p
 4. Convert internal states into observable behavior while retaining intention/subtext separately.
 5. Write or preserve required dialogue with stable speakers, positive timing, pauses, interruptions, and reaction links.
 6. Track speaker identity, prop owner, hand occupancy, transfer order, wetness, clothing, and relevant physical state as continuity invariants and expected scene-time deltas.
-7. Mark unsafe coexistence of dense obligations and offer reversible mitigation without choosing segment boundaries.
-8. Log micro-actions or implied props used only to externalize an existing beat.
-9. Emit deterministic artifacts, hashes, status, failures, warnings, and `next_skill: storyboard-director`.
+7. For every interactive hand action, assign stable per-limb IDs (`HAND_L`, `HAND_R`, or a subject-qualified equivalent) and emit before-contact, contact/transfer, and after-contact snapshots. Never use an unqualified “hand” as the only state for a door, selector, towel, garment, or handheld shower action.
+8. If source material does not establish handedness or hardware geometry, declare the blocking choice in performance state without promoting it to canon; do not infer a handle side, hinge side, or swing direction from the image crop.
+9. Mark unsafe coexistence of dense obligations and offer reversible mitigation without choosing segment boundaries.
+10. Log micro-actions or implied props used only to externalize an existing beat.
+11. Emit deterministic artifacts, hashes, status, failures, warnings, and `next_skill: storyboard-director`.
 
 ## Invariants
 
@@ -42,6 +44,8 @@ Produce authoritative `scene-performance.yaml`, readable `scene-text.md`, and `p
 - Keep speaker IDs project-global and stable across revisions.
 - Keep positive, ordered timing; declare every overlap/interruption.
 - Prevent impossible hand/prop transfers, wetness/clothing jumps, identity swaps, or reactions before triggers.
+- Require an authoritative two-sided limb state in every continuity snapshot. A prop or fixture state may change only across an explicit contact/transfer sequence with a declared owner and adjacent snapshots.
+- Keep canon uncertainty separate from performance blocking: a declared left/right choice may control the actor, but it cannot silently canonize unknown door hardware or room geometry.
 - Create no geography, spatial staging, editorial shot, generation segment, or camera plan.
 - Preserve source references, hashes, stable IDs, and immutable revisions.
 
@@ -51,7 +55,7 @@ Do not rewrite outcomes, add causal beats, resolve canon, redesign assets, choos
 
 ## Failure conditions
 
-Return `SCENE_NOT_PLAYABLE` with affected IDs, evidence, detail code, blocking scope, and owner when action is unobservable, actor control/reaction/entry/exit/timing/speaker assignment is missing, continuity contradicts itself, or playability requires a new plot outcome. Pass through upstream plot/canon failures unchanged.
+Return `SCENE_NOT_PLAYABLE` with affected IDs, evidence, detail code, blocking scope, and owner when action is unobservable, actor control/reaction/entry/exit/timing/speaker assignment is missing, a limb is undefined, a prop contact has no adjacent snapshots, continuity contradicts itself, or playability requires a new plot outcome. Pass through upstream plot/canon failures unchanged. Use detail codes `LIMB_STATE_UNDEFINED`, `PROP_CONTACT_SNAPSHOT_MISSING`, `HAND_ASSIGNMENT_CONFLICT`, or `UNKNOWN_HARDWARE_USED_AS_CANON` where applicable.
 
 ## Validation rules
 
@@ -59,6 +63,8 @@ Return `SCENE_NOT_PLAYABLE` with affected IDs, evidence, detail code, blocking s
 - Require complete one-to-many plot traceability and positive timing windows.
 - Require one stable speaker per dialogue cue and explicit action/reaction links.
 - Validate adjacent hand/prop/wetness/clothing snapshots.
+- Validate `limb_states` for stable IDs, left/right sides, legal states, explicit holding/contact targets, and no simultaneous incompatible ownership.
+- Validate before/contact/after snapshots for every interactive action, including door opening/closing at entry and exit.
 - Require scene-time phase ranges to be positive, ordered, and distinct from later source/record time.
 - Reject structured camera, shot, lens, axis, geography, staging, edit, H3, ComfyUI, render, and generation-segment keys; exempt verbatim dialogue text.
 - Require projection files to link to the authoritative hash.
@@ -76,7 +82,8 @@ If asked to add reconciliation, a close-up, and an uninterrupted 11-second segme
 - Make an internal beat observably playable.
 - Preserve all plot IDs/order/outcomes without invention.
 - Maintain stable speakers, turn-taking, reaction links, timing, and pauses.
-- Track hand/prop transfer and water/clothing transitions.
+- Track per-hand/per-limb prop transfers and water/clothing transitions.
+- Reject an entry or exit door action that says only “open/close door” without a declared contacting limb, door state, release state, and adjacent snapshots.
 - Flag unsafe coexistence without creating segments.
 - Reject missing playability and downstream-owned decisions.
 - Preserve provenance, immutable revisions, status, and storyboard handoff.

@@ -70,6 +70,29 @@ class CinematicContracts(unittest.TestCase):
                     validator.validate_v2(package)
                 self.assertIn(code, str(context.exception))
 
+    def test_environment_and_limb_guards_reject_silent_expansion(self):
+        validator = load_validator()
+        fixture = yaml.safe_load((ROOT / "tests/fixtures/storyboard-v2-real-cinematic.yaml").read_text(encoding="utf-8"))
+        forbidden_room = copy.deepcopy(fixture)
+        forbidden_room["director_treatment"]["environment_lock"]["forbidden_inventions"] += ["bathtub", "full vanity", "corridor"]
+        forbidden_room["scene_geography"]["zones"][0]["description"] = "full vanity, bathtub, and corridor"
+        with self.assertRaises(validator.ContractError) as environment_failure:
+            validator.validate_v2(forbidden_room)
+        self.assertIn("ENVIRONMENT_FEATURE_FORBIDDEN", str(environment_failure.exception))
+
+        divergent_limb = copy.deepcopy(fixture)
+        divergent_limb["shots"][0]["continuity_in"]["limb_states"] = copy.deepcopy(divergent_limb["shots"][0]["continuity_in"]["limb_states"])
+        divergent_limb["shots"][0]["continuity_in"]["limb_states"][0]["state"] = "contact"
+        with self.assertRaises(validator.ContractError) as limb_failure:
+            validator.validate_v2(divergent_limb)
+        self.assertIn("CONTINUITY_SNAPSHOT_PAYLOAD_MISMATCH", str(limb_failure.exception))
+
+        missing_limb = copy.deepcopy(fixture)
+        missing_limb["shots"][0]["continuity_in"].pop("limb_states")
+        with self.assertRaises(validator.ContractError) as missing_failure:
+            validator.validate_v2(missing_limb)
+        self.assertIn("CONTINUITY_STATE_INCOMPLETE", str(missing_failure.exception))
+
     def test_sparse_single_take_is_allowed_when_treatment_declares_it(self):
         validator = load_validator()
         package = yaml.safe_load((ROOT / "tests/fixtures/storyboard-v2-real-cinematic.yaml").read_text(encoding="utf-8"))

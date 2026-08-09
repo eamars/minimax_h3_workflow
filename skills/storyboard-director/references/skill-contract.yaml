@@ -1,8 +1,8 @@
 name: storyboard-director
-version: 0.3.0
+version: 0.4.0
 stage: storyboard
 mode: planning
-consumes: [project-request, canon-lock, asset-manifest, plot-package, scene-performance, optional-sound-plan, optional-storyboard-revision-request]
+consumes: [project-request, canon-lock, asset-manifest, environment-profile, plot-package, scene-performance, optional-sound-plan, optional-storyboard-revision-request]
 produces: [storyboard-package-v2, shot-table, segment-plan, editorial-boundary-manifest, generation-handoff-manifest, creative-acceptance-tests]
 side_effects: none
 approval_required: false
@@ -25,4 +25,12 @@ transition_policy:
   editorial_mechanisms: [cut, dissolve, fade, end]
   generation_relationships: [independent, same_shot_continue, endpoint_bridge, reference_reestablish, terminal]
   mechanism_and_relationship_are_separate: true
-failure_codes: [STORYBOARD_INPUT_SCHEMA_INVALID, STORYBOARD_SOURCE_VERSION_MISMATCH, SHOT_HAS_NO_PURPOSE, COVERAGE_THIN, BLOCKING_AMBIGUOUS, SCENE_GEOGRAPHY_MISSING, UNKNOWN_GEOMETRY_UNHANDLED, CAMERA_MODEL_OPAQUE, CAMERA_SETUP_MISSING, CAMERA_POSITION_UNMOTIVATED, CAMERA_MOVE_UNMOTIVATED, SEGMENT_TOO_LONG, SEGMENT_NONPOSITIVE, SEGMENT_OVERLOADED, TIME_DOMAIN_MISSING, TIMELINE_NONMONOTONIC, ENTRY_STATE_MISSING, CONTINUITY_CONTRACT_MISSING, EXIT_STATE_UNSTABLE, HANDOFF_UNSPECIFIED, EDITORIAL_GENERATION_BOUNDARY_CONFLATED, EDITORIAL_BOUNDARY_BILATERAL_MISMATCH, TRANSITION_SEMANTICS_INVALID, GENERATION_RELATIONSHIP_INVALID, MOVING_HANDOFF_POLICY_MISSING, STORYBOARD_TRACEABILITY_MISSING, STORYBOARD_TECHNOLOGY_CONTAMINATION, STORYBOARD_ARTIFACT_PROVENANCE_INVALID]
+failure_codes: [STORYBOARD_INPUT_SCHEMA_INVALID, STORYBOARD_SOURCE_VERSION_MISMATCH, ENVIRONMENT_LOCK_MISSING, ENVIRONMENT_FEATURE_FORBIDDEN, SHOT_HAS_NO_PURPOSE, COVERAGE_THIN, BLOCKING_AMBIGUOUS, SCENE_GEOGRAPHY_MISSING, UNKNOWN_GEOMETRY_UNHANDLED, CAMERA_MODEL_OPAQUE, CAMERA_SETUP_MISSING, CAMERA_POSITION_UNMOTIVATED, CAMERA_MOVE_UNMOTIVATED, SEGMENT_TOO_LONG, SEGMENT_NONPOSITIVE, SEGMENT_OVERLOADED, TIME_DOMAIN_MISSING, TIMELINE_NONMONOTONIC, ENTRY_STATE_MISSING, CONTINUITY_CONTRACT_MISSING, LIMB_CONTINUITY_MISSING, CONTINUITY_SNAPSHOT_PAYLOAD_MISMATCH, EXIT_STATE_UNSTABLE, HANDOFF_UNSPECIFIED, EDITORIAL_GENERATION_BOUNDARY_CONFLATED, EDITORIAL_BOUNDARY_BILATERAL_MISMATCH, TRANSITION_SEMANTICS_INVALID, GENERATION_RELATIONSHIP_INVALID, MOVING_HANDOFF_POLICY_MISSING, STORYBOARD_TRACEABILITY_MISSING, STORYBOARD_TECHNOLOGY_CONTAMINATION, STORYBOARD_ARTIFACT_PROVENANCE_INVALID]
+environment_lock:
+  required: true
+  enforcement: hard_reference_no_expansion
+  camera_position_change_does_not_change_environment: true
+continuity:
+  authoritative_registry: exactly_one
+  interactive_actions_require_limb_states: true
+  embedded_interactive_payload_must_match_registry: true

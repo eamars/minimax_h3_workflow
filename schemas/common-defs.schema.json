@@ -290,14 +290,45 @@
       },
       "additionalProperties": false
     },
+    "environmentLock": {
+      "type": "object",
+      "required": ["environment_profile_id", "source_asset_id", "enforcement", "required_landmarks", "allowed_features", "forbidden_inventions", "unknown_regions", "negative_space_rule"],
+      "properties": {
+        "environment_profile_id": {"type": "string", "minLength": 1},
+        "source_asset_id": {"type": "string", "minLength": 1},
+        "enforcement": {"const": "hard_reference_no_expansion"},
+        "required_landmarks": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "allowed_features": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "forbidden_inventions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "unknown_regions": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "negative_space_rule": {"type": "string", "minLength": 1},
+        "camera_position_policy": {"const": "storyboard_owned_within_environment_lock"}
+      },
+      "additionalProperties": false
+    },
+    "limbState": {
+      "type": "object",
+      "required": ["limb_id", "side", "state", "holding_prop_id", "contact_target"],
+      "properties": {
+        "limb_id": {"type": "string", "minLength": 1},
+        "side": {"enum": ["left", "right"]},
+        "state": {"enum": ["unknown", "free", "occupied", "contact", "transferring"]},
+        "holding_prop_id": {"type": ["string", "null"]},
+        "contact_target": {"type": ["string", "null"]},
+        "character_canon_id": {"type": ["string", "null"]},
+        "action_id": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
     "continuityState": {
       "type": "object",
-      "required": ["snapshot_id", "character_states", "environment_state", "prop_states", "sound_state", "invariants", "expected_deltas", "forbidden_deltas"],
+      "required": ["snapshot_id", "character_states", "environment_state", "prop_states", "limb_states", "sound_state", "invariants", "expected_deltas", "forbidden_deltas"],
       "properties": {
         "snapshot_id": {"type": "string", "minLength": 1},
         "character_states": {"type": "array", "items": {"type": "object", "required": ["canon_id", "visibility", "pose", "gaze", "wardrobe_state"], "properties": {"canon_id": {"type": "string", "minLength": 1}, "visibility": {"type": "string", "minLength": 1}, "pose": {"type": "string", "minLength": 1}, "gaze": {"type": "string", "minLength": 1}, "wardrobe_state": {"type": "string", "minLength": 1}, "wetness_state": {"type": "string"}}, "additionalProperties": false}},
         "environment_state": {"type": "object"},
         "prop_states": {"type": "array", "items": {"type": "object", "required": ["prop_id", "state"], "properties": {"prop_id": {"type": "string", "minLength": 1}, "state": {"type": "string", "minLength": 1}}, "additionalProperties": false}},
+        "limb_states": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/limbState"}},
         "sound_state": {"type": "object"},
         "invariants": {"type": "array", "items": {"type": "object", "required": ["invariant_id", "owner", "value"], "properties": {"invariant_id": {"type": "string", "minLength": 1}, "owner": {"type": "string", "minLength": 1}, "value": {"type": "string", "minLength": 1}}, "additionalProperties": false}},
         "expected_deltas": {"type": "array", "items": {"type": "string", "minLength": 1}},

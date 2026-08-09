@@ -1,6 +1,6 @@
 interface:
   display_name: "Storyboard Director"
   short_description: "Direct feature-film camera coverage and cut plans"
-  default_prompt: "Use $storyboard-director to turn canon, plot, performance, and sound into a real-cinematic editorial-shot, typed-camera, boundary, and generation-handoff plan."
+  default_prompt: "Use $storyboard-director to turn canon, plot, performance, and sound into a real-cinematic editorial-shot, typed-camera, hard-environment-lock, authoritative-continuity, boundary, and generation-handoff plan."
 policy:
   allow_implicit_invocation: true

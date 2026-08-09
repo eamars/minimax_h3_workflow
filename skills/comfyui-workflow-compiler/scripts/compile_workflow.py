@@ -174,6 +174,51 @@ def validate_bindings(bindings: dict, entry: dict, profile: dict):
                 raise AssertionError(f"OUTPUT_PATH_UNSAFE: {value}")
             if not path.is_file():
                 raise AssertionError(f"REQUIRED_ASSET_MISSING: {value}")
+    if "ordered_reference_assets" in bindings:
+        assets = bindings["ordered_reference_assets"]
+        if not isinstance(assets, list) or not assets or len(assets) > 9:
+            raise AssertionError("WORKFLOW_MAPPING_INVALID: ordered_reference_assets must contain 1-9 items")
+        for index, asset in enumerate(assets):
+            if not isinstance(asset, dict):
+                raise AssertionError(f"WORKFLOW_MAPPING_INVALID: ordered_reference_assets[{index}] must be an object")
+            for field in ("asset_id", "role", "order", "source_path", "input_name", "sha256"):
+                if field not in asset or asset[field] in (None, ""):
+                    raise AssertionError(f"WORKFLOW_MAPPING_INVALID: ordered_reference_assets[{index}] missing {field}")
+            if asset["order"] != index + 1:
+                raise AssertionError("WORKFLOW_MAPPING_INVALID: ordered_reference_assets order must be one-based and contiguous")
+            source = Path(str(asset["source_path"]))
+            input_name = Path(str(asset["input_name"]))
+            if source.is_absolute() or ".." in source.parts or not source.is_file():
+                raise AssertionError(f"REQUIRED_ASSET_MISSING: {asset['source_path']}")
+            if input_name.is_absolute() or ".." in input_name.parts or input_name.name != str(asset["input_name"]):
+                raise AssertionError(f"OUTPUT_PATH_UNSAFE: {asset['input_name']}")
+            digest = hashlib.sha256(source.read_bytes()).hexdigest()
+            if str(asset["sha256"]).removeprefix("sha256:") != digest:
+                raise AssertionError(f"REQUIRED_ASSET_MISSING: hash mismatch for {asset['asset_id']}")
+
+
+def expand_ordered_reference_assets(graph: dict, bindings: dict, object_info: dict) -> None:
+    """Expand R2VA image references from the live autogrow declaration."""
+    assets = bindings.get("ordered_reference_assets")
+    if assets is None:
+        return
+    node = graph.get("20")
+    conditioner = object_info.get("MiniMaxH3ReferenceToVideo", {})
+    spec = conditioner.get("input", {}).get("optional", {}).get("ref_images")
+    if not isinstance(node, dict) or not isinstance(spec, list) or len(spec) < 2:
+        raise AssertionError("WORKFLOW_MAPPING_INVALID: R2VA reference binding cannot be expanded")
+    options = spec[1].get("template", {}) if isinstance(spec[1], dict) else {}
+    prefix = options.get("prefix")
+    maximum = int(options.get("max", 0))
+    if not prefix or len(assets) > maximum:
+        raise AssertionError("WORKFLOW_INPUT_UNSUPPORTED: ordered references exceed live ref_images capacity")
+    inputs = node.setdefault("inputs", {})
+    numeric_ids = [int(str(key)) for key in graph if str(key).isdigit()]
+    next_id = max(numeric_ids, default=0) + 1
+    for index, asset in enumerate(assets):
+        loader_id = str(next_id + index)
+        graph[loader_id] = {"class_type": "LoadImage", "inputs": {"image": str(asset["input_name"])} }
+        inputs[f"ref_images.{prefix}{index}"] = [loader_id, 0]
 
 
 def main() -> int:
@@ -207,6 +252,8 @@ def main() -> int:
         raise AssertionError(f"WORKFLOW_TEMPLATE_MISSING: {template_path}")
     graph = replace(load(template_path), bindings)
     object_info = profile.get("evidence", {}).get("object_info") or profile.get("object_info")
+    if args.template_id == "h3-r2va-v1":
+        expand_ordered_reference_assets(graph, bindings, object_info)
     validate_live_graph(graph, object_info)
 
     payload = json.dumps(graph, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
@@ -235,8 +282,8 @@ def main() -> int:
         })
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(payload, encoding="utf-8")
-    args.report.write_text(yaml.safe_dump(report, sort_keys=True, allow_unicode=True), encoding="utf-8")
+    args.output.write_text(payload, encoding="utf-8", newline="\n")
+    args.report.write_text(yaml.safe_dump(report, sort_keys=True, allow_unicode=True), encoding="utf-8", newline="\n")
     print(report["workflow_hash"])
     return 0
 

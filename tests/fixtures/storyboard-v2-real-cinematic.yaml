@@ -17,7 +17,22 @@ director_treatment:
   visual_grammar: observational_master_then_subjective_coverage
   coverage_strategy: establish_space_then_change_position_for_reaction
   camera_position_policy: allowed_to_change_between_shots
-  coverage_policy: {allow_sparse_coverage: false, required_roles: [establishing, coverage, terminal]}
+  environment_lock:
+    environment_profile_id: ENV_FIXTURE_SHOWERBOX_V02
+    source_asset_id: REF_ROOM
+    enforcement: hard_reference_no_expansion
+    required_landmarks: [glass enclosure, rainfall shower, basin, mirror]
+    allowed_features: [declared fixture coverage only]
+    forbidden_inventions: [new room topology, second subject]
+    unknown_regions: [behind-west-wall]
+    negative_space_rule: preserve unshown room regions as unknown
+    camera_position_policy: storyboard_owned_within_environment_lock
+  coverage_policy:
+    allow_sparse_coverage: false
+    required_roles: [establishing, coverage, terminal]
+    limb_state_template: &fixture_limb_states
+      - {limb_id: HAND_L, side: left, state: free, holding_prop_id: null, contact_target: null}
+      - {limb_id: HAND_R, side: right, state: free, holding_prop_id: null, contact_target: null}
 scene_geography:
   geography_id: GEO01
   coordinate_system: shower-room-landmark-frame
@@ -74,6 +89,8 @@ shots:
       character_states: [{canon_id: CHAR01, visibility: full, pose: entering upright, gaze: toward mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity and grey shirt remain stable}]
       expected_deltas: [character moves from doorway to basin]
@@ -83,6 +100,7 @@ shots:
       character_states: [{canon_id: CHAR01, visibility: full, pose: stopped at basin, gaze: toward mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity and grey shirt remain stable}]
       expected_deltas: [character is now at basin]
@@ -129,6 +147,7 @@ shots:
       character_states: [{canon_id: CHAR01, visibility: full, pose: stopped at basin, gaze: toward mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity and grey shirt remain stable}]
       expected_deltas: [hand approaches tap, hesitation becomes visible]
@@ -138,6 +157,7 @@ shots:
       character_states: [{canon_id: CHAR01, visibility: full, pose: hand withdrawn from tap, gaze: toward mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity and grey shirt remain stable}]
       expected_deltas: [hesitation resolves into a look toward the mirror]
@@ -183,6 +203,7 @@ shots:
       character_states: [{canon_id: CHAR01, visibility: full, pose: turning toward mirror, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity and grey shirt remain stable}]
       expected_deltas: [character reaches stillness at mirror]
@@ -192,6 +213,7 @@ shots:
       character_states: [{canon_id: CHAR01, visibility: reflection, pose: still, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone, music: held-note}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity and grey shirt remain stable}]
       expected_deltas: [scene terminates on held reflection]
@@ -215,6 +237,7 @@ generation_segments:
       character_states: [{canon_id: CHAR01, visibility: full, pose: entering upright, gaze: toward mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
       expected_deltas: [enter]
@@ -224,6 +247,7 @@ generation_segments:
       character_states: [{canon_id: CHAR01, visibility: full, pose: stopped at basin, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
       expected_deltas: [stop]
@@ -249,6 +273,7 @@ generation_segments:
       character_states: [{canon_id: CHAR01, visibility: full, pose: stopped at basin, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
       expected_deltas: [hand approaches tap]
@@ -258,6 +283,7 @@ generation_segments:
       character_states: [{canon_id: CHAR01, visibility: full, pose: hand at tap, gaze: down, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
       expected_deltas: [hand stops]
@@ -283,6 +309,7 @@ generation_segments:
       character_states: [{canon_id: CHAR01, visibility: full, pose: hand at tap, gaze: down, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
       expected_deltas: [hand withdraws and gaze lifts]
@@ -292,6 +319,7 @@ generation_segments:
       character_states: [{canon_id: CHAR01, visibility: full, pose: hand withdrawn, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
       expected_deltas: [hesitation resolves]
@@ -317,6 +345,7 @@ generation_segments:
       character_states: [{canon_id: CHAR01, visibility: full, pose: turning toward mirror, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
       expected_deltas: [turn to stillness]
@@ -326,6 +355,7 @@ generation_segments:
       character_states: [{canon_id: CHAR01, visibility: reflection, pose: still, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
       environment_state: {room: intact, water: off}
       prop_states: []
+      limb_states: *fixture_limb_states
       sound_state: {ambience: room-tone, music: held-note}
       invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
       expected_deltas: [terminal reflection hold]
@@ -349,11 +379,11 @@ generation_handoffs:
   - {handoff_id: HANDOFF03, from_segment_id: SEQ01_SC01_SH02_SEG02, to_segment_id: SEQ01_SC01_SH03_SEG01, relationship: independent, endpoint_policy: none, acceptance_conditions: [dissolve is editorial only], editorial_boundary_id: BOUNDARY02}
   - {handoff_id: HANDOFF04, from_segment_id: SEQ01_SC01_SH03_SEG01, to_segment_id: null, relationship: terminal, endpoint_policy: none, acceptance_conditions: [terminal image holds], editorial_boundary_id: BOUNDARY03}
 continuity_registry:
-  - {snapshot_id: STATE01, character_states: [{canon_id: CHAR01, visibility: full, pose: entering, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], sound_state: {ambience: room-tone}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [enter], forbidden_deltas: [wardrobe change]}
-  - {snapshot_id: STATE02, character_states: [{canon_id: CHAR01, visibility: full, pose: basin, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], sound_state: {ambience: room-tone}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [stop], forbidden_deltas: [wardrobe change]}
-  - {snapshot_id: STATE03A, character_states: [{canon_id: CHAR01, visibility: full, pose: hand at tap, gaze: down, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], sound_state: {ambience: room-tone}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [withdraw and look], forbidden_deltas: [wardrobe change]}
-  - {snapshot_id: STATE03, character_states: [{canon_id: CHAR01, visibility: full, pose: hand withdrawn, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], sound_state: {ambience: room-tone}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [look], forbidden_deltas: [wardrobe change]}
-  - {snapshot_id: STATE04, character_states: [{canon_id: CHAR01, visibility: reflection, pose: still, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], sound_state: {ambience: held-note}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [terminate], forbidden_deltas: [new action]}
+  - {snapshot_id: STATE01, character_states: [{canon_id: CHAR01, visibility: full, pose: entering, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], limb_states: *fixture_limb_states, sound_state: {ambience: room-tone}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [enter], forbidden_deltas: [wardrobe change]}
+  - {snapshot_id: STATE02, character_states: [{canon_id: CHAR01, visibility: full, pose: basin, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], limb_states: *fixture_limb_states, sound_state: {ambience: room-tone}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [stop], forbidden_deltas: [wardrobe change]}
+  - {snapshot_id: STATE03A, character_states: [{canon_id: CHAR01, visibility: full, pose: hand at tap, gaze: down, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], limb_states: *fixture_limb_states, sound_state: {ambience: room-tone}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [withdraw and look], forbidden_deltas: [wardrobe change]}
+  - {snapshot_id: STATE03, character_states: [{canon_id: CHAR01, visibility: full, pose: hand withdrawn, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], limb_states: *fixture_limb_states, sound_state: {ambience: room-tone}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [look], forbidden_deltas: [wardrobe change]}
+  - {snapshot_id: STATE04, character_states: [{canon_id: CHAR01, visibility: reflection, pose: still, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], limb_states: *fixture_limb_states, sound_state: {ambience: held-note}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [terminate], forbidden_deltas: [new action]}
 animatic_intent:
   scene_time_policy: preserve overlapping coverage windows for the action clock
   source_time_policy: each generated segment starts at zero

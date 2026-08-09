@@ -1,9 +1,9 @@
 name: reference-canon-manager
-version: 0.2.0
+version: 0.3.0
 stage: canon
 mode: planning
 consumes: [project-request, seed-assets, optional-reference-map, prior-canon-lock]
-produces: [asset-manifest, canon-lock, reference-conflict-report, reference-order, geography-evidence]
+produces: [asset-manifest, canon-lock, environment-profile-when-environment-present, reference-conflict-report, reference-order, geography-evidence]
 side_effects: filesystem
 approval_required: false
 may_modify_upstream_decisions: false
@@ -25,6 +25,12 @@ geography:
   confidence_values: [exact, inferred, unknown]
   coordinates_owner: storyboard-director
   unknown_regions_preserved: true
+environment_profile:
+  required_when_role_present: environment_architecture
+  enforcement: hard_reference_no_expansion
+  required_fields: [profile_id, source_asset_id, required_landmarks, allowed_features, forbidden_inventions, unknown_features, negative_space_rule]
+  partial_edges_must_remain_partial: true
+  camera_position_remains_storyboard_owned: true
 camera_reference:
   position_nonbinding: true
   owner: storyboard-director
@@ -36,3 +42,5 @@ endpoint:
 plot_handoff:
   consumer: plot-architect
   unresolved_blocking_scope_sets_ready_false: true
+failure_contract:
+  allowed_codes: [REQUIRED_ASSET_MISSING, ASSET_HASH_MISMATCH, ASSET_SOURCE_MUTATION_DETECTED, ASSET_ROLE_AMBIGUOUS, ENDPOINT_ROLE_AMBIGUOUS, CANON_REFERENCE_CONFLICT, ENVIRONMENT_PROFILE_MISSING, ENVIRONMENT_FEATURE_FORBIDDEN, CANON_ID_COLLISION, CANON_OUTPUT_INVALID, REFERENCE_ORDER_INVALID, PROVENANCE_MISSING]
