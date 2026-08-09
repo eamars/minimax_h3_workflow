@@ -1,0 +1,23 @@
+name: post-editor
+version: 0.1.0
+stage: post
+mode: post
+consumes: [approved-production-plan, approval-record, approved-media-manifest, qc-report-final-and-segment, handoff-transition-plan, animatic-plan-or-paper-edit, sound-plan, delivery-specification, capability-profile-optional, workflow-catalog-utility-templates]
+produces: [edit-decision-list, assembly-plan, audio-mix-plan, final-assembly-workflow, final-master-optional, delivery-manifest]
+side_effects: media_processing
+approval_required: plan_approval
+may_modify_upstream_decisions: false
+owner: post-editor
+schema: schemas/edit-decision-list.schema.json
+routing:
+  upstream: [production-orchestrator, continuity-qc-supervisor_after_all_required_segment_and_handoff_passes, animatic-previs-planner, sound-dialogue-planner]
+  downstream: [continuity-qc-supervisor_final_mode]
+  gate: [valid_plan_approval, approved_media_manifest, every_required_media_qc_PASS]
+  final_qc: {skill: continuity-qc-supervisor, mode: final, required_verdict: PASS, independent: true}
+  delivery: {requires: [final_qc_PASS, matching_master_hash, matching_plan_hash, delivery_manifest_hash], state: DELIVERED}
+  on_final_qc_fail: [repair-director_or_editorial_fix, new_post_revision, new_independent_final_qc]
+  parallelizable: false
+  forbidden: [unapproved_media, PASS_WITH_EDITORIAL_FIX_media, undocumented_transition_change, approved_artifact_overwrite, self_approval]
+transition_rules: [cut, continue, bridge, match_cut, dissolve]
+final_qc_required: true
+failure_codes: [POST_APPROVAL_MEDIA_REQUIRED, POST_PLAN_HASH_MISMATCH, POST_MEDIA_MANIFEST_INVALID, POST_MEDIA_NOT_QC_APPROVED, POST_SOURCE_REVISION_MISSING, POST_TRANSITION_SEMANTICS_MISMATCH, POST_ENDPOINT_DUPLICATE, POST_AUDIO_CONTINUITY_FAILURE, POST_RUNTIME_MISMATCH, POST_WORKFLOW_INVALID, FINAL_QC_REQUIRED, FINAL_EDIT_CONTINUITY_FAILURE, DELIVERY_SPEC_FAILURE, DELIVERY_MANIFEST_HASH_MISSING, APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN]

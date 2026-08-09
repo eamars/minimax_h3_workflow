@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "render-report.schema.json",
+  "type": "object",
+  "required": ["artifact", "job_id", "attempt", "state", "inputs_hash", "workflow_hash", "seed", "model_versions", "node_versions", "outputs", "error"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "attempt": {"type": "integer", "minimum": 1},
+    "state": {"enum": ["queued", "running", "complete", "failed", "blocked"]},
+    "outputs": {"type": "array"},
+    "error": {"type": ["object", "null"]}
+  }
+}

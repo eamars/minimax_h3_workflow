@@ -1,0 +1,13 @@
+version: 1
+fixtures:
+  - {id: reflection_only, expect: {strategy: prompt_only, preserve_unrelated: true, new_qc_required: true}}
+  - {id: identity_drift, expect: {strategy: reference_set}}
+  - {id: final_frame_failure, expect: {strategy: clean_endpoint, preserve: approved_predecessor_media, endpoint_approval: true}}
+  - {id: repeated_hand_failure, expect: {strategy: shorten_split, status: UPSTREAM_PLAN_REVIEW_REQUIRED}}
+  - {id: hard_cut_changes_intent, expect: {strategy: upstream_revision, reapproval_required: true}}
+  - {id: audio_only, expect: {strategy: audio_only, preserve: approved_picture}}
+  - {id: stale_qc, expect: {failure: REPAIR_QC_REPORT_STALE, outputs: none}}
+  - {id: unsupported_mode, expect: {failure: REPAIR_STRATEGY_UNSUPPORTED}}
+  - {id: overwrite_approved, expect: {failure: REPAIR_ARTIFACT_OVERWRITE, api_calls: 0}}
+  - {id: self_approval, expect: {failure: REPAIR_INDEPENDENT_QC_REQUIRED}}
+  - {id: deterministic_repeat, expect: {same_strategy: true, same_invalidation: true}}

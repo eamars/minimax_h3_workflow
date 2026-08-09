@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "canon-lock.schema.json",
+  "type": "object",
+  "required": ["artifact", "canon_entities", "role_bindings", "source_asset_hashes", "plot_handoff"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "canon_entities": {"type": "array", "items": {"type": "object", "required": ["canon_id", "entity_type", "text_anchor", "asset_ids", "locked_traits", "non_binding_traits"]}},
+    "role_bindings": {"type": "array", "items": {"type": "object", "required": ["binding_id", "asset_id", "canon_id", "role", "timeline_scope", "endpoint_role", "transfer_policy"]}},
+    "source_asset_hashes": {"type": "object"},
+    "plot_handoff": {"type": "object", "required": ["ready", "blocking_scopes"]}
+  }
+}

@@ -1,0 +1,18 @@
+name: keyframe-handoff-builder
+version: 0.1.0
+stage: keyframe
+mode: compilation
+consumes: [approved-production-plan, storyboard-package, segment-plan, handoff-manifest, asset-manifest, canon-lock, approved-render-and-qc-for-continuation, approved-target-endpoint-for-bridge, h3-prompt-packet-when-generating, capability-profile-when-generating]
+produces: [keyframe-report, handoff-frame-selection]
+side_effects: media_processing
+approval_required: plan_approval
+may_modify_upstream_decisions: false
+owner: keyframe-handoff-builder
+routing:
+  upstream: [production-orchestrator-approval-gate, minimax-h3-adapter, storyboard-director, reference-canon-manager, continuity-qc-supervisor-when-continuing]
+  downstream: [comfyui-workflow-compiler, render-orchestrator]
+  conditional: true
+  triggers: [exact_endpoint_required, continuation_chain, fl2va_selected, bridge_required, prior_tail_must_be_reused]
+endpoint_status_values: [pending, approved, rejected, superseded]
+source_types: [user_seed, approved_tail, approved_target_still_job]
+determinism: {hash: sha256, candidate_tie_break: latest_passing_frame, no_random_generation: true}

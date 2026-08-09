@@ -12,10 +12,31 @@ workspace.
 
 - `scripts/` — reusable ComfyUI setup, model-download, API, launcher, and H3
   compatibility utilities.
+- `skills/production-orchestrator/` — the invokable approval-gated router for
+  the complete planning, compilation, execution, QC, repair, and delivery
+  lifecycle.
+- `skills/` — 15 specialist production packages covering request/canon/plot,
+  performance/sound/storyboard/previs/preflight, MiniMax H3 and ComfyUI
+  compilation, rendering, QC, repair, and post-production.
+- `schemas/` and `workflow-catalog/` — shared artifact contracts and typed,
+  live-capability-validated ComfyUI API templates.
 - `skills/comfyui/` — generic ComfyUI workflow design and validation guidance.
 - `skills/storyboard/` — generic story, shot, prompt, continuity, and handoff
   planning guidance.
 - `.gitignore` — keeps local runtime and production artifacts out of commits.
+
+Install or refresh the complete local skill set with
+`scripts\install_production_skills.ps1`, then invoke
+`$production-orchestrator` after the skill registry refreshes. The default
+`PLAN_ONLY` mode writes the full Markdown/YAML review document and stops for
+approval; `COMPILE_APPROVED_PLAN` compiles the matching ComfyUI workflow bundle
+only after the exact YAML hash is approved.
+
+The architecture enforces independently generated video segments of at most 10
+seconds. Longer intended shots are represented as dependency chains: each
+continuation waits for QC and an approved stable tail frame, reuses that exact
+frame as the next ComfyUI job's first frame, and trims duplicate endpoints
+before final assembly.
 
 ## Local setup
 

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "plot-package.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact", "project_id", "fidelity_mode", "primary_unit_type", "secondary_unit_types", "plot_engine", "premise", "input_contract", "story_core", "story_events", "presentation_order", "information_ledger", "attention_progression", "state_ledger", "beats", "beat_priority", "storyboard_handoff", "traceability", "invention_log", "risk_indicators", "planning_policy", "validation"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "project_id": {"type": "string", "pattern": "^PRJ[0-9]{2,}$"},
+    "fidelity_mode": {"enum": ["strict", "balanced", "expansive"]},
+    "primary_unit_type": {"$ref": "#/$defs/unitType"},
+    "secondary_unit_types": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/unitType"}},
+    "plot_engine": {"enum": ["dramatic", "observational", "reveal", "cause_and_effect", "transformation", "comedy", "suspense", "loop"]},
+    "premise": {"type": "string", "minLength": 1},
+    "input_contract": {"type": "object", "required": ["source_idea", "requested_runtime_seconds", "explicit_requirement_ids", "canon_revision_id", "assumptions", "unknowns"], "properties": {"source_idea": {"type": "string"}, "requested_runtime_seconds": {"type": ["number", "null"], "exclusiveMinimum": 0}, "explicit_requirement_ids": {"type": "array", "minItems": 1}, "canon_revision_id": {"type": "string"}, "assumptions": {"type": "array"}, "unknowns": {"type": "array"}}},
+    "story_core": {"type": "object", "required": ["premise", "narrative_function", "audience_promise", "opening_state", "subject_intention_or_activity", "progression_driver", "central_change", "closing_state", "emotional_entry", "emotional_exit"]},
+    "story_events": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["id", "event", "cause", "consequence"], "properties": {"id": {"type": "string", "pattern": "^EVT[0-9]{2,}$"}, "event": {"type": "string"}, "cause": {"type": "string"}, "consequence": {"type": "string"}}}},
+    "presentation_order": {"type": "array", "minItems": 1},
+    "information_ledger": {"type": "array"},
+    "attention_progression": {"type": "array"},
+    "state_ledger": {"type": "object", "required": ["character", "expression", "activity_or_body_state", "knowledge", "props", "environment"]},
+    "beats": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/beat"}},
+    "beat_priority": {"type": "object", "required": ["indispensable", "supporting", "optional_texture"]},
+    "storyboard_handoff": {"type": "object", "required": ["story_brief", "sequence_map", "scene_seeds", "beat_order", "must_show", "may_imply", "must_not_invent", "downstream_choices", "acceptance_tests"]},
+    "traceability": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["trace_id", "beat_id", "requirement_ids", "canon_reference_ids", "assumption_ids", "rationale"]}},
+    "invention_log": {"type": "array", "items": {"type": "object", "required": ["invention_id", "category", "statement", "rationale", "source", "authorization", "beat_ids"]}},
+    "risk_indicators": {"type": "array", "items": {"type": "object", "required": ["risk_id", "category", "severity", "affected_beat_ids", "indicator", "consequence", "downstream_note", "advisory_only"], "properties": {"advisory_only": {"const": true}}}},
+    "planning_policy": {"type": "object", "additionalProperties": false, "required": ["max_generation_segment_seconds", "enforcement", "applies_to"], "properties": {"max_generation_segment_seconds": {"const": 10}, "enforcement": {"const": "advisory"}, "applies_to": {"const": "plot_only"}}},
+    "validation": {"type": "object", "required": ["duration_fit", "premise_fidelity", "causal_or_progressive_coherence", "visual_legibility", "continuity_complete", "storyboard_boundary_respected", "unresolved_risks", "status", "failure_codes"], "properties": {"status": {"enum": ["pass", "revise", "blocked"]}}}
+  },
+  "$defs": {
+    "unitType": {"enum": ["vignette", "ritual_or_procedure", "micro_arc", "cause_effect", "reveal", "reaction", "expectation_reversal", "transformation", "suspense", "montage_progression", "loop", "scene_excerpt"]},
+    "beat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["beat_id", "order", "time_range_seconds", "plot_jobs", "trigger", "subject_intention_or_attention", "event", "required_visible_event", "action_summary", "immediate_result", "reaction_summary", "entry_state", "visible_change", "exit_state", "emotional_entry", "emotional_exit", "information_change", "physical_state_change", "continuity_in", "continuity_out", "next_beat_link", "requirement_ids", "canon_reference_ids", "assumption_ids", "invention_ids", "risk_ids"],
+      "properties": {
+        "beat_id": {"type": "string", "pattern": "^SEQ[0-9]{2,}_SC[0-9]{2,}_B[0-9]{2,}$"},
+        "order": {"type": "integer", "minimum": 1},
+        "time_range_seconds": {"type": "object", "required": ["start", "end"], "properties": {"start": {"type": "number", "minimum": 0}, "end": {"type": "number", "exclusiveMinimum": 0}}},
+        "plot_jobs": {"type": "array", "minItems": 1, "maxItems": 2},
+        "trigger": {"type": "string"}, "subject_intention_or_attention": {"type": "string"}, "event": {"type": "string"}, "required_visible_event": {"type": "string"}, "action_summary": {"type": "string"}, "immediate_result": {"type": "string"}, "reaction_summary": {"type": "string"}, "entry_state": {"type": "string"}, "visible_change": {"type": "string"}, "exit_state": {"type": "string"}, "emotional_entry": {"type": "string"}, "emotional_exit": {"type": "string"}, "information_change": {"type": "string"}, "physical_state_change": {"type": "string"}, "continuity_in": {"type": "string"}, "continuity_out": {"type": "string"},
+        "next_beat_link": {"type": ["string", "null"]},
+        "requirement_ids": {"type": "array", "minItems": 1}, "canon_reference_ids": {"type": "array"}, "assumption_ids": {"type": "array"}, "invention_ids": {"type": "array"}, "risk_ids": {"type": "array"}
+      }
+    }
+  }
+}

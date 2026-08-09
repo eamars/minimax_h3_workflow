@@ -1,0 +1,127 @@
+version: 1
+
+approval_record:
+  required_fields:
+    - plan_id
+    - plan_version
+    - plan_hash
+    - status
+    - approved_by
+    - approved_at
+    - approved_scope
+    - conditions
+  status_values:
+    - pending
+    - approved
+    - rejected
+    - revision_requested
+  hash_format: '^sha256:[0-9a-f]{64}$'
+
+compilation_gate:
+  all_required:
+    - production_plan.status == approved
+    - production_plan.content_hash == approval.plan_hash
+    - approval.status == approved
+    - no_unresolved_blocking_preflight_issues
+    - all_required_assets_exist_and_hash_match
+    - all_required_decisions_resolved_or_explicitly_delegated
+  failure_code: PLAN_APPROVAL_REQUIRED
+
+change_control:
+  required_fields:
+    - affected_ids
+    - reason
+    - requested_owner
+    - downstream_invalidation_scope
+    - reapproval_required
+  creative_reapproval_triggers:
+    - story
+    - performance
+    - camera_intent
+    - segment_boundary
+    - transition_meaning
+    - reference_role
+  technical_only_changes:
+    rule: Version and revalidate without creative reapproval only when approved intent and segment boundaries remain unchanged.
+
+invalidation_matrix:
+  project_request:
+    invalidates:
+      - all_planning_artifacts
+      - all_compilation_artifacts
+      - all_render_and_post_artifacts
+    reapproval_required: true
+  asset_or_canon_mapping:
+    invalidates:
+      - visually_affected_plot_artifacts
+      - affected_scene_artifacts
+      - affected_storyboard_artifacts
+      - affected_prompts_keyframes_workflows_and_renders
+    reapproval_required: true
+  plot_package:
+    invalidates:
+      - scene
+      - sound
+      - storyboard
+      - animatic
+      - preflight
+      - production_plan
+      - all_compilation
+    reapproval_required: true
+  scene_performance_package:
+    invalidates:
+      - affected_sound
+      - storyboard
+      - animatic
+      - preflight
+      - production_plan
+      - all_compilation
+    reapproval_required: true
+  sound_plan:
+    invalidates:
+      - storyboard_audio_track
+      - animatic
+      - affected_h3_packets
+      - affected_audio_and_post_workflows
+    reapproval_required: true
+  storyboard_package:
+    invalidates:
+      - animatic
+      - preflight
+      - production_plan
+      - affected_h3_packets_keyframes_workflows_and_renders
+    reapproval_required: true
+  approved_production_plan:
+    invalidates:
+      - everything_compiled_or_rendered_from_superseded_plan
+    reapproval_required: true
+  h3_packet:
+    invalidates:
+      - its_comfyui_job
+      - its_render_and_dependents
+    reapproval_required: false
+  workflow_template:
+    invalidates:
+      - jobs_compiled_from_template
+      - their_unapproved_renders
+    preserves:
+      - creative_plan
+    reapproval_required: false
+  qc_criteria:
+    invalidates:
+      - affected_qc_verdicts
+      - approvals_depending_on_those_verdicts
+    reapproval_required: false
+
+localized_repair:
+  rules:
+    - Preserve approved unaffected segments and intervals.
+    - Invalidate a continuation segment and its transitive dependents when its approved entry tail changes.
+    - Do not invalidate an approved predecessor merely because a dependent middle segment fails.
+    - Require plan reapproval if repair changes segment boundaries or transition semantics.
+
+overwrite_policy:
+  approved_artifacts: forbidden
+  approved_media: forbidden
+  replacement: Create a new revision, retain the prior revision, and record supersedes.
+  failure_code: APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN

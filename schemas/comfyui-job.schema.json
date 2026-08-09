@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "comfyui-job.schema.json",
+  "type": "object",
+  "required": ["artifact", "job_id", "job_type", "approved_plan", "template", "inputs", "outputs", "dependencies", "workflow_path", "duration"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "job_type": {"enum": ["keyframe", "video_segment", "bridge", "frame_extract", "concat", "audio_mix", "upscale", "final_export"]},
+    "approved_plan": {"$ref": "common-defs.schema.json#/$defs/approvedPlan"},
+    "template": {"type": "object", "required": ["template_id", "version"]},
+    "inputs": {"type": "object"},
+    "outputs": {"type": "object"},
+    "dependencies": {"type": "array", "items": {"type": "string"}},
+    "workflow_path": {"type": "string"},
+    "duration": {"$ref": "common-defs.schema.json#/$defs/h3Timing"}
+  }
+}

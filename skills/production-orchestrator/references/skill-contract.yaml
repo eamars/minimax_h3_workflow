@@ -1,0 +1,21 @@
+name: production-orchestrator
+version: 0.1.0
+stage: orchestration
+mode: planning
+consumes:
+  - lifecycle-request
+  - versioned-specialist-artifacts
+  - approval-record
+  - capability-profile
+  - qc-report
+produces:
+  - dispatch-result
+  - project-state
+  - production-plan-pair
+  - invalidation-scope
+side_effects: filesystem
+approval_required: false
+may_modify_upstream_decisions: false
+owner: production-orchestrator
+implementation_status: invokable_milestone_0_contract
+default_operating_mode: PLAN_ONLY

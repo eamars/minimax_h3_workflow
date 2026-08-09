@@ -1,0 +1,23 @@
+name: storyboard-director
+version: 0.2.0
+stage: storyboard
+mode: planning
+consumes: [project-request, canon-lock, asset-manifest, plot-package, scene-performance, optional-sound-plan, optional-storyboard-revision-request]
+produces: [storyboard-package, shot-table, segment-plan, handoff-manifest, creative-acceptance-tests]
+side_effects: none
+approval_required: false
+may_modify_upstream_decisions: false
+owner: storyboard-director
+implementation_status: invokable_milestone_2_model_neutral
+routing:
+  upstream: [request-normalizer, reference-canon-manager, plot-architect, scene-performance-writer, sound-dialogue-planner_when_triggered]
+  downstream: [animatic-previs-planner, production-preflight-reviewer]
+  parallelizable: false
+segment_policy:
+  duration_seconds: {exclusive_minimum: 0, maximum: 10}
+  preferred_seconds: {minimum: 4, maximum: 8}
+  one_primary_performance_arc: true
+  one_dominant_camera_move: true
+transition_policy:
+  allowed: [cut, continue, bridge, match_cut, dissolve, end]
+failure_codes: [STORYBOARD_INPUT_SCHEMA_INVALID, STORYBOARD_SOURCE_VERSION_MISMATCH, SHOT_HAS_NO_PURPOSE, BLOCKING_AMBIGUOUS, SEGMENT_TOO_LONG, SEGMENT_NONPOSITIVE, SEGMENT_OVERLOADED, ENTRY_STATE_MISSING, EXIT_STATE_UNSTABLE, HANDOFF_UNSPECIFIED, TRANSITION_SEMANTICS_INVALID, TIMELINE_NONMONOTONIC, CAMERA_MOVE_UNMOTIVATED, STORYBOARD_TRACEABILITY_MISSING, STORYBOARD_TECHNOLOGY_CONTAMINATION, STORYBOARD_ARTIFACT_PROVENANCE_INVALID]

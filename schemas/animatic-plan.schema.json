@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "animatic-plan.schema.json",
+  "type": "object",
+  "required": ["artifact", "timeline", "intended_runtime_seconds", "handles_seconds", "pacing_findings", "paper_edit"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "timeline": {"type": "array", "items": {"type": "object", "required": ["segment_id", "start_seconds", "end_seconds", "action_window", "reaction_window", "audio_cue_ids"]}},
+    "intended_runtime_seconds": {"type": "number", "exclusiveMinimum": 0},
+    "handles_seconds": {"type": "number", "minimum": 0},
+    "pacing_findings": {"type": "array"},
+    "paper_edit": {"type": "array"}
+  }
+}

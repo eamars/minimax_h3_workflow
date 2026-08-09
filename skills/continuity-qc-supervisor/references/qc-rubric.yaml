@@ -1,0 +1,24 @@
+version: 1
+evidence:
+  decoder: pyav
+  preferred_runtime: ComfyUI/.venv
+  sample_policy: [first_frame, last_frame, every_timeline_boundary_plus_or_minus_one_frame, quartiles, final_12_frames]
+  hash: sha256
+technical:
+  effective_duration_seconds: {exclusive_minimum: 0, maximum: 10}
+  fps: exact_plan_value
+  dimensions: exact_plan_value
+  frame_timestamps: strictly_ordered
+  decode: every_frame
+criteria:
+  - {id: action_order, source: segment.four_track_timeline.performance, failure: ACTION_ORDER_FAILURE}
+  - {id: identity_design, source: canon-lock, failure: IDENTITY_DRIFT}
+  - {id: environment_state, source: canon-lock, failure: ENVIRONMENT_DRIFT}
+  - {id: reflection_consistency, source: canon-lock, failure: REFLECTION_FAILURE}
+  - {id: camera_axis_horizon, source: segment.dominant_camera_move, failure: CAMERA_FAILURE}
+  - {id: dialogue_audio, source: sound-plan, failure: AUDIO_SYNC_FAILURE}
+  - {id: entry_exit, source: segment.entry_state_and_exit_state, failure: HANDOFF_MISMATCH}
+  - {id: media_integrity, source: render-report, failure: QC_MEDIA_SPEC_FAILURE}
+handoff:
+  reject_tail_if: [motion_blur, face_or_prop_occlusion, incomplete_expression_change, uncontrolled_water_or_smoke, unplanned_fast_pan, impossible_or_ambiguous_reflection]
+  pass_with_editorial_fix_is_never_continuation_eligible: true

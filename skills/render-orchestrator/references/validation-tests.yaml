@@ -1,0 +1,16 @@
+version: 1
+fixtures:
+  - {id: plan_gate, expect: {failure: PLAN_APPROVAL_REQUIRED, api_calls: 0}}
+  - {id: hash_mismatch, expect: {failure: PLAN_HASH_MISMATCH, api_calls: 0}}
+  - {id: cyclic_dag, expect: {failure: DAG_CYCLE, api_calls: 0}}
+  - {id: missing_dependency, expect: {failure: DAG_DEPENDENCY_MISSING, api_calls: 0}}
+  - {id: unapproved_continue_tail, expect: {failure: HANDOFF_TAIL_UNAPPROVED, api_calls: 0}}
+  - {id: independent_cuts, expect: {max_in_flight: 2, false_dependency: false}}
+  - {id: deterministic_ids, expect: {same_inputs_same_prompt_id: true, canonical_uuid: true, stable_client_id: true}}
+  - {id: resume_after_interrupt, expect: {reconcile_before_submit: true, duplicate_submission: false}}
+  - {id: transient_503, expect: {attempts: 3, backoff_seconds: [2, 5, 15], unchanged_job_spec: true}}
+  - {id: validation_400, expect: {retry: false, failure: COMFYUI_VALIDATION_FAILED}}
+  - {id: output_missing, expect: {failure: COMFYUI_OUTPUT_MISSING}}
+  - {id: rejected_branch, expect: {blocked: transitive_dependents, continue_unrelated_branch: true}}
+  - {id: overwrite_approved, expect: {failure: APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN}}
+  - {id: path_escape, expect: {failure: OUTPUT_PATH_ESCAPE}}

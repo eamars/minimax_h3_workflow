@@ -1,0 +1,10 @@
+version: 1
+fixtures:
+  - {id: direct_user_first_frame, expect: {regenerate: false, source_hash_preserved: true}}
+  - {id: general_reference, expect: {failure: ENDPOINT_ROLE_AMBIGUOUS}}
+  - {id: plan_gate, expect: {failure: PLAN_APPROVAL_REQUIRED, writes: false}}
+  - {id: unapproved_tail, expect: {failure: HANDOFF_TAIL_UNAPPROVED}}
+  - {id: latest_stable_tail, expect: {selected: latest_passing}}
+  - {id: aspect_rule_missing, expect: {failure: KEYFRAME_ASPECT_RATIO_CONFLICT}}
+  - {id: bridge_requires_two, expect: {failure: BRIDGE_ENDPOINT_UNAPPROVED}}
+  - {id: immutable, expect: {failure: APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN}}

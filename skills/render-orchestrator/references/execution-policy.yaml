@@ -1,0 +1,39 @@
+version: 1
+api:
+  base_url: http://127.0.0.1:8188
+  submit: {method: POST, path: /prompt}
+  status: [{method: GET, path: /queue}, {method: GET, path: '/history/{prompt_id}'}, {method: GET, path: '/api/jobs/{prompt_id}'}]
+  progress: websocket:/ws
+  compiler_only: [/object_info, /models, /system_stats]
+gate:
+  plan_status: approved
+  require_plan_hash_match: true
+  require_compile_report_status: compiled
+  require_dag_hash_match: true
+  require_endpoint_approval_for: [continue, bridge]
+limits:
+  concurrency: 1
+  poll_interval_seconds: 2
+  job_timeout_seconds: 3600
+  effective_segment_seconds: {exclusiveMinimum: 0, maximum: 10}
+retry:
+  max_attempts: 3
+  backoff_seconds: [2, 5, 15]
+  retry_http_status: [408, 409, 425, 429, 500, 502, 503, 504]
+  retry_network_errors: [timeout, connection_reset, connection_refused]
+  no_retry_status: [400, 401, 403, 404, 422]
+  mutate_prompt: false
+  mutate_seed: false
+  mutate_workflow: false
+  randomize: false
+idempotency:
+  namespace_uuid: 00000000-0000-0000-0000-000000000001
+  prompt_id: "uuid5(namespace_uuid, project_id + ':' + run_id + ':' + job_id + ':attempt:' + attempt)"
+  client_id: "'render:' + project_id + ':' + run_id"
+resume:
+  reconcile_paths: ['/history/{prompt_id}', /queue, '/api/jobs/{prompt_id}']
+  duplicate_submission: false
+persistence:
+  state_write: atomic_temp_then_replace
+  events: append_only_jsonl
+  approved_artifact_overwrite: false

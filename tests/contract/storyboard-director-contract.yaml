@@ -1,0 +1,10 @@
+version: 1
+cases:
+  - {id: valid_24s_continuity, expect: {minimum_segments: 3, maximum_each_seconds: 10, same_shot_id: true}}
+  - {id: cap_precision, expect: {pass: 10.0, reject: [10.0001, 11.0]}}
+  - {id: nonpositive, expect: {failure: SEGMENT_NONPOSITIVE}}
+  - {id: overloaded, expect: {failure: SEGMENT_OVERLOADED}}
+  - {id: unstable_exit, expect: {failure: EXIT_STATE_UNSTABLE}}
+  - {id: transition_matrix, expect: {all_semantics_validated: true}}
+  - {id: timeline_order, expect: {failure_on_nonmonotonic: true}}
+  - {id: technology_separation, expect: {failure: STORYBOARD_TECHNOLOGY_CONTAMINATION}}

@@ -1,0 +1,9 @@
+version: 1
+cases:
+  - {id: eight_categories, expect: {all_distinct: true}}
+  - {id: stable_speakers, expect: {one_speaker_per_spoken_cue: true}}
+  - {id: ambiguous_speaker, expect: {status: blocked, failure: DIALOGUE_SPEAKER_UNCLEAR}}
+  - {id: invalid_timing, expect: {status: blocked}}
+  - {id: continuation_ambience, expect: {explicit_carry_state: true}}
+  - {id: native_post, expect: {intent_present: true, h3_syntax_present: false}}
+  - {id: no_trigger, expect: {bypass_recorded: true, empty_plan_fabricated: false}}

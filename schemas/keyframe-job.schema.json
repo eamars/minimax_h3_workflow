@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "keyframe-job.schema.json",
+  "type": "object",
+  "required": ["artifact", "job_id", "segment_id", "endpoint", "source_type", "source_revision", "normalization", "approval_status", "output_path"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "job_id": {"type": "string"},
+    "endpoint": {"enum": ["in", "out"]},
+    "source_type": {"enum": ["user_seed", "approved_tail", "approved_target_still_job"]},
+    "approval_status": {"enum": ["pending", "approved", "rejected"]},
+    "normalization": {"type": "object", "required": ["width", "height", "color_format", "composition_rule"]},
+    "output_path": {"type": "string"}
+  }
+}

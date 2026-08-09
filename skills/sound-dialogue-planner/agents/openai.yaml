@@ -1,0 +1,6 @@
+interface:
+  display_name: "Sound & Dialogue Planner"
+  short_description: "Plan timed narrative audio and voice continuity"
+  default_prompt: "Use $sound-dialogue-planner to classify and time dialogue, voices, ambience, effects, and music with stable continuity."
+policy:
+  allow_implicit_invocation: true

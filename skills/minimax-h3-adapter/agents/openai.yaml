@@ -1,0 +1,6 @@
+interface:
+  display_name: "MiniMax H3 Adapter"
+  short_description: "Compile approved H3 prompt packets"
+  default_prompt: "Use $minimax-h3-adapter to compile approved MiniMax H3 prompt packets from the locked production plan."
+policy:
+  allow_implicit_invocation: true

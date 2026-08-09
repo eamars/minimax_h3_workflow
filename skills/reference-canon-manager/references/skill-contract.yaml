@@ -1,0 +1,31 @@
+name: reference-canon-manager
+version: 0.1.0
+stage: canon
+mode: planning
+consumes: [project-request, seed-assets, optional-reference-map, prior-canon-lock]
+produces: [asset-manifest, canon-lock, reference-conflict-report, reference-order]
+side_effects: filesystem
+approval_required: false
+may_modify_upstream_decisions: false
+owner: reference-canon-manager
+implementation_status: invokable_milestone_3_contract
+asset_rules:
+  asset_id_pattern: '^AST_[0-9a-f]{12}$'
+  path_format: relative_posix
+  source_hash: {algorithm: SHA-256, format: '^sha256:[0-9a-f]{64}$', input: raw_source_bytes}
+  immutable_source: true
+canon_rules:
+  canon_id_pattern: '^CAN_(SUBJ|WORLD|STYLE|WARD|PROP|CAM|MOTION|AUDIO)_[0-9a-f]{12}$'
+  binding_id_pattern: '^BND_[0-9a-f]{12}$'
+  collision_policy: fail_with_CANON_ID_COLLISION
+roles:
+  allowed: [subject_identity, environment_architecture, style_rendering, wardrobe, prop, pose_expression, camera_composition, motion_reference, audio_reference, general_reference]
+  primary_role_required: true
+endpoint:
+  allowed: [none, first_frame, last_frame, both]
+  default: none
+  non_none_requires: [user_declared, project_request_declared]
+  audio_endpoint_forbidden: true
+plot_handoff:
+  consumer: plot-architect
+  unresolved_blocking_scope_sets_ready_false: true

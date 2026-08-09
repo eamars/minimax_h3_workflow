@@ -1,0 +1,14 @@
+version: 1
+encoding: UTF-8
+prompt_language: English_except_verbatim_dialogue_lyrics_visible_text
+base_family:
+  fields: [integrated_multimodal_description, overall_soundscape, non_diegetic_music]
+  endpoint_prefixes:
+    I2VA: 'For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.'
+    FL2VA: 'How the reference pictures align with the target video — Picture 1 (from Shot 1) aligns with the 0.00-second mark of the target video; Picture 2 (from Shot N) aligns with the S.SS-second mark of the target video.'
+    L2VA: 'How the reference pictures align with the target video — <Picture 1> (from [Shot N]) aligns with the S.SS-second mark of the target video.'
+R2VA:
+  section_order: [subject_definitions, summary, retention_analysis, detailed_description, overall_soundscape, non_diegetic_music]
+  labels: [Subject, Picture, Video, Audio]
+dialogue: {speaker_ids: stable_actual_vocal_order, d_tag_contains: [words, language], preserve_verbatim: true}
+construction_order: [reference_assignment, global_style_lock, character_world_lock, directorial_intent, entry_state, blocking, visible_action, camera, timed_structure, dialogue_and_diegetic_sound, exit_handoff, exclusions]

@@ -1,0 +1,20 @@
+version: 1
+frame_tolerance: one_frame
+segment:
+  min_effective_seconds: 0.001
+  max_effective_seconds: 10
+  preferred_seconds: [4, 8]
+timeline: {require_sorted_contiguous: true, runtime_tolerance_frames: 1, require_sum_equals_intended_runtime: true, quantize: round_half_up}
+windows:
+  lead_in_seconds: 0.25
+  action_must_start_after_lead_in: true
+  completion_or_reaction_required_when_beat_demands: true
+  stable_exit_seconds: 0.25
+  reject_exit: [motion_blur, face_occlusion, incomplete_expression, uncontrolled_water_or_smoke, unplanned_fast_pan, ambiguous_reflection]
+audio:
+  hard_sync_tolerance_frames: 2
+  ambience_sync_tolerance_frames: 4
+  cue_must_be_inside_segment: true
+  cue_on_final_frame_forbidden: true
+  boundary_carry_must_be_declared: true
+preview: {execution_allowed: false, source_assets_must_be_declared: true}

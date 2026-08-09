@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "edit-decision-list.schema.json",
+  "type": "object",
+  "required": ["artifact", "project_id", "fps", "events"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "fps": {"type": "number", "exclusiveMinimum": 0},
+    "events": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["event_id", "source_revision", "source_in", "source_out", "record_in", "record_out", "transition", "audio_rules"]}}
+  }
+}

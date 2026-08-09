@@ -1,0 +1,11 @@
+version: 1
+selection:
+  T2VA: no_endpoint_and_no_reference_media
+  I2VA: exact_first_frame_only
+  FL2VA: exact_first_and_last_frame
+  L2VA: exact_last_frame_only
+  R2VA: non_endpoint_reference_media_or_reference_driven_motion_audio
+forbidden_without_tested_capability: [endpoint_plus_R2VA, general_as_endpoint, endpoint_as_general, R2VA_for_exact_handoff, mode_switch_to_hide_failure]
+base_conditioner: MiniMaxH3ImageToVideo
+reference_conditioner: MiniMaxH3ReferenceToVideo
+reference_presentation: {images: first, paired_video_audio: immediately_before_video, standalone_audio: after_videos, ordinals: one_based_per_type}

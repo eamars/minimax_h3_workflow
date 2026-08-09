@@ -1,0 +1,118 @@
+version: 1
+status: capability_probe_required
+rules:
+  - Treat live ComfyUI /object_info, /models, and /system_stats as authority.
+  - Substitute typed placeholders through the declared mapping; never submit a template containing placeholders.
+  - Reject missing nodes, models, assets, links, or unsupported mode combinations before queueing.
+  - Keep target and effective generation-segment duration positive and at or below 10 seconds.
+
+required_catalog_fields: [template_id, file, job_type, model_family, supported_modes, required_nodes, required_models, input_bindings, output_bindings, supported_duration_range, supported_resolution_rules, audio_support, validated_comfyui_version, validated_node_versions]
+
+h3_defaults: &h3_defaults
+  job_type: video_segment
+  model_family: MiniMax-H3
+  required_models: [diffusion_model, text_encoder, video_vae, audio_vae]
+  output_bindings: [video]
+  supported_duration_range: {exclusive_minimum: 0, maximum_effective_seconds: 10, model_frame_grid: '17k+5 at 24fps'}
+  supported_resolution_rules: {width_height_multiple: 32, live_capability_authoritative: true}
+  audio_support: native_stereo_32000_hz
+  validated_comfyui_version: live_system_stats_required
+  validated_node_versions: live_object_info_required
+
+utility_defaults: &utility_defaults
+  model_family: none
+  supported_modes: [UTILITY]
+  required_models: []
+  supported_duration_range: {source_media_contract_authoritative: true, generated_segment_maximum_seconds: 10}
+  supported_resolution_rules: {source_or_delivery_contract_authoritative: true, live_capability_authoritative: true}
+  audio_support: declared_by_source_and_delivery_contract
+  validated_comfyui_version: live_system_stats_required
+  validated_node_versions: live_object_info_required
+
+templates:
+  - <<: *h3_defaults
+    template_id: h3-t2va-v1
+    file: templates/h3_t2va_api.json
+    mapping: mappings/h3_t2va_api.mapping.yaml
+    supported_modes: [T2VA]
+    required_nodes: [CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ImageToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
+    input_bindings: [prompt, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+  - <<: *h3_defaults
+    template_id: h3-i2va-v1
+    file: templates/h3_i2va_api.json
+    mapping: mappings/h3_i2va_api.mapping.yaml
+    supported_modes: [I2VA]
+    required_nodes: [LoadImage, CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ImageToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
+    input_bindings: [prompt, first_frame_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+  - <<: *h3_defaults
+    template_id: h3-fl2va-v1
+    file: templates/h3_fl2va_api.json
+    mapping: mappings/h3_fl2va_api.mapping.yaml
+    supported_modes: [FL2VA]
+    required_nodes: [LoadImage, CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ImageToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
+    input_bindings: [prompt, first_frame_path, last_frame_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+  - <<: *h3_defaults
+    template_id: h3-l2va-v1
+    file: templates/h3_l2va_api.json
+    mapping: mappings/h3_l2va_api.mapping.yaml
+    supported_modes: [L2VA]
+    required_nodes: [LoadImage, CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ImageToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
+    input_bindings: [prompt, last_frame_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+  - <<: *h3_defaults
+    template_id: h3-r2va-v1
+    file: templates/h3_r2va_api.json
+    mapping: mappings/h3_r2va_api.mapping.yaml
+    supported_modes: [R2VA]
+    required_nodes: [LoadImage, CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ReferenceToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
+    input_bindings: [prompt, reference_0_path, reference_image_size, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+  - <<: *utility_defaults
+    template_id: still-keyframe-v1
+    file: templates/still_keyframe_api.json
+    job_type: keyframe
+    model_family: source-image-normalization
+    supported_modes: [STILL]
+    required_nodes: [LoadImage, SaveImage]
+    input_bindings: [source_image_path, output_prefix]
+    output_bindings: [image]
+    audio_support: none
+  - <<: *utility_defaults
+    template_id: frame-extract-v1
+    file: templates/frame_extract_api.json
+    job_type: frame_extract
+    required_nodes: [LoadVideo, GetVideoComponents, ImageFromBatch, SaveImage]
+    input_bindings: [approved_video_path, frame_index, output_prefix]
+    output_bindings: [image]
+    audio_support: none
+  - <<: *h3_defaults
+    template_id: bridge-v1
+    file: templates/bridge_api.json
+    job_type: bridge
+    supported_modes: [FL2VA]
+    required_nodes: [LoadImage, CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ImageToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
+    input_bindings: [prompt, approved_source_tail_path, approved_target_head_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+  - <<: *utility_defaults
+    template_id: concat-v1
+    file: templates/concat_api.json
+    job_type: concat
+    supported_modes: [POST]
+    required_nodes: [LoadVideo, GetVideoComponents, ImageBatch, AudioConcat, CreateVideo, SaveVideo]
+    input_bindings: [video_0_path, video_1_path, fps, output_prefix]
+    output_bindings: [video]
+  - <<: *utility_defaults
+    template_id: audio-mix-v1
+    file: templates/audio_mix_api.json
+    job_type: audio_mix
+    supported_modes: [POST]
+    required_nodes: [LoadVideo, GetVideoComponents, LoadAudio, AudioMerge, CreateVideo, SaveVideo]
+    input_bindings: [picture_master_path, mix_track_path, fps, output_prefix]
+    output_bindings: [video]
+  - <<: *utility_defaults
+    template_id: upscale-v1
+    file: templates/upscale_api.json
+    job_type: upscale
+    model_family: capability-selected
+    supported_modes: [POST]
+    required_nodes: [LoadVideo, GetVideoComponents, UpscaleModelLoader, ImageUpscaleWithModel, CreateVideo, SaveVideo]
+    required_models: [upscale_model]
+    input_bindings: [approved_video_path, upscale_model, fps, output_prefix]
+    output_bindings: [video]

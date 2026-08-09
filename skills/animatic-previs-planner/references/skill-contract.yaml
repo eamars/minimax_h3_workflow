@@ -1,0 +1,16 @@
+name: animatic-previs-planner
+version: 0.1.0
+stage: previs
+mode: planning
+consumes: [project-request, storyboard-package, sound-plan-conditional, canon-lock-optional, asset-manifest-optional, seed-thumbnail-manifest-optional, prior-animatic-plan-optional]
+produces: [animatic-plan, paper-edit, pacing-findings, preview-spec-optional, dispatch-result]
+side_effects: none
+approval_required: false
+may_modify_upstream_decisions: false
+owner: animatic-previs-planner
+implementation_status: invokable_milestone_3_contract
+routing:
+  after: storyboard-director
+  wait_for_conditional: sound-dialogue-planner
+  next: production-preflight-reviewer
+  forbidden: [h3-compilation, comfyui-compilation, preview-execution, media-processing]

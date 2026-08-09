@@ -156,9 +156,15 @@ def convert_workflow(workflow: dict, widget_orders: dict[str, list[str]]) -> dic
 
 
 def apply_overrides(workflow: dict, prompt: dict, args) -> dict:
-    for node in workflow["nodes"]:
-        nid = str(node["id"])
-        ntype = node["type"]
+    if "nodes" in workflow:
+        node_specs = ((str(node["id"]), node["type"]) for node in workflow["nodes"])
+    else:
+        node_specs = (
+            (str(node_id), node.get("class_type"))
+            for node_id, node in prompt.items()
+            if isinstance(node, dict)
+        )
+    for nid, ntype in node_specs:
         if nid not in prompt:
             continue
         if ntype in ("MiniMaxH3ImageToVideo", "MiniMaxH3ReferenceToVideo"):
@@ -196,15 +202,24 @@ def main() -> int:
 
     workflow = json.loads(args.workflow.read_text(encoding="utf-8"))
     base = f"http://{args.host}:{args.port}"
-    node_types = {
-        n["type"]
-        for n in workflow["nodes"]
-        if not n["type"].startswith("MarkdownNote")
-        and n["type"] not in ("Note", "PrimitiveNode")
-    }
-    widget_orders = get_widget_orders(base, node_types)
-
-    prompt_api = convert_workflow(workflow, widget_orders)
+    if "nodes" in workflow:
+        node_types = {
+            n["type"]
+            for n in workflow["nodes"]
+            if not n["type"].startswith("MarkdownNote")
+            and n["type"] not in ("Note", "PrimitiveNode")
+        }
+        widget_orders = get_widget_orders(base, node_types)
+        prompt_api = convert_workflow(workflow, widget_orders)
+    else:
+        prompt_api = workflow.get("prompt", workflow)
+        if not isinstance(prompt_api, dict) or not all(
+            isinstance(node, dict) and "class_type" in node and "inputs" in node
+            for node in prompt_api.values()
+        ):
+            print("ERROR: workflow is neither a UI export nor a /prompt API graph")
+            return 2
+        print(f"Using compiled /prompt API graph with {len(prompt_api)} nodes")
     prompt_api = apply_overrides(workflow, prompt_api, args)
 
     print(f"Submitting {len(prompt_api)} nodes to {base}/prompt ...")

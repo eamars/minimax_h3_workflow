@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "qc-report.schema.json",
+  "type": "object",
+  "required": ["artifact", "subject_id", "mode", "verdict", "severity", "failures", "criteria_traceability"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "mode": {"enum": ["segment", "handoff", "final"]},
+    "verdict": {"enum": ["PASS", "PASS_WITH_EDITORIAL_FIX", "FAIL"]},
+    "severity": {"enum": ["none", "minor", "major", "critical"]},
+    "failures": {"type": "array", "items": {"type": "object", "required": ["code", "time_range", "evidence_frames", "expected", "observed", "affected_dependencies"]}},
+    "criteria_traceability": {"type": "array"}
+  }
+}

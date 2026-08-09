@@ -1,0 +1,18 @@
+version: 1
+failure_order: [severity_desc, time_range_start_asc, affected_stable_id_asc, code_asc]
+precondition: current_schema_valid_qc_FAIL_with_evidence
+localized_qc_failures:
+  - {code: REFLECTION_FAILURE, default_strategy: prompt_only, alternate: reference_role}
+  - {code: IDENTITY_DRIFT, default_strategy: reference_set, alternate: reference_role}
+  - {code: ENVIRONMENT_DRIFT, default_strategy: reference_role, alternate: reference_set}
+  - {code: CAMERA_FAILURE, default_strategy: prompt_only, alternate: mode_change}
+  - {code: ACTION_ORDER_FAILURE, default_strategy: temporal_portion, alternate: shorten_split}
+  - {code: AUDIO_SYNC_FAILURE, default_strategy: audio_only, alternate: picture_only}
+  - {code: HANDOFF_MISMATCH, default_strategy: clean_endpoint, alternate: temporal_portion}
+  - {code: QC_TAIL_APPROVAL_BLOCKED, default_strategy: clean_endpoint, alternate: bridge}
+strategy_guards:
+  seed_revision: {requires: [prior_prompt_and_reference_attempt_recorded, deterministic_seed_derivation], max_new_seed_revisions: 1}
+  mode_change: {requires: [live_capability_profile, supported_mode_in_catalog, h3_adapter_validation, compiler_revalidation]}
+  shorten_split: {requires: [new_segment_ids, revised_timeline, preflight, plan_reapproval]}
+  clean_endpoint: {requires: [effective_clip_under_10s, keyframe_builder, endpoint_approval, successor_recompile_when_bound]}
+  bridge: {requires: [approved_source_tail, approved_target_head, supported_fl2va, endpoint_approval, plan_approval]}

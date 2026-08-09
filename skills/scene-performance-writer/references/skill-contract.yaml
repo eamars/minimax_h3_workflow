@@ -1,0 +1,22 @@
+name: scene-performance-writer
+version: 0.1.0
+stage: scene
+mode: planning
+consumes: [project-request, canon-lock, plot-package, prior-scene-performance-for-revision]
+produces: [scene-performance, scene-text, performance-continuity]
+side_effects: none
+approval_required: false
+may_modify_upstream_decisions: false
+owner: scene-performance-writer
+default_operating_mode: PLAN_ONLY
+schema_refs:
+  scene_performance: schemas/scene-performance.schema.json
+routing:
+  planning_position: 4
+  upstream: [request-normalizer, reference-canon-manager, plot-architect]
+  downstream: [sound-dialogue-planner_when_triggered, storyboard-director]
+  bypass_only_if: [one_subject, no_dialogue, one_simple_procedure, plot_beats_already_playable]
+  bypass_record_required: true
+failure_contract:
+  allowed_codes: [SCENE_NOT_PLAYABLE]
+  detail_codes: [missing_observable_action, missing_actor_control, missing_reaction, missing_entry_or_exit_state, invalid_timing, speaker_assignment_unresolved, prop_hand_transfer_conflict, wetness_or_clothing_state_conflict, outcome_requires_new_plot_event]

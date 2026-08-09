@@ -44,6 +44,15 @@ cache/
 *.sqlite
 *.sqlite3
 
+# Project-local production artifacts and execution state
+/plan/
+/compiled/
+/orchestrator/runs/
+/orchestrator/state/
+
+# Temporary development documents
+/TEMP_*
+
 # Local production material and generated edit artifacts
 workflows/
 storyboards/

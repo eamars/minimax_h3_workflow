@@ -1,0 +1,9 @@
+version: 1
+cases:
+  - {id: one_line_brief, expect: {status: review_ready, handoff_ready: true, max_generation_segment_seconds: 10, effective_mode: PLAN_ONLY}}
+  - {id: explicit_runtime_wins, input: "Create a 24-second film.", expect: {total_duration_seconds: 24, status: review_ready}}
+  - {id: absent_runtime, input: "Show a person entering a room.", expect: {total_duration_seconds: null, status: review_ready}}
+  - {id: contradictory_runtime, input: "Make it exactly 8 seconds and exactly 12 seconds.", expect: {status: blocked, failure_code: INTAKE_MISSING_CORE_REQUIREMENT}}
+  - {id: overlong_single_segment, input: "Generate one uninterrupted 12-second segment.", expect: {status: blocked, failure_code: INTAKE_MISSING_CORE_REQUIREMENT}}
+  - {id: long_project_allowed, input: "Create a 24-second continuous camera shot.", expect: {status: review_ready, no_generation_segments_created: true}}
+  - {id: requested_compile_cannot_bypass_gate, input: "Compile and render this video now.", expect: {effective_mode: PLAN_ONLY, compile_authorized: false, render_authorized: false}}

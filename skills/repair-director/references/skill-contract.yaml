@@ -1,0 +1,26 @@
+name: repair-director
+version: 0.1.0
+stage: repair
+mode: repair
+consumes: [qc-report-fail, approved-production-plan, approval-record, segment-card, h3-prompt-packet, comfyui-job, workflow-record, render-report, canon-lock, asset-manifest, neighboring-approved-media, endpoint-records-optional, capability-profile-optional, prior-repair-revisions]
+produces: [repair-plan, revised-prompt-delta-optional, revised-job-spec, invalidation-scope, repair-routing-decision]
+side_effects: filesystem
+approval_required: plan_approval
+may_modify_upstream_decisions: false
+owner: repair-director
+schema: schemas/repair-plan.schema.json
+routing:
+  upstream: [continuity-qc-supervisor, render-orchestrator, comfyui-workflow-compiler, minimax-h3-adapter, keyframe-handoff-builder, reference-canon-manager, plot-architect, scene-performance-writer, sound-dialogue-planner, storyboard-director, post-editor]
+  downstream: [production-orchestrator, minimax-h3-adapter-when-prompt_or_mode_changed, comfyui-workflow-compiler-when-job_changed, keyframe-handoff-builder-when-endpoint_changed, render-orchestrator-after-approval, continuity-qc-supervisor-new_revision]
+strategies: [prompt_only, reference_role, reference_set, seed_revision, shorten_split, mode_change, temporal_portion, clean_endpoint, bridge, transition_revision, audio_only, picture_only, editorial, upstream_revision]
+reapproval:
+  required_when: [plot, performance, camera_intent, segment_boundary, transition_meaning]
+  state_when_required: PLAN_REVIEW_READY
+endpoint_gate:
+  clean_endpoint_or_bridge_requires: [keyframe-handoff-builder, endpoint_approval, independent_qc]
+invalidation:
+  approved_overwrite: forbidden
+  preserve_unaffected_branches: true
+  continuation_tail_changed: invalidate_successor_and_transitive_dependents_preserve_predecessor
+independence: {qc_authors_repair: false, repaired_output_requires_new_revision: true, repaired_output_requires_new_qc_pass: true, repair_director_cannot_self_approve: true}
+failure_codes: [REPAIR_INPUT_INVALID, REPAIR_QC_REPORT_STALE, REPAIR_SCOPE_UNRESOLVED, REPAIR_STRATEGY_UNSUPPORTED, REPAIR_APPROVAL_REQUIRED, REPAIR_INVALIDATION_INVALID, REPAIR_REVISED_JOB_INVALID, REPAIR_ARTIFACT_OVERWRITE, REPAIR_INDEPENDENT_QC_REQUIRED, REPAIR_UPSTREAM_REVISION_REQUIRED]

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sound-plan.schema.json",
+  "type": "object",
+  "required": ["artifact", "speaker_registry", "cues", "continuity_rules", "generation_routing"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "speaker_registry": {"type": "array", "items": {"type": "object", "required": ["speaker_id", "canon_id"]}},
+    "cues": {"type": "array", "items": {"type": "object", "required": ["cue_id", "category", "timing", "source_beat_ids"], "properties": {"category": {"enum": ["dialogue", "voice_over", "singing", "ambience", "physical_effect", "non_verbal_human", "diegetic_music", "non_diegetic_music"]}}}},
+    "continuity_rules": {"type": "array"},
+    "generation_routing": {"type": "array"}
+  }
+}

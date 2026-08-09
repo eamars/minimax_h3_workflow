@@ -1,0 +1,13 @@
+version: 1
+fixtures:
+  - {id: valid_segment, expect: {verdict: PASS, manifest: included}}
+  - {id: identity_drift, expect: {verdict: FAIL, failure: IDENTITY_DRIFT, manifest: excluded}}
+  - {id: camera_error, expect: {verdict: FAIL, failure: CAMERA_FAILURE, not_failure: IDENTITY_DRIFT}}
+  - {id: mirror_mismatch, expect: {verdict: FAIL, failure: REFLECTION_FAILURE}}
+  - {id: unstable_tail, expect: {verdict: PASS_WITH_EDITORIAL_FIX, continuation_eligible: false, cut_candidate: true}}
+  - {id: duration_over_cap, expect: {verdict: FAIL, failure: QC_MEDIA_SPEC_FAILURE}}
+  - {id: decode_error, expect: {verdict: FAIL, failure: QC_MEDIA_DECODE_FAILURE}}
+  - {id: missing_traceability, expect: {verdict: FAIL, failure: QC_CRITERIA_UNTRACEABLE}}
+  - {id: plan_hash_mismatch, expect: {failure: QC_PLAN_HASH_MISMATCH, creative_inspection: false}}
+  - {id: repaired_revision, expect: {new_qc_revision: true, self_approval: false}}
+  - {id: deterministic_repeat, expect: {canonical_report_byte_identical: true}}

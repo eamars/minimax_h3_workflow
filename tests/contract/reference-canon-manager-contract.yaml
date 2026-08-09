@@ -1,0 +1,10 @@
+version: 1
+cases:
+  - {id: four_expression_images, expect: {subject_canons: 1, nonbinding_observations: 4}}
+  - {id: incidental_person, expect: {must_not_transfer: true}}
+  - {id: explicit_first_frame, expect: {endpoint_role: first_frame}}
+  - {id: implicit_opening_image, expect: {endpoint_role: none}}
+  - {id: conflicting_hair_no_priority, expect: {exit_code: 2, failure: CANON_REFERENCE_CONFLICT}}
+  - {id: changed_source_bytes, expect: {exit_code: 1, failure: ASSET_HASH_MISMATCH}}
+  - {id: aspect_ratio_mismatch, expect: {status: WARN, source_mutated: false}}
+  - {id: ready_with_blocking_conflict, expect: {exit_code: 2}}

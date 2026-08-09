@@ -1,0 +1,106 @@
+version: 1
+scope: project_lifecycle
+initial_state: NEW
+terminal_states:
+  - DELIVERED
+
+states:
+  - NEW
+  - INTAKE_VALIDATED
+  - PLANNING
+  - PLAN_PREFLIGHT
+  - PLAN_REVIEW_READY
+  - PLAN_APPROVED
+  - COMPILING
+  - COMPILED
+  - KEYFRAME_PREP
+  - PRODUCING
+  - SEGMENT_QC
+  - REPAIRING
+  - ASSEMBLY_READY
+  - ASSEMBLING
+  - FINAL_QC
+  - DELIVERED
+
+transitions:
+  - {from: NEW, to: INTAKE_VALIDATED, requires: [intake_gate_passed]}
+  - {from: INTAKE_VALIDATED, to: PLANNING, requires: [project_request_revision_frozen]}
+  - {from: PLANNING, to: PLAN_PREFLIGHT, requires: [all_required_planning_artifacts_valid]}
+  - {from: PLAN_PREFLIGHT, to: PLAN_REVIEW_READY, requires: [preflight_pass_for_human_review]}
+  - {from: PLAN_PREFLIGHT, to: PLANNING, requires: [preflight_revision_request]}
+  - {from: PLAN_REVIEW_READY, to: PLAN_APPROVED, requires: [human_approval_matches_plan_hash]}
+  - {from: PLAN_REVIEW_READY, to: PLANNING, requires: [human_revision_request]}
+  - {from: PLAN_APPROVED, to: COMPILING, requires: [approval_still_valid, live_comfyui_probe_authorized]}
+  - {from: COMPILING, to: COMPILED, requires: [all_graphs_valid, production_dag_acyclic, compile_report_passed]}
+  - {from: COMPILED, to: KEYFRAME_PREP, requires: [compiled_bundle_hashes_match]}
+  - {from: KEYFRAME_PREP, to: PRODUCING, requires: [required_initial_endpoints_approved_or_none_required]}
+  - {from: PRODUCING, to: SEGMENT_QC, requires: [one_or_more_render_outputs_complete]}
+  - {from: SEGMENT_QC, to: PRODUCING, requires: [more_ready_jobs_exist, required_handoffs_approved]}
+  - {from: SEGMENT_QC, to: REPAIRING, requires: [localized_qc_failure]}
+  - {from: REPAIRING, to: PRODUCING, requires: [versioned_repair_job_approved]}
+  - {from: REPAIRING, to: PLAN_REVIEW_READY, requires: [repair_changes_creative_intent_and_revised_plan_passed_preflight]}
+  - {from: SEGMENT_QC, to: ASSEMBLY_READY, requires: [all_required_segments_approved]}
+  - {from: ASSEMBLY_READY, to: ASSEMBLING, requires: [approved_media_manifest_valid]}
+  - {from: ASSEMBLING, to: FINAL_QC, requires: [versioned_master_created]}
+  - {from: FINAL_QC, to: ASSEMBLING, requires: [editorial_only_fix_required]}
+  - {from: FINAL_QC, to: REPAIRING, requires: [source_media_repair_required]}
+  - {from: FINAL_QC, to: DELIVERED, requires: [final_qc_passed, delivery_manifest_valid]}
+
+forbidden_transitions:
+  - from: PLAN_REVIEW_READY
+    to: COMPILING
+    failure_code: PLAN_APPROVAL_REQUIRED
+  - from: PLAN_APPROVED
+    to: PRODUCING
+    failure_code: INVALID_STATUS_TRANSITION
+  - from: SEGMENT_QC
+    to: ASSEMBLING
+    failure_code: INVALID_STATUS_TRANSITION
+  - from: DELIVERED
+    to: overwrite_approved_outputs
+    failure_code: APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN
+
+invalidation_behavior:
+  approved_plan_changed:
+    new_state: PLANNING
+    actions:
+      - supersede_old_plan_revision
+      - mark_dependent_compilation_and_unapproved_outputs_stale
+      - preserve_approved_output_bytes_as_history_but_supersede_their_artifact_revisions
+      - exclude_superseded_outputs_from_the_current_approved_media_manifest
+      - request_new_human_approval
+  workflow_template_changed:
+    new_state: COMPILING
+    actions:
+      - preserve_creative_plan_approval
+      - invalidate_jobs_compiled_from_changed_template
+  continuation_tail_changed:
+    new_state: KEYFRAME_PREP
+    actions:
+      - preserve_approved_predecessor_media
+      - invalidate_successor_entry_frame_and_transitive_dependents
+
+segment_states:
+  - PLANNED
+  - COMPILED
+  - ADMITTED
+  - RENDERED
+  - DECODED_AND_HASHED
+  - ENDPOINT_EXTRACTED
+  - QC_PENDING
+  - QC_PASSED
+  - ENDPOINT_APPROVED
+  - SUCCESSOR_ELIGIBLE
+  - FAILED
+  - REPAIR_REQUIRED
+
+strict_serial_continuation:
+  max_in_flight_jobs: 1
+  successor_compilation: just_in_time_after_endpoint_approval
+  successor_admission: predecessor_qc_pass_and_endpoint_hash_match
+  endpoint_frame_policy: actual_final_decoded_frame_only
+  endpoint_window_policy: validate_final_12_frames_do_not_substitute_earlier_frame
+  descendant_invalidation: transitive_from_failed_or_changed_endpoint
+  final_qc_order: segment_qc_then_assembly_then_master_qc_then_delivery
+
+concurrency_note: Project state summarizes lifecycle progress; independent branches may be concurrent only under an explicit parallel profile. Strict serial continuation permits one in-flight production job and no successor pre-admission.

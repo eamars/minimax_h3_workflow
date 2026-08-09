@@ -1,0 +1,4 @@
+interface:
+  display_name: "ComfyUI Workflow Compiler"
+  short_description: "Compile typed, approved ComfyUI workflow jobs"
+  default_prompt: "Use $comfyui-workflow-compiler after plan approval to compile validated ComfyUI workflows and a production DAG; do not queue or render."

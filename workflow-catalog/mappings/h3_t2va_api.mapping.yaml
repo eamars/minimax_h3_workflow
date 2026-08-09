@@ -1,0 +1,10 @@
+template_id: h3-t2va-v1
+required_nodes: [CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ImageToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
+required_models: [diffusion_model, text_encoder, video_vae, audio_vae]
+input_bindings: [prompt, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+output_bindings: [video]
+supported_duration_range: {exclusive_minimum: 0, maximum_effective_seconds: 10, frame_grid: '17k+5 at 24fps'}
+supported_resolution_rules: {multiple: 32, live_capability_authoritative: true}
+audio_support: native_stereo_32000_hz
+validated_comfyui_version: local_source_probe_required
+validated_node_versions: live_object_info_required

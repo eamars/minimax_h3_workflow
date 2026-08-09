@@ -1,0 +1,6 @@
+interface:
+  display_name: "Production Preflight Reviewer"
+  short_description: "Audit Phase A plan feasibility and handoffs"
+  default_prompt: "Use $production-preflight-reviewer to audit the complete Phase A package and return the exact verdict and smallest revision requests without rewriting it."
+policy:
+  allow_implicit_invocation: true

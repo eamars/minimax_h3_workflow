@@ -1,0 +1,16 @@
+version: 1
+input_gate:
+  require: [approved_plan, approval_record, matching_plan_hash, approved_media_manifest, all_required_qc_PASS, delivery_spec]
+  reject: [missing_hash, stale_revision, superseded_media, PASS_WITH_EDITORIAL_FIX, failed_or_pending_qc]
+canonicalization: {encoding: UTF-8, newline: LF, map_order: sorted_keys, hash: sha256}
+transitions:
+  cut: {kind: hard_cut, frame_overlap: 0, audio_overlap: declared_only}
+  continue: {kind: handoff_join, require: [approved_tail_hash, successor_entry_hash], drop: successor_frame_0_only_when_hash_equal}
+  bridge: {kind: generated_bridge, require: [approved_source_tail, approved_target_head], endpoint_policy: remove_only_exact_matching_duplicates}
+  match_cut: {kind: hard_cut, require: [both_entry_frames_fixed], frame_overlap: 0}
+  dissolve: {kind: editorial_crossfade, require: [declared_duration], continuity_claim: false}
+media_normalization: [frame_order, fps, width, height, color, codec, audio_sample_rate, audio_channels, loudness]
+audio: {sample_accurate_trim: true, preserve_dialogue_identity: true, preserve_ambience: true, unexplained_gap_or_restart: block, undocumented_overlap: block}
+workflow: {catalog_revision_required: true, live_capability_profile_required: true, named_bindings_only: true, queue_comfyui: false, unresolved_placeholders: block, cycles: block}
+final_qc: {skill: continuity-qc-supervisor, mode: final, verdict: PASS, independent: true, hash_bindings: [master, edl, workflow, plan]}
+delivery: {manifest_hash_required: true, approved_artifacts_immutable: true, latest_alias_forbidden: true}

@@ -1,0 +1,27 @@
+name: comfyui-workflow-compiler
+version: 0.1.0
+stage: compilation
+mode: compilation
+consumes: [approved-production-plan, approval-record, h3-prompt-packet-manifest, asset-manifest, canon-lock, handoff-frame-selection-optional, keyframe-report-optional, frozen-comfyui-capability-profile, versioned-workflow-catalog, output-path-policy]
+produces: [comfyui-workflows, comfyui-job-manifests, production-dag, compile-report, checksums]
+side_effects: filesystem
+approval_required: plan_approval
+may_modify_upstream_decisions: false
+owner: comfyui-workflow-compiler
+implementation_status: invokable_milestone_4_contract
+requires:
+  plan_gate: {production_plan_status: approved, approval_status: approved, exact_hash_match: true, blocking_preflight_count: 0}
+  capability_profile: {object_info_evidence: true, installed_model_evidence: true, system_stats_evidence: true, frozen_revision_hash: required}
+  catalog: {validated_revision: required, template_and_mapping_hashes: required}
+  execution: {queue: forbidden, render: forbidden, model_download: forbidden}
+limits:
+  target_duration_seconds: {exclusive_minimum: 0, maximum: 10}
+  effective_duration_seconds: {exclusive_minimum: 0, maximum: 10}
+  h3: {fps: 24, frame_grid: '17k+5', width_height_multiple: 32}
+  output: {approved_overwrite: forbidden}
+routing:
+  predecessors: [production-orchestrator-approval-gate, comfyui-live-capability-probe, workflow-catalog-freeze, minimax-h3-adapter]
+  conditional_predecessor: keyframe-handoff-builder
+  successor: render-orchestrator
+  forbidden_successors: [comfyui-prompt-queue, model-downloader]
+failure_codes: [PLAN_APPROVAL_REQUIRED, PLAN_HASH_MISMATCH, PREFLIGHT_BLOCKED, CAPABILITY_PROBE_MISSING, WORKFLOW_TEMPLATE_MISSING, WORKFLOW_MAPPING_INVALID, WORKFLOW_NODE_UNAVAILABLE, WORKFLOW_INPUT_UNSUPPORTED, WORKFLOW_LINK_INVALID, WORKFLOW_CYCLE, REQUIRED_MODEL_MISSING, REQUIRED_ASSET_MISSING, SEGMENT_TOO_LONG, INVALID_FRAME_GRID, RESOLUTION_UNSUPPORTED, AUDIO_SPEC_UNSUPPORTED, HANDOFF_TAIL_UNAPPROVED, DAG_INVALID, APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN, OUTPUT_PATH_UNSAFE]

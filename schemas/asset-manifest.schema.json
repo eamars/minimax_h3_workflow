@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "asset-manifest.schema.json",
+  "type": "object",
+  "required": ["artifact", "assets"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "assets": {"type": "array", "items": {"type": "object", "required": ["asset_id", "path", "media_type", "sha256", "role", "subjects_or_worlds", "controls", "may_transfer", "must_not_transfer", "timeline_scope", "priority", "endpoint_role", "h3_candidate_label"], "properties": {"asset_id": {"type": "string"}, "path": {"type": "string"}, "media_type": {"enum": ["image", "video", "audio"]}, "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "role": {"type": "array", "minItems": 1}, "endpoint_role": {"enum": ["none", "first_frame", "last_frame", "both"]}, "priority": {"type": "integer", "minimum": 0}}}}
+  }
+}

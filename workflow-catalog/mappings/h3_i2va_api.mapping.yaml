@@ -1,0 +1,5 @@
+template_id: h3-i2va-v1
+extends: h3-t2va-v1
+required_nodes_extra: [LoadImage]
+required_inputs_extra: [first_frame_path]
+endpoint_binding: {first_frame: MiniMaxH3ImageToVideo.first_frame}

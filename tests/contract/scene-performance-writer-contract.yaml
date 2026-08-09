@@ -1,0 +1,11 @@
+version: 1
+skill: scene-performance-writer
+cases:
+  - {id: psychological_state_becomes_playable, expect: {status: review_ready, camera_fields: 0}}
+  - {id: every_plot_beat_traceable, expect: {mapping: exact_one_or_more, causal_invention_count: 0}}
+  - {id: stable_two_person_speakers, expect: {speaker_ids: [SPK01, SPK02], reactions: explicit}}
+  - {id: prop_hand_transfer, expect: {transfer_explicit: true, impossible_transfer: false}}
+  - {id: wetness_clothing, expect: {unexplained_jump: false}}
+  - {id: unsafe_coexistence, expect: {warning_count: 1, segment_boundary_created: false}}
+  - {id: missing_playability, expect: {status: blocked, failure: SCENE_NOT_PLAYABLE}}
+  - {id: downstream_decisions, expect: {status: blocked, forbidden_keys_rejected: true}}

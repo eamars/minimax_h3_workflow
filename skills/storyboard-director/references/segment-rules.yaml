@@ -1,0 +1,17 @@
+version: 1
+segment:
+  duration_seconds: {exclusive_minimum: 0, maximum: 10}
+  preferred_seconds: {minimum: 4, maximum: 8}
+  primary_performance_arc: exactly_one
+  dominant_camera_move: exactly_one_or_static
+  stable_exit_forbid: [motion_blur, face_or_prop_occlusion, incomplete_expression_change, uncontrolled_water_or_smoke, unplanned_fast_pan, impossible_reflection]
+  timeline: {tracks: [performance, camera, sound, edit_handoff], intervals: positive_monotonic_within_duration}
+transitions:
+  cut: {continuity: independent, dependency: none, parallelizable: true}
+  continue: {continuity: exact_stable_exit_to_next_entry, dependency: approved_tail_then_successor, parallelizable: false}
+  bridge: {continuity: endpoint_transition_job, dependency: approved_source_and_target_endpoints, parallelizable: false}
+  match_cut: {continuity: named_bilateral_motif, dependency: fixed_entry_states, parallelizable: true}
+  dissolve: {continuity: editorial_only, dependency: independently_accepted_clips, semantic_continuity: false}
+creative_acceptance:
+  every_shot: [plot_trace, purpose, blocking, camera_motivation, edit_intent]
+  every_segment: [duration, entry_state, performance_arc, dominant_move, four_tracks, exit_state, transition, traceability, predicates]

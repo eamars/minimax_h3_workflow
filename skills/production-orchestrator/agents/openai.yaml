@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Video Production Orchestrator"
+  short_description: "Plan and route segmented ComfyUI video production"
+  default_prompt: "Use $production-orchestrator to plan an approval-gated MiniMax H3 video and its ComfyUI segment handoffs."

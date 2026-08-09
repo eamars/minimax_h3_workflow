@@ -1,0 +1,6 @@
+template_id: h3-r2va-v1
+extends: h3-t2va-v1
+replace_conditioner: MiniMaxH3ReferenceToVideo
+required_inputs_extra: [ordered_reference_assets]
+reference_limits: {images: 9, videos: 3, audio: 3, live_capability_authoritative: true}
+dynamic_binding_rule: Add one loader per ordered asset and bind using the live autogrow input name.

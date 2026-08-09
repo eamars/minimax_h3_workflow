@@ -1,0 +1,59 @@
+version: 1
+profile_id: strict_serial_continuation_r04
+purpose: Preserve temporal state across generation segments when no parallelism is allowed.
+topology:
+  relation: continue
+  direction: predecessor_to_successor_only
+  max_in_flight_jobs: 1
+  successor_pre_admission: forbidden
+  successor_precompile: forbidden_until_endpoint_approved
+timebase:
+  fps: 24
+  segment_frames: 192
+  segment_seconds: 8.0
+  segment_count: 8
+  master_frames: 1536
+  master_seconds: 64.0
+  retain_boundary_frames: true
+  repeated_boundary_frame: explicit_approval_required
+continuation:
+  initial_mode: R2VA
+  successor_mode: I2VA
+  successor_node: MiniMaxH3ImageToVideo
+  temporal_state_input: predecessor_actual_final_decoded_frame
+  endpoint_frame_index: 191
+  stability_window: {start_frame: 180, end_frame: 191, frame_count: 12}
+  substitute_earlier_endpoint: forbidden
+  normalization: none_by_default
+  endpoint_hash_required: true
+gates:
+  order:
+    - render
+    - decode_and_hash
+    - extract_actual_final_frame
+    - full_segment_qc
+    - endpoint_qc
+    - endpoint_approval
+    - just_in_time_successor_compile
+    - successor_admission
+  failure: block_transitive_descendants
+safety_qc:
+  every_frame_required:
+    - adult_only_representation
+    - non_explicit_depiction
+    - chest_deep_water_privacy
+    - dense_mist_or_steam_coverage
+    - no_transient_revealing_frame
+device:
+  logical_device: gpu:0
+  expected_device: NVIDIA GeForce RTX 4090
+  require_runtime_identity_check: true
+  placements: [video_vae, audio_vae, diffusion_model, clip]
+  cpu_fallback: forbidden
+artifact_policy:
+  revision_namespace: R04
+  preserve_prior_revisions: [R01, R02, R03]
+  plan_topology_delta_approval_required: true
+assembly:
+  order: [all_segment_qc_pass, endpoint_gates_pass, assemble, final_master_qc, delivery]
+  retime_or_frame_drop: forbidden

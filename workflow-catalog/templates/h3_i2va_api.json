@@ -1,0 +1,19 @@
+{
+  "1": {"class_type": "LoadImage", "inputs": {"image": "${first_frame_path}"}},
+  "10": {"class_type": "CLIPLoader", "inputs": {"clip_name": "${text_encoder}", "type": "minimax", "device": "default"}},
+  "11": {"class_type": "VAELoader", "inputs": {"vae_name": "${video_vae}"}},
+  "12": {"class_type": "VAELoader", "inputs": {"vae_name": "${audio_vae}"}},
+  "13": {"class_type": "UnetLoaderGGUFDynamicVRAM", "inputs": {"unet_name": "${diffusion_model}"}},
+  "20": {"class_type": "MiniMaxH3ImageToVideo", "inputs": {"clip": ["10", 0], "vae": ["11", 0], "prompt": "${prompt}", "width": "${width}", "height": "${height}", "length": "${model_frame_count}", "first_frame": ["1", 0]}},
+  "30": {"class_type": "RandomNoise", "inputs": {"noise_seed": "${seed}"}},
+  "31": {"class_type": "KSamplerSelect", "inputs": {"sampler_name": "${sampler_name}"}},
+  "32": {"class_type": "BasicScheduler", "inputs": {"model": ["13", 0], "scheduler": "${scheduler}", "steps": "${steps}", "denoise": 1.0}},
+  "33": {"class_type": "BasicGuider", "inputs": {"model": ["13", 0], "conditioning": ["20", 0]}},
+  "34": {"class_type": "SamplerCustomAdvanced", "inputs": {"noise": ["30", 0], "guider": ["33", 0], "sampler": ["31", 0], "sigmas": ["32", 0], "latent_image": ["20", 1]}},
+  "40": {"class_type": "VAEDecode", "inputs": {"samples": ["34", 0], "vae": ["11", 0]}},
+  "41": {"class_type": "VAEDecodeAudio", "inputs": {"samples": ["34", 0], "vae": ["12", 0]}},
+  "42": {"class_type": "ImageFromBatch", "inputs": {"image": ["40", 0], "batch_index": 0, "length": "${effective_frame_count}"}},
+  "43": {"class_type": "TrimAudioDuration", "inputs": {"audio": ["41", 0], "start_index": 0.0, "duration": "${effective_duration_seconds}"}},
+  "44": {"class_type": "CreateVideo", "inputs": {"images": ["42", 0], "audio": ["43", 0], "fps": 24, "bit_depth": 8}},
+  "45": {"class_type": "SaveVideo", "inputs": {"video": ["44", 0], "filename_prefix": "${output_prefix}", "format": "auto", "codec": {"codec": "auto"}}}
+}

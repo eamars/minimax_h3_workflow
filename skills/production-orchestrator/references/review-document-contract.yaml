@@ -1,0 +1,36 @@
+version: 1
+top_level_outputs:
+  markdown: plan/production-plan-vNN.md
+  yaml: plan/production-plan-vNN.yaml
+authoritative: yaml
+status_before_human_approval: review_ready
+required_sections:
+  - Request summary and assumptions
+  - Seed asset and reference map
+  - Canon locks and conflicts
+  - Plot architecture
+  - Scene and performance design
+  - Dialogue and sound plan
+  - Director treatment
+  - Sequence scene shot and generation-segment tables
+  - Four-track timelines
+  - Handoff and transition plan
+  - Animatic and pacing analysis
+  - Segment risk scores
+  - Parallel and sequential dependency proposal
+  - Provisional H3 mode per segment
+  - Provisional ComfyUI workflow class per segment
+  - Acceptance criteria
+  - Open decisions requiring human review
+  - Preflight verdict
+  - Qualitative rerender exposure by segment
+  - Approval record placeholder
+segment_traceability_required:
+  - plot_beat_ids
+  - performance_beat_id
+  - canon_reference_ids
+  - shot_id
+  - predecessor_and_successor_relationships
+  - creative_acceptance_test_ids
+merge_rule: Copy or reference specialist-owned fields; never silently rewrite them.
+gate_rule: Stop at PLAN_REVIEW_READY and request explicit approval bound to the YAML content hash.

@@ -1,0 +1,29 @@
+version: 1
+hashing:
+  source_assets: {algorithm: SHA-256, input: raw_file_bytes, output_format: '^sha256:[0-9a-f]{64}$'}
+roles:
+  subject_identity: {controls: [identity, proportions, facial_structure, hair, stable_design]}
+  environment_architecture: {controls: [architecture, spatial_layout, fixtures, persistent_materials]}
+  style_rendering: {controls: [rendering, palette, lighting_language, texture_language]}
+  wardrobe: {controls: [garment_design, material, color, accessories]}
+  prop: {controls: [object_shape, object_material, object_markings]}
+  pose_expression: {controls: [declared_pose, declared_expression], binding: performance_only}
+  camera_composition: {controls: [framing, viewpoint, composition, lens_appearance]}
+  motion_reference: {controls: [movement_quality, temporal_pattern]}
+  audio_reference: {controls: [voice_character, ambience, music_texture]}
+endpoint_rules:
+  default: none
+  never_infer_from: [filename, file_order, visual_composition, apparent_start_state, apparent_end_state]
+canon_extraction:
+  missing_attribute: unspecified
+  visual_redesign: forbidden
+  inferred_story_meaning: forbidden
+  incidental_person: must_not_transfer_unless_explicit_subject
+conflict_policy:
+  precedence: [explicit_user_role_and_scope, explicit_user_priority, project_request_scope, deterministic_tie_break]
+  forbidden_resolution_basis: [filename, filesystem_order, recency, model_confidence, aesthetic_preference]
+reference_order:
+  sort: [priority_ascending, scope_specificity_descending, endpoint_explicit_descending, role_rank_ascending, sha256_ascending, asset_id_ascending]
+immutability:
+  source_actions_forbidden: [mutate, copy, crop, resize, reencode, metadata_strip]
+  derived_media_owner: keyframe-handoff-builder

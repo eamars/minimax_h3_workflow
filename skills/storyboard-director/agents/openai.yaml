@@ -1,0 +1,6 @@
+interface:
+  display_name: "Storyboard Director"
+  short_description: "Model-neutral shots and continuity plans"
+  default_prompt: "Use $storyboard-director to turn the approved plot and performance plan into shots, four-track timelines, and stable generation segments."
+policy:
+  allow_implicit_invocation: true

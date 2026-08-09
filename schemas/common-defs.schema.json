@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "common-defs.schema.json",
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "stableId": {"type": "string", "pattern": "^(PRJ[0-9]{2,}|SEQ[0-9]{2,}(_SC[0-9]{2,}(_(B|SH)[0-9]{2,}(_SEG[0-9]{2,})?)?)?|JOB_[A-Z0-9_]+_R[0-9]{2,})$"},
+    "approvedPlan": {
+      "type": "object",
+      "required": ["plan_id", "plan_version", "plan_hash"],
+      "properties": {
+        "plan_id": {"type": "string", "minLength": 1},
+        "plan_version": {"type": "integer", "minimum": 1},
+        "plan_hash": {"$ref": "#/$defs/sha256"},
+        "approval_status": {"const": "approved"},
+        "approval_record_revision": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "h3Timing": {
+      "type": "object",
+      "required": ["target_seconds", "model_frame_count", "model_seconds", "effective_frame_count", "effective_seconds", "fps"],
+      "properties": {
+        "target_seconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 10},
+        "model_frame_count": {"type": "integer", "minimum": 5, "$comment": "Deterministic validator enforces model_frame_count % 17 == 5."},
+        "model_seconds": {"type": "number", "exclusiveMinimum": 0},
+        "effective_frame_count": {"type": "integer", "minimum": 1, "maximum": 240},
+        "effective_seconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 10},
+        "fps": {"const": 24}
+      },
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["artifact_id", "artifact_type", "project_id", "version", "revision_id", "created_from", "source_versions", "status", "content_hash", "created_at", "created_by", "provenance"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_type": {"type": "string", "minLength": 1},
+        "project_id": {"type": "string", "pattern": "^PRJ[0-9]{2,}$"},
+        "version": {"type": "integer", "minimum": 1},
+        "revision_id": {"type": "string", "pattern": "^.+@v[0-9]{2,}$"},
+        "created_from": {"type": "array", "items": {"type": "string"}},
+        "source_versions": {"type": "array", "items": {"type": "object", "required": ["artifact_id", "version", "content_hash"], "properties": {"artifact_id": {"type": "string"}, "version": {"type": "integer", "minimum": 1}, "content_hash": {"$ref": "#/$defs/sha256"}}}},
+        "status": {"enum": ["draft", "review_ready", "approved", "rejected", "superseded"]},
+        "content_hash": {"$ref": "#/$defs/sha256"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "created_by": {"type": "string", "minLength": 1},
+        "provenance": {"type": "object", "required": ["user_inputs", "source_assets", "upstream_artifacts"]}
+      },
+      "additionalProperties": true
+    },
+    "generationSegment": {
+      "type": "object",
+      "required": ["segment_id", "shot_id", "duration_seconds", "entry_state", "primary_performance_arc", "dominant_camera_move", "four_track_timeline", "exit_state", "transition_to_next", "predecessor_segment_id", "successor_segment_id", "traceability", "acceptance_criteria"],
+      "properties": {
+        "segment_id": {"type": "string", "pattern": "^SEQ[0-9]{2,}_SC[0-9]{2,}_SH[0-9]{2,}_SEG[0-9]{2,}$"},
+        "shot_id": {"type": "string", "pattern": "^SEQ[0-9]{2,}_SC[0-9]{2,}_SH[0-9]{2,}$"},
+        "duration_seconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 10},
+        "entry_state": {"type": "object"},
+        "primary_performance_arc": {"type": "string", "minLength": 1},
+        "dominant_camera_move": {"type": "string", "minLength": 1},
+        "four_track_timeline": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["start_seconds", "end_seconds", "performance", "camera", "sound", "edit_handoff"]}},
+        "exit_state": {"type": "object"},
+        "transition_to_next": {"enum": ["cut", "continue", "bridge", "match_cut", "dissolve", "end"]},
+        "predecessor_segment_id": {"type": ["string", "null"]},
+        "successor_segment_id": {"type": ["string", "null"]},
+        "traceability": {"type": "object", "required": ["plot_beat_ids", "performance_beat_id", "canon_reference_ids", "shot_id", "acceptance_test_ids"]},
+        "acceptance_criteria": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    }
+  }
+}

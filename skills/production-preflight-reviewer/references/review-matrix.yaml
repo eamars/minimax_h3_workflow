@@ -1,0 +1,15 @@
+version: 1
+dimensions:
+  - {id: requirement_coverage, owner: request-normalizer, codes: [INTAKE_MISSING_CORE_REQUIREMENT]}
+  - {id: premise_fidelity, owner: plot-architect, codes: [PLOT_PREMISE_DRIFT, PLOT_CAUSAL_GAP]}
+  - {id: traceability, owner: earliest_fault_owner, codes: [PLOT_CAUSAL_GAP, SHOT_HAS_NO_PURPOSE]}
+  - {id: canon_consistency, owner: reference-canon-manager, codes: [ASSET_ROLE_AMBIGUOUS, CANON_REFERENCE_CONFLICT]}
+  - {id: performance_legibility, owner: scene-performance-writer, codes: [SCENE_NOT_PLAYABLE, DIALOGUE_SPEAKER_UNCLEAR]}
+  - {id: camera_blocking, owner: storyboard-director, codes: [BLOCKING_AMBIGUOUS]}
+  - {id: segment_duration_density, owner: storyboard-director, codes: [SEGMENT_TOO_LONG, SEGMENT_OVERLOADED]}
+  - {id: generation_risk, owner: storyboard-director, codes: [SEGMENT_OVERLOADED]}
+  - {id: handoff_stability, owner: storyboard-director, codes: [ENTRY_STATE_MISSING, EXIT_STATE_UNSTABLE, HANDOFF_UNSPECIFIED]}
+  - {id: dependency_correctness, owner: storyboard-director_or_orchestrator, codes: [DEPENDENCY_CYCLE, HANDOFF_UNSPECIFIED]}
+  - {id: audio_continuity, owner: sound-dialogue-planner, codes: [DIALOGUE_SPEAKER_UNCLEAR, AUDIO_SYNC_FAILURE]}
+  - {id: capability_assumptions, owner: compilation_owner, codes: [H3_MODE_MISMATCH, WORKFLOW_TEMPLATE_MISSING, WORKFLOW_NODE_UNAVAILABLE, REQUIRED_ASSET_MISSING]}
+  - {id: delivery_completeness, owner: request_or_storyboard_owner, codes: [DELIVERY_SPEC_FAILURE, REQUIRED_ASSET_MISSING]}

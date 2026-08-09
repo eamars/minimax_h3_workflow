@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "storyboard-package.schema.json",
+  "type": "object",
+  "required": ["artifact", "director_treatment", "shots", "generation_segments", "handoffs", "creative_acceptance_tests"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "director_treatment": {"type": "object"},
+    "shots": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["shot_id", "purpose", "plot_beat_ids", "blocking", "camera", "edit_intent"]}},
+    "generation_segments": {"type": "array", "minItems": 1, "items": {"$ref": "common-defs.schema.json#/$defs/generationSegment"}},
+    "handoffs": {"type": "array"},
+    "creative_acceptance_tests": {"type": "array", "minItems": 1}
+  }
+}

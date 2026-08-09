@@ -1,0 +1,11 @@
+version: 1
+skill: plot-architect
+cases:
+  - {id: balanced_activity, expect: {status: pass, engine: observational, cap_enforcement: advisory}}
+  - {id: quiet_shower, expect: {status: pass, forbidden_inventions: [danger, intruder, twist]}}
+  - {id: twenty_four_seconds, expect: {runtime: 24, generation_segments: 0}}
+  - {id: strict_no_invention, expect: {invention_log_count: 0}}
+  - {id: unauthorized_expansive, expect: {status: blocked, failure: PLOT_FIDELITY_MODE_UNAUTHORIZED}}
+  - {id: blocking_canon, expect: {status: blocked, failure: PLOT_CANON_CONFLICT_BLOCKING}}
+  - {id: untraced_requirement, expect: {status: revise, failure: PLOT_REQUIREMENT_UNTRACED}}
+  - {id: technology_contamination, expect: {status: revise, failure: PLOT_TECHNOLOGY_CONTAMINATION}}

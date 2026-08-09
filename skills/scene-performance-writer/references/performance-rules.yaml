@@ -1,0 +1,22 @@
+version: 1
+id_patterns:
+  performance_beat: '^SEQ[0-9]{2,}_SC[0-9]{2,}_B[0-9]{2,}_PB[0-9]{2,}$'
+  dialogue_cue: '^SEQ[0-9]{2,}_SC[0-9]{2,}_DLG[0-9]{2,}$'
+  speaker: '^SPK[0-9]{2,}$'
+  prop: '^PROP[0-9]{2,}$'
+continuity:
+  wetness: [unknown, dry, damp, wet, dripping, saturated]
+  clothing: [unknown, dry, damp, wet, soaked, changed]
+  hand: [unknown, free, occupied, contact, transferring]
+  transfer_rule: Require an explicit action and adjacent snapshots.
+  reaction_rule: Require reaction after trigger unless interruption is declared.
+timing:
+  duration_exclusive_minimum: 0
+  overlap_requires: [overlap_type, trigger_cue_id]
+traceability:
+  every_plot_beat_required: true
+  no_new_causal_beats: true
+unsafe_coexistence:
+  required_fields: [id, performance_beat_ids, conflicting_obligations, evidence, reversible_mitigation]
+  no_segment_authority: true
+forbidden_structured_keys: [camera, shot, lens, axis, framing, edit, transition, h3, comfyui, render, generation_segment]
