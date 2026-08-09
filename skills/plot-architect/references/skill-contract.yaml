@@ -1,0 +1,23 @@
+name: plot-architect
+version: 0.2.0
+stage: plot
+mode: planning
+consumes: [project-request, canon-lock, optional-plot-revision-request]
+produces: [plot-package]
+side_effects: none
+approval_required: false
+may_modify_upstream_decisions: false
+owner: plot-architect
+implementation_status: milestone_2_normalized_contract
+schema: schemas/plot-package.schema.json
+routing:
+  upstream: [request-normalizer, reference-canon-manager]
+  downstream: [scene-performance-writer]
+  parallel_safe: false
+invalidation:
+  invalidates: [scene-performance, relevant-sound-plan, storyboard-package, animatic-plan, preflight-report, production-plan, compilation]
+advisory_policy:
+  max_generation_segment_seconds: 10
+  enforcement: advisory
+  plot_must_not_choose: [shot_boundaries, camera, edit_transition, model_mode, workflow, render_schedule]
+failure_codes: [PLOT_INPUT_SCHEMA_INVALID, PLOT_SOURCE_VERSION_MISMATCH, PLOT_CANON_CONFLICT_BLOCKING, PLOT_UNRESOLVED_CORE_DECISION, PLOT_PREMISE_DRIFT, PLOT_REQUIREMENT_UNTRACED, PLOT_OVER_INVENTION, PLOT_FIDELITY_MODE_UNAUTHORIZED, PLOT_CAUSAL_GAP, PLOT_VISIBLE_CHANGE_MISSING, PLOT_ENTRY_STATE_MISSING, PLOT_EXIT_STATE_MISSING, PLOT_RUNTIME_COVERAGE_GAP, PLOT_BEAT_ORDER_INVALID, PLOT_TECHNOLOGY_CONTAMINATION, PLOT_ADVISORY_POLICY_MISSING, PLOT_ARTIFACT_PROVENANCE_INVALID]

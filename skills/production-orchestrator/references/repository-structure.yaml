@@ -1,20 +1,29 @@
-version: 1
+version: 2
 purpose: Describe the project architecture that this skill routes; this file is a reference, not a requirement that an installed skill copy contain the project.
 
-project_root: .
+toolkit_root: .
+project_root: projects/<project-id>/
+project_workspace_template: projects/_template/
 tracked_contracts:
-  - architecture/
   - schemas/
-  - orchestrator/production-orchestrator/
   - skills/
   - workflow-catalog/
   - tests/
-runtime_only_paths:
+  - examples/
+  - projects/README.md
+  - projects/_template/README.md
+shared_runtime_only_paths:
   - ComfyUI/
-  - workflows/
-  - outputs/
-  - logs/
+project_input_paths:
   - seeding_material/
+  - inputs/
+project_artifact_paths:
+  - plan/
+  - compiled/
+  - orchestrator/state/
+  - orchestrator/runs/
+  - scripts/
+  - workflows/
   - storyboards/
   - frames/
   - renders/
@@ -23,6 +32,8 @@ runtime_only_paths:
   - prompts/
   - manifests/
   - audio/
+  - logs/
+  - outputs/
 
 planned_skill_packages:
   planning:
@@ -49,11 +60,8 @@ planned_skill_packages:
 
 existing_package_alignment:
   skills/plot-architect:
-    disposition: retain_and_normalize_in_milestone_2
-    distribution: local_only_until_milestone_2_decision
-  skills/storyboard:
-    disposition: refactor_to_storyboard-director_in_milestone_2
-    compatibility_alias: storyboard-director
+    disposition: canonical_specialist
+    distribution: public_toolkit
   skills/comfyui:
     disposition: retain_as_generic_platform_guidance
     note: Production compilation authority belongs to comfyui-workflow-compiler.
@@ -63,6 +71,8 @@ existing_package_alignment:
 
 rules:
   - Treat user seed assets as canon; do not create a visual-development skill.
+  - Keep every project's inputs and artifacts below projects/<project-id>/; never share a root seeding_material directory between projects.
+  - Keep reusable toolkit code at the repository root and project-only adapters under the owning project's scripts/.
   - Keep generated video segments at or below 10 seconds after validated model-grid trimming.
   - Keep ComfyUI runtime, model weights, local workflows, renders, and logs outside tracked contracts.
   - Keep specialist ownership separate and the top orchestrator thin.

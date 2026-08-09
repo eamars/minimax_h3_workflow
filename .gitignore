@@ -32,6 +32,14 @@ __pycache__/
 # setup scripts; do not vendor it in this workflow repository.
 /ComfyUI/
 
+# Per-project workspaces are local/private by default. Keep the layout guides
+# visible, but keep project inputs, plans, outputs, and project-only scripts
+# out of the public toolkit repository. Put sanitized, reusable fixtures under
+# examples/ instead.
+/projects/*/
+!/projects/_template/
+!/projects/_template/**
+
 # Generated runtime state and logs
 logs/
 outputs/
@@ -44,34 +52,8 @@ cache/
 *.sqlite
 *.sqlite3
 
-# Project-local production artifacts and execution state
-/plan/
-/compiled/
-/orchestrator/runs/
-/orchestrator/state/
-
 # Temporary development documents
 /TEMP_*
-
-# Local production material and generated edit artifacts
-workflows/
-storyboards/
-seeding_material/
-frames/
-renders/
-bridges/
-edit/
-prompts/
-manifests/
-audio/
-
-# One-off local diagnostics and machine-specific launch wrappers
-scripts/_probe_gpu.py
-scripts/build_*.py
-scripts/launch_h3_*.ps1
-
-# Local-only skills not part of the public toolkit
-skills/plot-architect/
 
 # Downloaded model/checkpoint artifacts
 *.safetensors

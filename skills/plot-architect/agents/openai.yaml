@@ -1,0 +1,6 @@
+interface:
+  display_name: "Plot Architect"
+  short_description: "Build traceable premise-faithful plot packages"
+  default_prompt: "Use $plot-architect with the normalized request and locked canon to produce a schema-valid plot package without camera, dialogue, H3, or ComfyUI decisions."
+policy:
+  allow_implicit_invocation: true

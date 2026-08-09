@@ -1,4 +1,0 @@
-interface:
-  display_name: "Continuity Storyboard Planner"
-  short_description: "Plan connected scenes for generated video"
-  default_prompt: "Use $storyboard to turn this story or video idea into connected scene cards, H3 prompts, and generation-ready handoffs."
