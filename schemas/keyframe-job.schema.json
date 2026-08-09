@@ -6,6 +6,10 @@
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
     "job_id": {"type": "string"},
+    "planning_model_version": {"enum": [1, 2]},
+    "generation_relationship": {"enum": ["independent", "same_shot_continue", "endpoint_bridge", "reference_reestablish", "terminal"]},
+    "endpoint_policy": {"enum": ["none", "moving_endpoint", "stable_tail", "approved_entry_reference", "bridge_endpoints"]},
+    "motion_endpoint_evidence": {"type": "object", "required": ["source_tail", "successor_entry", "comparison_fields"]},
     "endpoint": {"enum": ["in", "out"]},
     "source_type": {"enum": ["user_seed", "approved_tail", "approved_target_still_job"]},
     "approval_status": {"enum": ["pending", "approved", "rejected"]},

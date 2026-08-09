@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "animatic-plan-v2.schema.json",
+  "type": "object",
+  "required": ["artifact", "planning_model_version", "scene_time_policy", "source_time_policy", "record_time_policy", "shot_timeline", "segment_timeline", "assembly_map", "editorial_boundaries", "generation_handoffs", "sound_boundary_map", "intended_runtime_seconds", "handles_seconds", "pacing_findings", "paper_edit"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "planning_model_version": {"const": 2},
+    "scene_time_policy": {"type": "object"},
+    "source_time_policy": {"type": "object"},
+    "record_time_policy": {"type": "object"},
+    "shot_timeline": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["shot_id", "scene_time", "record_time", "purpose", "incoming_boundary_id", "outgoing_boundary_id"]}},
+    "segment_timeline": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["segment_id", "shot_id", "scene_time", "source_time", "record_time", "action_window", "reaction_window", "audio_cue_ids"]}},
+    "assembly_map": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["shot_id", "segment_ids", "assembly_order", "generation_relationships"]}},
+    "editorial_boundaries": {"type": "array", "minItems": 1, "items": {"$ref": "common-defs.schema.json#/$defs/editorialBoundary"}},
+    "generation_handoffs": {"type": "array", "items": {"$ref": "common-defs.schema.json#/$defs/generationHandoff"}},
+    "sound_boundary_map": {"type": "array", "items": {"type": "object", "required": ["boundary_id", "carry_policy", "cue_ids"]}},
+    "intended_runtime_seconds": {"type": "number", "exclusiveMinimum": 0},
+    "handles_seconds": {"type": "number", "minimum": 0},
+    "pacing_findings": {"type": "array"},
+    "paper_edit": {"type": "array"}
+  },
+  "additionalProperties": false
+}

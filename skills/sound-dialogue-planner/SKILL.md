@@ -1,6 +1,6 @@
 ---
 name: sound-dialogue-planner
-description: Create a schema-valid narrative audio plan from plot, playable-scene, canon, and request artifacts. Invoke for dialogue, voice-over, singing, music, voice references, strong sound motifs, or cross-segment audio continuity; assign speakers, cue categories, timing, bridges, voice continuity, and native-vs-post intent without choosing H3 syntax, camera, ComfyUI nodes, render settings, or plot changes.
+description: Create a schema-valid narrative audio plan from plot, playable-scene, canon, and request artifacts, then preserve it through a later editorial sound-boundary pass. Invoke for dialogue, voice-over, singing, music, voice references, strong sound motifs, or cross-segment audio continuity; assign speakers, cue categories, timing, bridges, voice continuity, and native-vs-post intent without choosing H3 syntax, camera, ComfyUI nodes, render settings, or plot changes.
 ---
 
 # Sound and Dialogue Planner
@@ -13,7 +13,7 @@ Read [sound rules](references/sound-rules.yaml), the [skill contract](references
 
 ## Ownership boundary
 
-Own narrative audio intent, cue classification and timing, speaker registry, voice-reference role, diegetic status, ambience/effect/music continuity, audio bridges, and capability-agnostic native/post/hybrid intent. Do not own plot, performance wording, camera, segments, H3 syntax, workflows, rendering, QC, or final mix.
+Own narrative audio intent, cue classification and scene-time timing, speaker registry, voice-reference role, diegetic status, ambience/effect/music continuity, audio bridges, and capability-agnostic native/post/hybrid intent. Animatic/Previs owns the post-storyboard mapping of those cues to editorial boundaries and record time. Do not own plot, performance wording, camera, segments, H3 syntax, workflows, rendering, QC, or final mix.
 
 ## Inputs
 
@@ -30,10 +30,10 @@ Produce `sound-plan.yaml`, `dialogue-cue-sheet.yaml`, and `voice-continuity.yaml
 3. Convert playable beats and supplied lines into cue records without rewriting.
 4. Classify every cue using the deterministic category precedence.
 5. Express finite nonnegative timing, tolerances, anchors, and pre/post-roll.
-6. Define carried/reset/bridge audio state for declared cut, continue, bridge, match-cut, and dissolve boundaries.
+6. Define carried/reset/bridge audio state for the narrative events supplied by the storyboard; do not collapse editorial mechanisms and generation relationships into one transition field.
 7. Record voice constraints and permissible variation from explicit/canon sources.
 8. Select capability-agnostic native/post/hybrid intent with rationale and fallback.
-9. Group cues by supplied scene/segment and declare bridge dependencies without inventing IDs.
+9. Group cues by supplied scene/performance phase and declare cross-generation continuity without inventing editorial shot or segment IDs.
 10. Sort deterministically, hash, and return review-ready or blocked status.
 
 ## Invariants
@@ -43,7 +43,7 @@ Produce `sound-plan.yaml`, `dialogue-cue-sheet.yaml`, and `voice-continuity.yaml
 - Preserve exact wording, beat IDs, and performance timing intent.
 - Require finite positive timing and source provenance for every cue.
 - Make cross-boundary audio behavior explicit.
-- Treat `dissolve` as editorial; never claim physical continuity from it.
+- Treat editorial `cut`, `dissolve`, and `fade` semantics as downstream record-time decisions; never claim physical continuity from a dissolve or generation handoff.
 - Resize or merge no segment; report supplied over-cap segments to Storyboard Director.
 - Preserve immutable revisions and exact upstream hashes.
 
@@ -69,7 +69,7 @@ For a silent shower vignette, emit continuous ambience, timed physical water eff
 
 ## Adversarial example
 
-For one line with two plausible speakers, conflicting voice canon, and a continuation with no ambience exit state, block with attribution/canon evidence. Do not choose a speaker, alter the line, or invent a boundary state.
+For one line with two plausible speakers, conflicting voice canon, and a same-shot generation handoff with no ambience carry state, block with attribution/canon evidence. Do not choose a speaker, alter the line, or invent an editorial boundary.
 
 ## Acceptance tests
 

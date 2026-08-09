@@ -1,6 +1,6 @@
 ---
 name: reference-canon-manager
-description: Lock user-supplied seed images, video, and audio references into traceable asset roles, canonical identity/environment anchors, endpoint declarations, conflict reports, and deterministic handoff metadata. Use when a video plan contains seed assets, exact first/last frames, continuation handoffs, reference conflicts, or canon consistency requirements.
+description: Lock user-supplied seed images, video, and audio references into traceable asset roles, canonical identity/environment anchors, scene-geography evidence, endpoint declarations, conflict reports, and deterministic handoff metadata. Use when a video plan contains seed assets, exact first/last frames, camera-reference conflicts, continuation handoffs, or canon consistency requirements.
 ---
 
 # Reference and Canon Manager
@@ -11,7 +11,7 @@ Lock supplied seed media as the visual source of truth. Extract only observable,
 
 ## Ownership boundary
 
-Own asset provenance, raw-byte SHA-256 hashes, media metadata, reference roles, timeline scope, priority, canon grouping, textual anchors, endpoint declarations, conflicts, and reference ordering. Let Plot Architect own what happens and why; allow no downstream skill to rewrite the lock silently.
+Own asset provenance, raw-byte SHA-256 hashes, media metadata, reference roles, timeline scope, priority, canon grouping, textual anchors, observable environment landmarks, endpoint declarations, conflicts, and reference ordering. Let Plot Architect own what happens and why and Storyboard Director own camera decisions; allow no downstream skill to rewrite the lock silently.
 
 ## Inputs
 
@@ -35,11 +35,11 @@ plot_handoff: {ready: true, blocking_scopes: []}
 2. Hash raw bytes and collect deterministic media metadata.
 3. Preserve prior stable IDs when the source hash is unchanged; otherwise derive deterministic asset IDs.
 4. Assign one primary role and only explicitly declared compatible secondary roles. Keep endpoint meaning separate.
-5. Group assets into canonical subjects, worlds, styles, wardrobes, props, compositions, motions, or audio references.
+5. Group assets into canonical subjects, worlds, styles, wardrobes, props, compositions, motions, or audio references. Extract only observable geography/landmark evidence with confidence `exact`, `inferred`, or `unknown`.
 6. Record observable locked anchors and non-binding pose, expression, lighting, action, or incidental content separately.
 7. Detect role, identity, environment, endpoint, scope, priority, and aspect-ratio conflicts.
 8. Preserve explicit priority and never resolve ambiguity by filename, order, recency, confidence, or taste.
-9. Produce deterministic role-specific ordering and H3 candidate labels without encoding endpoint semantics into them.
+9. Produce deterministic role-specific ordering and H3 candidate labels without encoding endpoint semantics or camera movement semantics into them.
 10. Mark handoff ready only for scopes with no unresolved blocking conflict.
 
 ## Invariants
@@ -49,13 +49,15 @@ plot_handoff: {ready: true, blocking_scopes: []}
 - Keep `role` and `endpoint_role` orthogonal.
 - Default endpoints to `none`; require explicit evidence for first, last, or both.
 - Separate identity/design from pose, expression, action, lighting, and incidental subjects.
+- Treat camera-composition references as evidence for appearance/framing, not as an instruction that freezes camera position across editorial shots.
+- Preserve unknown or conflicting geography explicitly; do not fabricate coordinates, axes, or room topology.
 - Put an incidental person in an environment reference under `must_not_transfer` unless explicitly assigned.
 - Keep unresolved conflicts visible and scoped.
 - Preserve stable IDs, provenance, priorities, source hashes, and immutable revisions.
 
 ## Non-responsibilities
 
-Do not invent plot, motivation, action, dialogue, blocking, camera language, shots, prompts, workflows, repairs, or edits. Do not redesign, mutate, normalize, or prepare endpoint media. Delegate derived endpoint preparation to Keyframe and Handoff Builder.
+Do not invent plot, motivation, action, dialogue, blocking, camera language, shots, prompts, workflows, repairs, or edits. Do not redesign, mutate, normalize, or prepare endpoint media. Delegate spatial staging and camera setup choices to Storyboard Director and derived endpoint preparation to Keyframe and Handoff Builder.
 
 ## Failure conditions
 
@@ -68,7 +70,7 @@ Return a shared failure code, affected IDs/scopes, evidence, and owner. Use `REQ
 - Verify every canon asset and order entry resolves to the manifest with the same hash.
 - Require explicit endpoint evidence and reject audio endpoints.
 - Require `plot_handoff.ready: false` for affected blocking scopes.
-- Validate against `schemas/asset-manifest.schema.json` and `schemas/canon-lock.schema.json`.
+- Validate against `schemas/asset-manifest.schema.json`, `schemas/canon-lock.schema.json`, and the v2 geography/continuity bindings when a real-cinematic plan is requested.
 - Run `python scripts/validate_reference_canon.py --project-root <root> --asset-manifest <path> --canon-lock <path> --conflicts <path> --order <path>`.
 
 ## Minimal example

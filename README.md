@@ -21,8 +21,9 @@ workspace.
 - `schemas/` and `workflow-catalog/` — shared artifact contracts and typed,
   live-capability-validated ComfyUI API templates.
 - `skills/comfyui/` — generic ComfyUI workflow design and validation guidance.
-- `skills/storyboard-director/` — model-neutral storyboard direction, blocking,
-  camera/edit intent, timelines, continuity, and handoffs.
+- `skills/storyboard-director/` — model-neutral feature-film storyboard
+  direction, scene geography, typed camera setup/motion, editorial boundaries,
+  timelines, continuity, and generation handoffs.
 - `.gitignore` — keeps local runtime and production artifacts out of commits.
 
 ## Repository and project layout
@@ -98,10 +99,27 @@ approval; `COMPILE_APPROVED_PLAN` compiles the matching ComfyUI workflow bundle
 only after the exact YAML hash is approved.
 
 The architecture enforces independently generated video segments of at most 10
-seconds. Longer intended shots are represented as dependency chains: each
-continuation waits for QC and an approved stable tail frame, reuses that exact
-frame as the next ComfyUI job's first frame, and trims duplicate endpoints
-before final assembly.
+seconds, but the editorial shot remains the creative unit. Longer intended
+shots retain one shot ID across multiple generation segments. Each join declares
+its generation relationship and endpoint policy (`stable_tail`,
+`moving_endpoint`, `approved_entry_reference`, or bridge); a stable tail is not
+imposed on an editorial cut or on a declared moving endpoint. Editorial cuts,
+dissolves, fades, and terminal ends are represented separately in the EDL.
+
+New real-cinematic packages use `planning_model_version: 2` and are validated
+with:
+
+```powershell
+python scripts\validate_cinematic_package.py --storyboard <storyboard.yaml>
+```
+
+The v2 contract requires explicit `scene_time`, `source_time`, and
+`record_time`, typed scene geography, structured camera setup/motion, continuity
+invariants, bilateral editorial boundaries, and separate generation handoffs.
+Historical v1 packages remain readable through the v1 path and are migrated with
+an explicit review-blocked report rather than creative fields being invented.
+
+The executed reviewer-corrected development record is [real-cinematic-development-plan-v03.md](examples/cinematic/plan/real-cinematic-development-plan-v03.md); v02 remains the design baseline.
 
 ## Local setup
 

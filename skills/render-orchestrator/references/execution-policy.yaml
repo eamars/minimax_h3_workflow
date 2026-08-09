@@ -1,4 +1,4 @@
-version: 1
+version: 2
 api:
   base_url: http://127.0.0.1:8188
   submit: {method: POST, path: /prompt}
@@ -10,7 +10,8 @@ gate:
   require_plan_hash_match: true
   require_compile_report_status: compiled
   require_dag_hash_match: true
-  require_endpoint_approval_for: [continue, bridge]
+  require_endpoint_approval_for: [same_shot_continue, endpoint_bridge, stable_tail, bridge_endpoints]
+  moving_endpoint_requires_qc_suitability: true
 limits:
   concurrency: 1
   poll_interval_seconds: 2

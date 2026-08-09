@@ -67,6 +67,341 @@
         "acceptance_criteria": {"type": "array", "minItems": 1, "items": {"type": "string"}}
       },
       "additionalProperties": true
+    },
+    "cinematicTimeRange": {
+      "type": "object",
+      "required": ["start_seconds", "end_seconds"],
+      "properties": {
+        "start_seconds": {"type": "number", "minimum": 0},
+        "end_seconds": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "sceneGeography": {
+      "type": "object",
+      "required": ["geography_id", "coordinate_system", "landmarks", "axes", "unknown_regions", "zones", "relations", "reference_views"],
+      "properties": {
+        "geography_id": {"type": "string", "minLength": 1},
+        "coordinate_system": {"type": "string", "minLength": 1},
+        "landmarks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["landmark_id", "kind", "description", "confidence"],
+            "properties": {
+              "landmark_id": {"type": "string", "minLength": 1},
+              "kind": {"type": "string", "minLength": 1},
+              "description": {"type": "string", "minLength": 1},
+              "confidence": {"enum": ["exact", "inferred", "unknown"]},
+              "reference_ids": {"type": "array", "items": {"type": "string"}}
+            },
+            "additionalProperties": false
+          }
+        },
+        "axes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["axis_id", "subject_ids", "description"],
+            "properties": {
+              "axis_id": {"type": "string", "minLength": 1},
+              "subject_ids": {"type": "array", "minItems": 2, "items": {"type": "string"}},
+              "description": {"type": "string", "minLength": 1}
+            },
+            "additionalProperties": false
+          }
+        },
+        "unknown_regions": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "allowed_camera_zones": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "zones": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["zone_id", "kind", "description", "adjacent_zone_ids", "visibility"],
+            "properties": {
+              "zone_id": {"type": "string", "minLength": 1},
+              "kind": {"type": "string", "minLength": 1},
+              "description": {"type": "string", "minLength": 1},
+              "adjacent_zone_ids": {"type": "array", "items": {"type": "string"}},
+              "visibility": {"type": "string", "minLength": 1},
+              "entrances": {"type": "array", "items": {"type": "string"}},
+              "exits": {"type": "array", "items": {"type": "string"}},
+              "obstacles": {"type": "array", "items": {"type": "string"}}
+            },
+            "additionalProperties": false
+          }
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["relation_id", "type", "from_id", "to_id"],
+            "properties": {
+              "relation_id": {"type": "string", "minLength": 1},
+              "type": {"type": "string", "minLength": 1},
+              "from_id": {"type": "string", "minLength": 1},
+              "to_id": {"type": "string", "minLength": 1},
+              "constraints": {"type": "array", "items": {"type": "string"}}
+            },
+            "additionalProperties": false
+          }
+        },
+        "reference_views": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["view_id", "asset_id", "purpose"],
+            "properties": {
+              "view_id": {"type": "string", "minLength": 1},
+              "asset_id": {"type": "string", "minLength": 1},
+              "purpose": {"type": "string", "minLength": 1},
+              "provenance": {"type": "string"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "active_axis_scopes": {"type": "array", "items": {"type": "object"}}
+      },
+      "additionalProperties": false
+    },
+    "cameraSetup": {
+      "type": "object",
+      "required": ["setup_id", "position", "orientation", "optics", "composition", "axis"],
+      "properties": {
+        "setup_id": {"type": "string", "minLength": 1},
+        "position": {
+          "type": "object",
+          "required": ["reference_frame", "zone", "height", "depth", "lateral", "relation_to_subject"],
+          "properties": {
+            "reference_frame": {"type": "string", "minLength": 1},
+            "zone": {"type": "string", "minLength": 1},
+            "height": {"type": "string", "minLength": 1},
+            "depth": {"type": "string", "minLength": 1},
+            "lateral": {"type": "string", "minLength": 1},
+            "relation_to_subject": {"type": "string", "minLength": 1}
+          },
+          "additionalProperties": false
+        },
+        "orientation": {
+          "type": "object",
+          "required": ["viewpoint", "aim", "horizon"],
+          "properties": {
+            "viewpoint": {"type": "string", "minLength": 1},
+            "aim": {"type": "string", "minLength": 1},
+            "horizon": {"type": "string", "minLength": 1},
+            "roll": {"type": "string"}
+          },
+          "additionalProperties": false
+        },
+        "optics": {
+          "type": "object",
+          "required": ["lens_appearance", "focus_behavior", "depth_of_field"],
+          "properties": {
+            "lens_appearance": {"type": "string", "minLength": 1},
+            "focal_length_mm": {"type": "number", "exclusiveMinimum": 0},
+            "focus_behavior": {"type": "string", "minLength": 1},
+            "depth_of_field": {"type": "string", "minLength": 1}
+          },
+          "additionalProperties": false
+        },
+        "composition": {
+          "type": "object",
+          "required": ["shot_size", "subject_priority", "screen_direction", "headroom", "eyeline"],
+          "properties": {
+            "shot_size": {"type": "string", "minLength": 1},
+            "subject_priority": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+            "screen_direction": {"type": "string", "minLength": 1},
+            "headroom": {"type": "string", "minLength": 1},
+            "eyeline": {"type": "string", "minLength": 1}
+          },
+          "additionalProperties": false
+        },
+        "axis": {
+          "type": "object",
+          "required": ["axis_id", "side", "status"],
+          "properties": {
+            "axis_id": {"type": ["string", "null"]},
+            "side": {"type": ["string", "null"]},
+            "status": {"enum": ["held", "crossed_with_reset", "not_applicable", "unknown"]},
+            "crossing_justification": {"type": ["string", "null"]}
+          },
+          "additionalProperties": false
+        },
+        "look_at": {
+          "type": "object",
+          "required": ["target", "mode"],
+          "properties": {
+            "target": {"type": "string", "minLength": 1},
+            "mode": {"type": "string", "minLength": 1},
+            "priority": {"type": "string"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "cameraMotion": {
+      "type": "object",
+      "required": ["type", "motivation", "speed_profile", "movement_character"],
+      "properties": {
+        "type": {"enum": ["static", "dolly", "track", "pan", "tilt", "crane", "arc", "handheld", "zoom", "rack_focus", "compound"]},
+        "motivation": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "minLength": 1},
+        "speed_profile": {"type": "string", "minLength": 1},
+        "movement_character": {"type": "string", "minLength": 1},
+        "start_position": {"type": "string"},
+        "end_position": {"type": "string"},
+        "subject_relationship": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "cameraPlan": {
+      "type": "object",
+      "required": ["setup", "in_shot_motion", "setup_change_from_previous", "keyframes", "risk_controls"],
+      "properties": {
+        "setup": {"$ref": "#/$defs/cameraSetup"},
+        "in_shot_motion": {"$ref": "#/$defs/cameraMotion"},
+        "setup_change_from_previous": {
+          "type": "object",
+          "required": ["position_changed", "reason", "continuity_strategy"],
+          "properties": {
+            "position_changed": {"type": "boolean"},
+            "from_shot_id": {"type": ["string", "null"]},
+            "reason": {"type": "string", "minLength": 1},
+            "continuity_strategy": {"type": "array", "minItems": 1, "items": {"enum": ["establishing", "eyeline_match", "axis_reset", "coverage", "subjective_reveal", "rhythmic_cut", "unknown_geometry"]}}
+          },
+          "additionalProperties": false
+        },
+        "keyframes": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["time_seconds", "position", "viewpoint"],
+            "properties": {
+              "time_seconds": {"type": "number", "minimum": 0},
+              "position": {"type": "string", "minLength": 1},
+              "viewpoint": {"type": "string", "minLength": 1},
+              "look_at": {"type": "string"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "risk_controls": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      },
+      "additionalProperties": false
+    },
+    "continuityState": {
+      "type": "object",
+      "required": ["snapshot_id", "character_states", "environment_state", "prop_states", "sound_state", "invariants", "expected_deltas", "forbidden_deltas"],
+      "properties": {
+        "snapshot_id": {"type": "string", "minLength": 1},
+        "character_states": {"type": "array", "items": {"type": "object", "required": ["canon_id", "visibility", "pose", "gaze", "wardrobe_state"], "properties": {"canon_id": {"type": "string", "minLength": 1}, "visibility": {"type": "string", "minLength": 1}, "pose": {"type": "string", "minLength": 1}, "gaze": {"type": "string", "minLength": 1}, "wardrobe_state": {"type": "string", "minLength": 1}, "wetness_state": {"type": "string"}}, "additionalProperties": false}},
+        "environment_state": {"type": "object"},
+        "prop_states": {"type": "array", "items": {"type": "object", "required": ["prop_id", "state"], "properties": {"prop_id": {"type": "string", "minLength": 1}, "state": {"type": "string", "minLength": 1}}, "additionalProperties": false}},
+        "sound_state": {"type": "object"},
+        "invariants": {"type": "array", "items": {"type": "object", "required": ["invariant_id", "owner", "value"], "properties": {"invariant_id": {"type": "string", "minLength": 1}, "owner": {"type": "string", "minLength": 1}, "value": {"type": "string", "minLength": 1}}, "additionalProperties": false}},
+        "expected_deltas": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "forbidden_deltas": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      },
+      "additionalProperties": false
+    },
+    "stagingPlan": {
+      "type": "object",
+      "required": ["geography_id", "subject_positions", "action_path", "eyelines", "entry_exit"],
+      "properties": {
+        "geography_id": {"type": "string", "minLength": 1},
+        "subject_positions": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["subject_id", "zone", "relation_to_landmarks"], "properties": {"subject_id": {"type": "string", "minLength": 1}, "zone": {"type": "string", "minLength": 1}, "relation_to_landmarks": {"type": "array", "items": {"type": "string"}}}, "additionalProperties": false}},
+        "action_path": {"type": "string", "minLength": 1},
+        "eyelines": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "entry_exit": {"type": "object", "required": ["entry", "exit"], "properties": {"entry": {"type": "string", "minLength": 1}, "exit": {"type": "string", "minLength": 1}}, "additionalProperties": false},
+        "blocking_change_reason": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "editorialBoundary": {
+      "type": "object",
+      "required": ["boundary_id", "from_shot_id", "to_shot_id", "mechanism", "motivations", "audio_behavior", "picture_edit", "audio_edit", "record_time"],
+      "properties": {
+        "boundary_id": {"type": "string", "minLength": 1},
+        "from_shot_id": {"type": "string", "minLength": 1},
+        "to_shot_id": {"type": ["string", "null"]},
+        "mechanism": {"enum": ["cut", "dissolve", "fade", "end"]},
+        "motivations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "audio_behavior": {"type": "string", "minLength": 1},
+        "edit_point": {"$ref": "#/$defs/cinematicTimeRange"},
+        "record_time": {"$ref": "#/$defs/cinematicTimeRange"},
+        "picture_edit": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {"enum": ["cut", "dissolve", "fade", "end"]},
+            "frame": {"type": "integer", "minimum": 0},
+            "pre_roll_frames": {"type": "integer", "minimum": 0},
+            "post_roll_frames": {"type": "integer", "minimum": 0}
+          },
+          "additionalProperties": false
+        },
+        "audio_edit": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {"enum": ["independent", "j_cut", "l_cut", "hard_sync"]},
+            "overlap_frames": {"type": "integer", "minimum": 0},
+            "room_tone_policy": {"type": "string"},
+            "pre_roll_frames": {"type": "integer", "minimum": 0},
+            "post_roll_frames": {"type": "integer", "minimum": 0}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "generationHandoff": {
+      "type": "object",
+      "required": ["handoff_id", "from_segment_id", "to_segment_id", "relationship", "endpoint_policy", "acceptance_conditions"],
+      "properties": {
+        "handoff_id": {"type": "string", "minLength": 1},
+        "from_segment_id": {"type": "string", "minLength": 1},
+        "to_segment_id": {"type": ["string", "null"]},
+        "relationship": {"enum": ["independent", "same_shot_continue", "endpoint_bridge", "reference_reestablish", "terminal"]},
+        "endpoint_policy": {"enum": ["none", "moving_endpoint", "stable_tail", "approved_entry_reference", "bridge_endpoints"]},
+        "acceptance_conditions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "editorial_boundary_id": {"type": ["string", "null"]},
+        "motion_endpoint_evidence": {
+          "type": "object",
+          "properties": {
+            "source_tail": {"type": "string", "minLength": 1},
+            "successor_entry": {"type": "string", "minLength": 1},
+            "comparison_fields": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+            "capability_evidence_id": {"type": "string"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "generationSegmentV2": {
+      "type": "object",
+      "required": ["segment_id", "shot_id", "shot_segment_index", "duration_seconds", "scene_time", "source_time", "record_time", "entry_state", "exit_state", "continuity_contract", "camera_interval_map", "performance_arc_id", "four_track_timeline", "generation_handoff_to_next", "traceability", "acceptance_criteria"],
+      "properties": {
+        "segment_id": {"type": "string", "pattern": "^SEQ[0-9]{2,}_SC[0-9]{2,}_SH[0-9]{2,}_SEG[0-9]{2,}$"},
+        "shot_id": {"type": "string", "pattern": "^SEQ[0-9]{2,}_SC[0-9]{2,}_SH[0-9]{2,}$"},
+        "shot_segment_index": {"type": "integer", "minimum": 1},
+        "duration_seconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 10},
+        "scene_time": {"$ref": "#/$defs/cinematicTimeRange"},
+        "source_time": {"$ref": "#/$defs/cinematicTimeRange"},
+        "record_time": {"$ref": "#/$defs/cinematicTimeRange"},
+        "entry_state": {"$ref": "#/$defs/continuityState"},
+        "exit_state": {"$ref": "#/$defs/continuityState"},
+        "continuity_contract": {"type": "object", "required": ["invariants", "expected_deltas", "forbidden_deltas"], "properties": {"invariants": {"type": "array", "items": {"type": "string"}}, "expected_deltas": {"type": "array", "items": {"type": "string"}}, "forbidden_deltas": {"type": "array", "items": {"type": "string"}}}, "additionalProperties": false},
+        "camera_interval_map": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["start_seconds", "end_seconds", "camera_setup_id", "motion"], "properties": {"start_seconds": {"type": "number", "minimum": 0}, "end_seconds": {"type": "number", "minimum": 0}, "camera_setup_id": {"type": "string", "minLength": 1}, "motion": {"$ref": "#/$defs/cameraMotion"}}, "additionalProperties": false}},
+        "performance_arc_id": {"type": "string", "minLength": 1},
+        "four_track_timeline": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["start_seconds", "end_seconds", "performance", "camera", "sound", "edit_handoff"]}},
+        "generation_handoff_to_next": {"oneOf": [{"$ref": "#/$defs/generationHandoff"}, {"type": "null"}]},
+        "traceability": {"type": "object", "required": ["plot_beat_ids", "performance_beat_id", "canon_reference_ids", "shot_id", "acceptance_test_ids"]},
+        "acceptance_criteria": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      },
+      "additionalProperties": false
     }
   }
 }

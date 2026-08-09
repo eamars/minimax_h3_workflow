@@ -1,4 +1,4 @@
-version: 1
+version: 2
 resolution: sibling_installed_skill
 rule: Load each named SKILL.md before dispatch; never substitute a generic or legacy package for an unavailable specialist.
 shared_contract_resolution:
@@ -13,8 +13,8 @@ specialists:
   plot-architect: {path: ../../plot-architect/SKILL.md, stage: plot, produces: [plot-package]}
   scene-performance-writer: {path: ../../scene-performance-writer/SKILL.md, stage: scene, produces: [scene-performance, scene-text, performance-continuity]}
   sound-dialogue-planner: {path: ../../sound-dialogue-planner/SKILL.md, stage: sound, conditional: true, produces: [sound-plan, dialogue-cue-sheet, voice-continuity]}
-  storyboard-director: {path: ../../storyboard-director/SKILL.md, stage: storyboard, produces: [storyboard-package, shot-table, segment-plan, handoff-manifest, creative-acceptance-tests]}
-  animatic-previs-planner: {path: ../../animatic-previs-planner/SKILL.md, stage: previs, produces: [animatic-plan, paper-edit, pacing-review]}
+  storyboard-director: {path: ../../storyboard-director/SKILL.md, stage: storyboard, produces: [storyboard-package-v2, shot-table, segment-plan, editorial-boundary-manifest, generation-handoff-manifest, creative-acceptance-tests]}
+  animatic-previs-planner: {path: ../../animatic-previs-planner/SKILL.md, stage: previs, produces: [animatic-plan-v2, paper-edit, shot-segment-assembly, sound-boundary-map, pacing-review]}
   production-preflight-reviewer: {path: ../../production-preflight-reviewer/SKILL.md, stage: preflight, produces: [preflight-report, risk-register, revision-requests]}
   minimax-h3-adapter: {path: ../../minimax-h3-adapter/SKILL.md, stage: compilation, approval_required: true, produces: [h3-prompt-packets, h3-validation-report]}
   keyframe-handoff-builder: {path: ../../keyframe-handoff-builder/SKILL.md, stage: keyframe, conditional: true, approval_required: true, produces: [keyframe-report, handoff-frame-selection]}

@@ -1,6 +1,6 @@
 ---
 name: scene-performance-writer
-description: Convert schema-valid project requests, canon locks, and plot packages into playable scene/performance artifacts with observable action, dialogue, subtext, reactions, timing, stable speaker IDs, and prop/wetness continuity. Use after plot-architect and before storyboard-director; do not use for camera, shots, MiniMax H3, ComfyUI, rendering, or plot-outcome decisions.
+description: Convert schema-valid project requests, canon locks, and plot packages into playable scene/performance artifacts with observable action, dialogue, subtext, reactions, scene-time phases, stable speaker IDs, and prop/wetness continuity. Use after plot-architect and before storyboard-director; do not use for camera, spatial staging, shots, MiniMax H3, ComfyUI, rendering, or plot-outcome decisions.
 ---
 
 # Scene and Performance Writer
@@ -13,7 +13,7 @@ Read the [skill contract](references/skill-contract.yaml), [performance rules](r
 
 ## Ownership boundary
 
-Own playable behavior, dialogue wording when speech is required, subtext, turn-taking, approximate timing, density, stable speaker IDs, and hand/prop/wetness/clothing continuity. Do not own camera, coverage, cuts, transitions, H3 syntax, ComfyUI graphs, generation boundaries, render settings, or plot outcomes.
+Own playable behavior, dialogue wording when speech is required, subtext, turn-taking, approximate scene-time timing, density, stable speaker IDs, performance phase IDs, and hand/prop/wetness/clothing continuity. Do not own camera, geography, spatial staging, coverage, cuts, transitions, H3 syntax, ComfyUI graphs, generation boundaries, render settings, or plot outcomes.
 
 ## Inputs
 
@@ -21,16 +21,16 @@ Consume exact, valid revisions of project request, canon lock, plot package, and
 
 ## Required outputs
 
-Produce authoritative `scene-performance.yaml`, readable `scene-text.md`, and `performance-continuity.yaml`. Include artifact provenance, performance beats, dialogue, continuity, unsafe coexistence, and a handoff result. Use stable `SEQnn_SCnn_Bnn_PBnn`, `SEQnn_SCnn_DLGnn`, `SPKnn`, and `PROPnn` IDs.
+Produce authoritative `scene-performance.yaml`, readable `scene-text.md`, and `performance-continuity.yaml`. Include artifact provenance, performance beats, dialogue, scene-time phase ranges, continuity snapshots, unsafe coexistence, and a handoff result. Use stable `SEQnn_SCnn_Bnn_PBnn`, `SEQnn_SCnn_DLGnn`, `SPKnn`, and `PROPnn` IDs; storyboard later binds those phases to editorial shots.
 
 ## Processing method
 
 1. Validate schemas, status, hashes, project ID, and canon conflicts.
-2. Map every plot beat to one or more performance beats without creating causal events.
+2. Map every plot beat to one or more performance beats without creating causal events; assign ordered scene-time phase IDs.
 3. State actor/controller, intention, observable action, reaction, adjustment, and visible result.
 4. Convert internal states into observable behavior while retaining intention/subtext separately.
 5. Write or preserve required dialogue with stable speakers, positive timing, pauses, interruptions, and reaction links.
-6. Track speaker identity, prop owner, hand occupancy, transfer order, wetness, clothing, and relevant physical state.
+6. Track speaker identity, prop owner, hand occupancy, transfer order, wetness, clothing, and relevant physical state as continuity invariants and expected scene-time deltas.
 7. Mark unsafe coexistence of dense obligations and offer reversible mitigation without choosing segment boundaries.
 8. Log micro-actions or implied props used only to externalize an existing beat.
 9. Emit deterministic artifacts, hashes, status, failures, warnings, and `next_skill: storyboard-director`.
@@ -42,7 +42,7 @@ Produce authoritative `scene-performance.yaml`, readable `scene-text.md`, and `p
 - Keep speaker IDs project-global and stable across revisions.
 - Keep positive, ordered timing; declare every overlap/interruption.
 - Prevent impossible hand/prop transfers, wetness/clothing jumps, identity swaps, or reactions before triggers.
-- Create no generation segment or camera plan.
+- Create no geography, spatial staging, editorial shot, generation segment, or camera plan.
 - Preserve source references, hashes, stable IDs, and immutable revisions.
 
 ## Non-responsibilities
@@ -59,7 +59,8 @@ Return `SCENE_NOT_PLAYABLE` with affected IDs, evidence, detail code, blocking s
 - Require complete one-to-many plot traceability and positive timing windows.
 - Require one stable speaker per dialogue cue and explicit action/reaction links.
 - Validate adjacent hand/prop/wetness/clothing snapshots.
-- Reject structured camera, shot, lens, axis, edit, H3, ComfyUI, render, and generation-segment keys; exempt verbatim dialogue text.
+- Require scene-time phase ranges to be positive, ordered, and distinct from later source/record time.
+- Reject structured camera, shot, lens, axis, geography, staging, edit, H3, ComfyUI, render, and generation-segment keys; exempt verbatim dialogue text.
 - Require projection files to link to the authoritative hash.
 
 ## Minimal example

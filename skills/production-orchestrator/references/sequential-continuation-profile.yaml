@@ -1,8 +1,8 @@
-version: 1
+version: 2
 profile_id: strict_serial_continuation_r04
 purpose: Preserve temporal state across generation segments when no parallelism is allowed.
 topology:
-  relation: continue
+  relation: same_shot_continue
   direction: predecessor_to_successor_only
   max_in_flight_jobs: 1
   successor_pre_admission: forbidden
@@ -26,6 +26,8 @@ continuation:
   substitute_earlier_endpoint: forbidden
   normalization: none_by_default
   endpoint_hash_required: true
+  endpoint_policies: [stable_tail, moving_endpoint, approved_entry_reference]
+  stable_tail_is_not_universal: true
 gates:
   order:
     - render

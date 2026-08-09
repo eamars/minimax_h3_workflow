@@ -1,6 +1,6 @@
 ---
 name: render-orchestrator
-description: Execute an approved, compiled ComfyUI production DAG with dependency-aware scheduling, bounded deterministic retries, resumable state, and per-job provenance. Use after plan approval and compiler validation to queue video, keyframe, bridge, extraction, and post jobs; never revise prompts, choose creative takes, or continue from an unapproved tail.
+description: Execute an approved, compiled real-cinematic ComfyUI production DAG with dependency-aware scheduling, bounded deterministic retries, resumable state, and per-job provenance. Use after plan approval and compiler validation to queue video, keyframe, bridge, extraction, and post jobs while enforcing typed generation handoff policies; never revise prompts or choose creative takes.
 ---
 
 # Render Orchestrator
@@ -15,7 +15,7 @@ Own queue admission, topological scheduling, concurrency, ComfyUI submission/mon
 
 ## Inputs
 
-Require an approved production plan and matching hash; compiler production DAG and immutable compiled bundle; approval record; compiler capability/endpoint profile; execution policy; project/run IDs; and optional prior run state. Every node must have a valid ComfyUI job, stable revision, duration at most 10 seconds, dependencies, output paths, and source hashes. Continuations additionally require the predecessor's QC-approved handoff frame.
+Require an approved production plan and matching hash; compiler production DAG and immutable compiled bundle; approval record; compiler capability/endpoint profile; execution policy; project/run IDs; and optional prior run state. Every node must have a valid ComfyUI job, stable revision, duration at most 10 seconds, dependencies, output paths, and source hashes. Generation handoffs additionally require the endpoint evidence declared by their policy; only stable-tail relationships require a QC-approved stable tail.
 
 ## Required outputs
 
@@ -24,7 +24,7 @@ Write atomically without approved overwrite: `run-state.yaml`, `job-reports/<job
 ## Processing method
 
 1. Validate approval, exact plan hash, compiled-bundle status, sources, paths, and immutability before API calls.
-2. Validate DAG IDs/edges/cycles/job types. Admit only dependency-ready jobs; continuation and bridge jobs also require endpoint approval.
+2. Validate DAG IDs/edges/cycles/job types. Admit only dependency-ready jobs; `same_shot_continue` and bridge jobs require their declared endpoint gates, while independent jobs remain independent.
 3. Load/create run state keyed by project, plan revision/hash, run ID, and execution-policy hash. On resume reconcile `/history/{prompt_id}`, `/queue`, and available job status before submission.
 4. Schedule ready nodes in stable topological order within resource limits. Derive deterministic UUIDv5 prompt IDs from project/run/job/attempt and stable client IDs; send the compiled graph unchanged to `POST /prompt`.
 5. Monitor queue/history with bounded polling. Mark complete only after server success and declared outputs exist, decode, remain under the output root, and hash successfully.
@@ -38,7 +38,7 @@ Write atomically without approved overwrite: `run-state.yaml`, `job-reports/<job
 - Exact plan approval/hash and a validated compiled bundle are mandatory.
 - Compiled graph, prompt, seed, models, nodes, timing, and creative parameters never mutate.
 - Prompt IDs are canonical and deterministic; reconciliation precedes resubmission.
-- DAG gates are enforced, continuations serialize, and independent cuts remain independent.
+- DAG gates are enforced, same-shot continuations serialize, moving endpoints retain their policy evidence, and independent generation relationships remain independent.
 - Effective segment duration is positive and at most 10 seconds.
 - Retry is bounded, deterministic, infrastructure-only, and spec-preserving.
 - Reports/state/events/outputs are versioned, hashed, confined, and immutable once approved.
@@ -46,7 +46,7 @@ Write atomically without approved overwrite: `run-state.yaml`, `job-reports/<job
 
 ## Non-responsibilities
 
-Do not alter canon, plot, performance, storyboard, sound, animatic, H3 prompts, modes, workflows, endpoint frames, creative parameters, QC verdicts, repair plans, or final edits. Do not auto-continue from an unapproved tail or randomize a retry.
+Do not alter canon, plot, performance, storyboard, sound, animatic, H3 prompts, modes, workflows, endpoint frames, handoff policies, creative parameters, QC verdicts, repair plans, or final edits. Do not auto-continue from unapproved evidence or randomize a retry.
 
 ## Failure conditions
 
@@ -62,7 +62,7 @@ Admit two independent cut segments concurrently. Admit a continuation only after
 
 ## Adversarial example
 
-If a successor references a draft QC tail and `/prompt` returns 503, block the successor with `HANDOFF_TAIL_UNAPPROVED`; reconcile the submitted prompt before retrying the unchanged predecessor within budget. Never invent a tail, alter the graph, or mark it complete.
+If a successor references draft endpoint evidence and `/prompt` returns 503, block it with the applicable handoff-approval failure; reconcile the submitted prompt before retrying the unchanged job within budget. Never invent an endpoint, alter the graph, or mark it complete.
 
 ## Acceptance tests
 

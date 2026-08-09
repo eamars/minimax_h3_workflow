@@ -1,0 +1,20 @@
+artifact:
+  artifact_id: storyboard_PRJ01_bad_v02
+  artifact_type: storyboard-package
+  project_id: PRJ01
+  version: 2
+  revision_id: storyboard_PRJ01_bad@v02
+  created_from: []
+  source_versions: []
+  status: review_ready
+  content_hash: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+  created_at: 2026-08-09T00:00:00Z
+  created_by: fixture
+  provenance: {user_inputs: [], source_assets: [], upstream_artifacts: []}
+planning_model_version: 2
+director_treatment: {camera_position_policy: fixed_forever}
+scene_geography: {geography_id: unknown, coordinate_system: unknown, landmarks: [], axes: [], unknown_regions: []}
+shots: []
+generation_segments: []
+handoffs: [{from: SEQ01_SC01_SH01_SEG01, to: SEQ01_SC01_SH02_SEG01, transition: continue}]
+creative_acceptance_tests: []

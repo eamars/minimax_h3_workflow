@@ -1,5 +1,5 @@
 name: production-orchestrator
-version: 0.1.0
+version: 0.2.0
 stage: orchestration
 mode: planning
 consumes:
@@ -11,11 +11,12 @@ consumes:
 produces:
   - dispatch-result
   - project-state
-  - production-plan-pair
+  - production-plan-pair-v2
+  - editorial-generation-topology
   - invalidation-scope
 side_effects: filesystem
 approval_required: false
 may_modify_upstream_decisions: false
 owner: production-orchestrator
-implementation_status: invokable_milestone_0_contract
+implementation_status: invokable_milestone_3_real_cinematic
 default_operating_mode: PLAN_ONLY

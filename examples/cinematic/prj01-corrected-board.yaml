@@ -1,0 +1,37 @@
+fixture_type: real-cinematic-review-fixture
+project_id: PRJ01
+planning_model_version: 2
+intent: feature-film scene board; generation segments are implementation units, not editorial shots
+camera_position_policy: allowed_to_change_between_shots
+coverage_policy: motivated coverage with sparse coverage allowed when the long take is intentional
+scene_geography:
+  zones: [entry, counter, tub-wide, tub-profile, mirror, water-detail, towel-side, exit]
+  axis: fixed until a motivated mirror-side reset
+  continuity_anchors: [character identity, wardrobe/wetness progression, prop ownership, room landmarks, steam direction]
+shot_board:
+  - {shot_id: SEQ01_SC01_SH01, role: establishing, position: entry, viewpoint: three-quarter-wide, purpose: establish room geography and arrival, cut_to: SEQ01_SC01_SH02}
+  - {shot_id: SEQ01_SC01_SH02, role: coverage, position: counter, viewpoint: lateral-medium, purpose: make preparation readable, cut_to: SEQ01_SC01_SH03}
+  - {shot_id: SEQ01_SC01_SH03, role: transition, position: tub-wide, viewpoint: high-three-quarter, purpose: reveal the action-space change, cut_to: SEQ01_SC01_SH04}
+  - {shot_id: SEQ01_SC01_SH04, role: master, position: tub-profile, viewpoint: patient-profile, purpose: hold the body and room relationship, cut_to: SEQ01_SC01_SH05}
+  - {shot_id: SEQ01_SC01_SH05, role: insert, position: water-detail, viewpoint: close-low, purpose: punctuate tactile action, cut_to: SEQ01_SC01_SH06}
+  - {shot_id: SEQ01_SC01_SH06, role: subjective, position: mirror, viewpoint: reflection-profile, purpose: change position to externalize the emotional turn, cut_to: SEQ01_SC01_SH07}
+  - {shot_id: SEQ01_SC01_SH07, role: reaction, position: towel-side, viewpoint: medium-oblique, purpose: preserve state and prepare exit, cut_to: SEQ01_SC01_SH08}
+  - {shot_id: SEQ01_SC01_SH08, role: terminal, position: exit, viewpoint: wide-reverse, purpose: finish on the room becoming empty, cut_to: null}
+editorial_boundaries:
+  - {boundary_id: B01, mechanism: cut, audio_edit: j_cut, overlap_frames: 12}
+  - {boundary_id: B02, mechanism: cut, audio_edit: hard_sync, overlap_frames: 0}
+  - {boundary_id: B03, mechanism: cut, audio_edit: l_cut, overlap_frames: 18}
+  - {boundary_id: B04, mechanism: cut, audio_edit: hard_sync, overlap_frames: 0}
+  - {boundary_id: B05, mechanism: cut, audio_edit: j_cut, overlap_frames: 10}
+  - {boundary_id: B06, mechanism: dissolve, audio_edit: l_cut, overlap_frames: 18}
+  - {boundary_id: B07, mechanism: cut, audio_edit: hard_sync, overlap_frames: 0}
+  - {boundary_id: B08, mechanism: end, audio_edit: independent, overlap_frames: 0}
+generation_policy:
+  same_shot_continue: moving_endpoint_or_stable_tail_only
+  independent: editorial_cut_or_dissolve_declared_separately
+  terminal: explicit_end_boundary
+acceptance_tests:
+  - camera position and viewpoint change only when motivated by story purpose
+  - every shot resolves to a typed continuity snapshot
+  - no record-time gaps or overlaps outside declared audio J/L overlap
+  - no generation handoff carries an editorial mechanism

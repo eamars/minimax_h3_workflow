@@ -5,9 +5,10 @@
   "required": ["artifact", "performance_beats", "dialogue", "continuity", "unsafe_coexistence", "normalization"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
-    "performance_beats": {"type": "array", "items": {"type": "object", "required": ["performance_beat_id", "plot_beat_ids", "intention", "action", "reaction", "adjustment", "visible_state_change", "approx_duration_seconds"]}},
+    "planning_model_version": {"enum": [1, 2]},
+    "performance_beats": {"type": "array", "items": {"type": "object", "required": ["performance_beat_id", "plot_beat_ids", "intention", "action", "reaction", "adjustment", "visible_state_change", "approx_duration_seconds"], "properties": {"scene_time": {"$ref": "common-defs.schema.json#/$defs/cinematicTimeRange"}, "phase_id": {"type": "string"}}}},
     "dialogue": {"type": "array", "items": {"type": "object", "required": ["cue_id", "speaker_id", "text", "timing_window"]}},
-    "continuity": {"type": "object"},
+    "continuity": {"type": "object", "properties": {"invariants": {"type": "array"}, "expected_deltas": {"type": "array"}, "forbidden_deltas": {"type": "array"}}},
     "unsafe_coexistence": {"type": "array"},
     "normalization": {"type": "object", "required": ["status", "failure_codes", "warnings", "handoff_ready", "next_skill"], "properties": {"status": {"enum": ["review_ready", "blocked", "failed"]}, "next_skill": {"const": "storyboard-director"}}}
   }

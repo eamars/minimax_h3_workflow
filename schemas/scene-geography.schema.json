@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "scene-geography.schema.json",
+  "type": "object",
+  "required": ["planning_model_version", "scene_geography"],
+  "properties": {
+    "planning_model_version": {"const": 2},
+    "scene_geography": {"$ref": "common-defs.schema.json#/$defs/sceneGeography"}
+  },
+  "additionalProperties": false
+}

@@ -1,6 +1,6 @@
 ---
 name: continuity-qc-supervisor
-description: Evaluate rendered MiniMax H3 and ComfyUI video segments or assembled masters against approved production plans, canon locks, prompt/workflow records, audio requirements, and endpoint handoffs. Use after every completed render, before continuation, and for final QC to produce evidence-backed QC reports and immutable media manifests without authoring repairs.
+description: Evaluate rendered MiniMax H3 and ComfyUI video segments or assembled masters against approved real-cinematic production plans, canon locks, typed camera setup/motion, audio requirements, editorial boundaries, and generation handoffs. Use after every completed render, before continuation, and for final QC without authoring repairs.
 ---
 
 # Continuity and QC Supervisor
@@ -11,7 +11,7 @@ Evaluate each completed segment and final assembly against the approved plan. Pr
 
 ## Ownership boundary
 
-Own media inspection, acceptance-criteria traceability, continuity judgment, evidence capture, verdicts, handoff-tail eligibility, and approved-media manifest entries. Treat the approved plan, canon lock, prompt packet, workflow record, render report, and adjacent approved endpoints as authoritative.
+Own media inspection, acceptance-criteria traceability, continuity judgment, evidence capture, verdicts, handoff suitability, and approved-media manifest entries. Treat the approved plan, canon lock, prompt packet, workflow record, render report, editorial boundary records, and adjacent approved endpoints as authoritative.
 
 ## Inputs
 
@@ -28,8 +28,8 @@ Write new revisions only: `qc/<segment-id>_r<revision>.yaml`, deterministic `qc/
 3. Validate decode, frame order, effective duration, FPS, dimensions, color metadata, audio presence/rate/channels, and integrity. Effective duration is positive and at most 10 seconds.
 4. Sample first/last, each declared boundary ±1 frame, quartiles, and the final 12 frames or 0.5 seconds; hash every evidence item.
 5. Evaluate every approved criterion with source ID, time range, expected, observed, result, and evidence IDs.
-6. Evaluate plot/action/performance, identity/design, costume/props/environment/light/wetness, hands, reflections, camera/axis/horizon, dialogue/ambience/audio, entry/exit, adjacency, and technical specs.
-7. For continuation, require approved predecessor media and a stable tail with no major/blocking failure. A cut candidate may still be continuation-ineligible.
+6. Evaluate plot/action/performance, identity/design, costume/props/environment/light/wetness, hands, reflections, camera setup/position/viewpoint/axis/horizon and in-shot motion, dialogue/ambience/audio, entry/exit, adjacency, editorial boundary behavior, and technical specs.
+7. For a generation handoff, apply its declared policy: require a stable tail only for `stable_tail`, inspect motion/path suitability for `moving_endpoint`, verify entry reference binding for `approved_entry_reference`, and inspect both endpoints for `bridge_endpoints`. An editorial cut candidate is never automatically a same-shot continuation.
 8. Assign exactly `PASS`, `PASS_WITH_EDITORIAL_FIX`, or `FAIL`. The middle verdict is cut/post only and never continuation-eligible.
 9. Route localized failure evidence to Repair Director without changing plan, prompt, seed, workflow, job, or media.
 10. Evaluate repaired/revised output as a new QC revision; never reuse a prior verdict.
@@ -40,14 +40,14 @@ Write new revisions only: `qc/<segment-id>_r<revision>.yaml`, deterministic `qc/
 - Preserve bytes, paths, hashes, frame indices, timestamps, and provenance.
 - Never overwrite approved reports, evidence, manifests, or media.
 - Missing trace/evidence, stale hash, or decode failure blocks approval.
-- `PASS_WITH_EDITORIAL_FIX` never authorizes continuation.
+- `PASS_WITH_EDITORIAL_FIX` never authorizes a generation handoff; it may be routed only to the declared post/editorial path.
 - QC never authors or applies repair, and every repaired output receives a new evaluation.
 - Independent segments may run in parallel; continuation chains serialize.
-- Final master cannot pass with a failed join, audio transition, or delivery criterion.
+- Final master cannot pass with a failed editorial boundary, generation seam, audio transition, or delivery criterion.
 
 ## Non-responsibilities
 
-Do not revise story, performance, dialogue, camera, segmentation, H3 prompts, seeds, workflows, render jobs, endpoint extraction, repair deltas, editorial fixes, or delivery specs. Do not queue ComfyUI or approve your own repair.
+Do not revise story, performance, dialogue, camera, segmentation, H3 prompts, seeds, workflows, render jobs, endpoint extraction, handoff policy, repair deltas, editorial fixes, or delivery specs. Do not queue ComfyUI or approve your own repair.
 
 ## Failure conditions
 
@@ -55,7 +55,7 @@ Return evidence and affected IDs with: `QC_INPUT_INVALID`, `QC_PLAN_HASH_MISMATC
 
 ## Validation rules
 
-Validate artifact envelopes, approval/hash, source revisions, and IDs. Decode every frame with PyAV; require positive duration at most 10 seconds, expected FPS/dimensions, ordered timestamps, and no missing frames. Validate audio duration/sync/rate/channels and unexplained restarts. Trace every criterion to evidence, localize failures, distinguish failure domains, and require stable tails without blur, occlusion, unfinished expression, uncontrolled fluid/smoke, fast pan, or ambiguous reflection. Canonical ordering must make identical evaluations byte-identical apart from lifecycle metadata.
+Validate artifact envelopes, approval/hash, source revisions, and IDs. Decode every frame with PyAV; require positive duration at most 10 seconds, expected FPS/dimensions, ordered timestamps, and no missing frames. Validate audio duration/sync/rate/channels and unexplained restarts. Trace every criterion to evidence, localize failures, distinguish camera setup/motion from editorial boundary and generation handoff failures, and apply stable-tail evidence only where policy requires it. Canonical ordering must make identical evaluations byte-identical apart from lifecycle metadata.
 
 ## Minimal example
 
@@ -63,7 +63,7 @@ A valid handoff report for a 4-second segment traces its action criterion to fra
 
 ## Adversarial example
 
-A clip matches identity, action, and camera but ends blurred and occluded. Return `PASS_WITH_EDITORIAL_FIX` plus `QC_TAIL_APPROVAL_BLOCKED` or `HANDOFF_MISMATCH`, preserve it only as a cut candidate, and do not extract a substitute tail or approve its successor.
+A clip matches identity, action, and camera but ends blurred and occluded. If the declared policy is `stable_tail`, return `PASS_WITH_EDITORIAL_FIX` plus `QC_TAIL_APPROVAL_BLOCKED`; if it is `moving_endpoint`, evaluate whether the motion evidence remains suitable. Preserve the clip only according to the declared editorial/generation path and never extract a substitute tail silently.
 
 ## Acceptance tests
 

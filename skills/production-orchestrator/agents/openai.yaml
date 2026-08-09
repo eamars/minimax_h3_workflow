@@ -1,4 +1,4 @@
 interface:
   display_name: "AI Video Production Orchestrator"
-  short_description: "Plan and route segmented ComfyUI video production"
-  default_prompt: "Use $production-orchestrator to plan an approval-gated MiniMax H3 video and its ComfyUI segment handoffs."
+  short_description: "Coordinate approval-gated cinematic production"
+  default_prompt: "Use $production-orchestrator to coordinate approval-gated real-cinematic production across editorial shots, typed camera plans, generation handoffs, compilation, execution, QC, repair, and delivery."

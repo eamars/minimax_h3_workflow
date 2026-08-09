@@ -32,7 +32,13 @@ failures:
   - {code: SCENE_NOT_PLAYABLE, stage: scene, severity: major, retryable: false, owner: scene-performance-writer}
   - {code: DIALOGUE_SPEAKER_UNCLEAR, stage: sound, severity: major, retryable: false, owner: sound-dialogue-planner}
   - {code: SHOT_HAS_NO_PURPOSE, stage: storyboard, severity: major, retryable: false, owner: storyboard-director}
+  - {code: COVERAGE_THIN, stage: storyboard, severity: major, retryable: false, owner: storyboard-director}
   - {code: BLOCKING_AMBIGUOUS, stage: storyboard, severity: major, retryable: false, owner: storyboard-director}
+  - {code: SCENE_GEOGRAPHY_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: UNKNOWN_GEOMETRY_UNHANDLED, stage: storyboard, severity: major, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_MODEL_OPAQUE, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_SETUP_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_POSITION_UNMOTIVATED, stage: storyboard, severity: major, retryable: false, owner: storyboard-director}
   - {code: SEGMENT_TOO_LONG, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
   - {code: SEGMENT_OVERLOADED, stage: storyboard, severity: major, retryable: false, owner: storyboard-director}
   - {code: ENTRY_STATE_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
@@ -41,12 +47,84 @@ failures:
   - {code: STORYBOARD_INPUT_SCHEMA_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
   - {code: STORYBOARD_SOURCE_VERSION_MISMATCH, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
   - {code: SEGMENT_NONPOSITIVE, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: TIME_DOMAIN_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: SOURCE_TIME_DURATION_MISMATCH, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CONTINUITY_CONTRACT_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
   - {code: TRANSITION_SEMANTICS_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: EDITORIAL_GENERATION_BOUNDARY_CONFLATED, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: EDITORIAL_BOUNDARY_BILATERAL_MISMATCH, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GENERATION_RELATIONSHIP_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: MOVING_HANDOFF_POLICY_MISSING, stage: storyboard, severity: major, retryable: false, owner: storyboard-director}
   - {code: TIMELINE_NONMONOTONIC, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
   - {code: CAMERA_MOVE_UNMOTIVATED, stage: storyboard, severity: major, retryable: false, owner: storyboard-director}
   - {code: STORYBOARD_TRACEABILITY_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
   - {code: STORYBOARD_TECHNOLOGY_CONTAMINATION, stage: storyboard, severity: major, retryable: false, owner: storyboard-director}
   - {code: STORYBOARD_ARTIFACT_PROVENANCE_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GEOGRAPHY_LANDMARK_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GEOGRAPHY_AXIS_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GEOGRAPHY_ZONE_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GEOGRAPHY_ZONES_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GEOGRAPHY_ZONE_UNKNOWN, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GEOGRAPHY_RELATIONS_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GEOGRAPHY_RELATION_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GEOGRAPHY_REFERENCE_VIEWS_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GEOGRAPHY_REFERENCE_VIEW_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GEOGRAPHY_UNKNOWN_REGIONS_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: STAGING_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: STAGING_INCOMPLETE, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: STAGING_GEOGRAPHY_MISMATCH, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: STAGING_GEOGRAPHY_UNKNOWN, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: STAGING_LANDMARK_UNKNOWN, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: REFERENCE_BINDINGS_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_SETUP_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_POSITION_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_ORIENTATION_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_OPTICS_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_COMPOSITION_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_GEOGRAPHY_UNKNOWN, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_LOOK_AT_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_KEYFRAMES_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_KEYFRAMES_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_RISK_CONTROLS_MISSING, stage: storyboard, severity: major, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_MOTION_PATH_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_MOTION_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_MOTION_UNMOTIVATED, stage: storyboard, severity: major, retryable: false, owner: storyboard-director}
+  - {code: TIME_RANGE_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: TIME_RANGE_NONMONOTONIC, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: TIME_RANGE_NONPOSITIVE, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: EDITORIAL_BOUNDARY_TOPOLOGY_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: EDITORIAL_BOUNDARY_ORDER_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: EDITORIAL_RECORD_TIME_NONMONOTONIC, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: EDITORIAL_PICTURE_EDIT_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: EDITORIAL_AUDIO_EDIT_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GENERATION_HANDOFF_LINK_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GENERATION_HANDOFF_LINK_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GENERATION_EDITORIAL_LINK_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: GENERATION_ENDPOINT_POLICY_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: MOVING_ENDPOINT_EVIDENCE_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_INTERVAL_NONMONOTONIC, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_INTERVAL_OUT_OF_RANGE, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_INTERVAL_SETUP_UNKNOWN, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CAMERA_INTERVAL_COVERAGE_GAP, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: SEGMENT_SCENE_TIME_OUT_OF_SHOT, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: SHOT_SEGMENT_SCENE_GAP, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: SHOT_SEGMENTS_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: RECORD_ASSEMBLY_ORDER_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: RECORD_ASSEMBLY_GAP, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: RECORD_ASSEMBLY_END_MISMATCH, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CONTINUITY_STATE_CONTRADICTION, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CONTINUITY_ENVIRONMENT_CONTRADICTION, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CONTINUITY_REGISTRY_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CONTINUITY_REGISTRY_REFERENCE_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CONTINUITY_SNAPSHOT_LINK_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: CONTINUITY_CHARACTER_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: SCENE_COVERAGE_OVERLAP_UNDECLARED, stage: storyboard, severity: major, retryable: false, owner: storyboard-director}
+  - {code: MIGRATION_REVIEW_REQUIRED, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: COMPILATION_TRACEABILITY_MISSING, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
+  - {code: CAMERA_INTERVAL_BINDING_MISMATCH, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
+  - {code: CONTINUITY_BINDING_MISMATCH, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
+  - {code: MOVING_ENDPOINT_CAPABILITY_UNPROVEN, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
+  - {code: CAMERA_TRACEABILITY_MISSING, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
   - {code: PLAN_APPROVAL_REQUIRED, stage: orchestration, severity: blocking, retryable: false, owner: production-orchestrator}
   - {code: PLAN_HASH_MISMATCH, stage: orchestration, severity: blocking, retryable: false, owner: production-orchestrator}
   - {code: INVALID_STATUS_TRANSITION, stage: orchestration, severity: blocking, retryable: false, owner: production-orchestrator}
@@ -111,6 +189,9 @@ failures:
   - {code: ENVIRONMENT_DRIFT, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
   - {code: ACTION_ORDER_FAILURE, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
   - {code: CAMERA_FAILURE, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
+  - {code: CAMERA_SETUP_MISMATCH, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
+  - {code: EDITORIAL_BOUNDARY_FAILURE, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
+  - {code: MOVING_HANDOFF_UNSUITABLE, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
   - {code: REFLECTION_FAILURE, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
   - {code: AUDIO_SYNC_FAILURE, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
   - {code: HANDOFF_MISMATCH, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}

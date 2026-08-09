@@ -5,7 +5,11 @@
   "required": ["artifact", "subject_id", "mode", "verdict", "severity", "failures", "criteria_traceability"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
-    "mode": {"enum": ["segment", "handoff", "final"]},
+    "mode": {"enum": ["segment", "handoff", "camera_path", "generation_handoff", "editorial_boundary", "final"]},
+    "planning_model_version": {"enum": [1, 2]},
+    "handoff_policy": {"enum": ["none", "moving_endpoint", "stable_tail", "approved_entry_reference", "bridge_endpoints"]},
+    "editorial_boundary_id": {"type": ["string", "null"]},
+    "camera_evidence": {"type": "object", "properties": {"setup_match": {"type": "boolean"}, "position_path_match": {"type": "boolean"}, "axis_status": {"type": "string"}}},
     "verdict": {"enum": ["PASS", "PASS_WITH_EDITORIAL_FIX", "FAIL"]},
     "severity": {"enum": ["none", "minor", "major", "critical"]},
     "failures": {"type": "array", "items": {"type": "object", "required": ["code", "time_range", "evidence_frames", "expected", "observed", "affected_dependencies"]}},

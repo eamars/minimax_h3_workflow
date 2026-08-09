@@ -1,0 +1,18 @@
+fixture_type: historical-bad-example
+project_id: PRJ01
+source: projects/PRJ01/plan/production-plan-v01.yaml
+failure_profile:
+  - eight generation chunks are treated as the storyboard
+  - each chunk is an equal 8-second block with no editorial shot purpose
+  - camera intent is effectively a reusable reference setting rather than a shot-by-shot position/viewpoint plan
+  - all transitions are independent generation boundaries, so picture cuts and generation relationships are not independently authored
+  - continuity is described as prose/assumptions instead of typed entry and exit snapshots
+shots:
+  - {shot_id: SEQ01_SC01_SH01, role: opening, camera: opaque, transition: independent}
+  - {shot_id: SEQ01_SC01_SH02, role: preparation, camera: opaque, transition: independent}
+  - {shot_id: SEQ01_SC01_SH03, role: transition, camera: opaque, transition: independent}
+  - {shot_id: SEQ01_SC01_SH04, role: settle, camera: opaque, transition: independent}
+  - {shot_id: SEQ01_SC01_SH05, role: action, camera: opaque, transition: independent}
+  - {shot_id: SEQ01_SC01_SH06, role: hold, camera: opaque, transition: independent}
+  - {shot_id: SEQ01_SC01_SH07, role: exit-preparation, camera: opaque, transition: independent}
+  - {shot_id: SEQ01_SC01_SH08, role: exit, camera: opaque, transition: end}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "h3-prompt-packet-v2.schema.json",
+  "type": "object",
+  "required": ["artifact", "planning_model_version", "segment_id", "shot_id", "approved_plan", "mode", "duration_seconds", "scene_time", "source_time", "record_time", "timing", "reference_bindings", "camera_intent", "continuity_contract", "fields", "traceability"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "planning_model_version": {"const": 2},
+    "segment_id": {"type": "string"},
+    "shot_id": {"type": "string"},
+    "approved_plan": {"$ref": "common-defs.schema.json#/$defs/approvedPlan"},
+    "mode": {"enum": ["T2VA", "I2VA", "FL2VA", "L2VA", "R2VA"]},
+    "duration_seconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 10},
+    "scene_time": {"$ref": "common-defs.schema.json#/$defs/cinematicTimeRange"},
+    "source_time": {"$ref": "common-defs.schema.json#/$defs/cinematicTimeRange"},
+    "record_time": {"$ref": "common-defs.schema.json#/$defs/cinematicTimeRange"},
+    "timing": {"$ref": "common-defs.schema.json#/$defs/h3Timing"},
+    "reference_bindings": {"type": "array", "items": {"type": "object", "required": ["label", "asset_id", "role", "order"]}},
+    "camera_intent": {"$ref": "common-defs.schema.json#/$defs/cameraPlan"},
+    "continuity_contract": {"type": "object", "required": ["invariants", "expected_deltas", "forbidden_deltas"]},
+    "fields": {"type": "object", "required": ["visual", "action", "camera", "audio"]},
+    "traceability": {"type": "object", "required": ["plan_hash", "shot_id", "plot_beat_ids", "performance_beat_id"]}
+  },
+  "additionalProperties": false
+}

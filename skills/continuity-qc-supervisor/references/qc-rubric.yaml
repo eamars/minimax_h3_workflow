@@ -1,4 +1,4 @@
-version: 1
+version: 2
 evidence:
   decoder: pyav
   preferred_runtime: ComfyUI/.venv
@@ -15,10 +15,14 @@ criteria:
   - {id: identity_design, source: canon-lock, failure: IDENTITY_DRIFT}
   - {id: environment_state, source: canon-lock, failure: ENVIRONMENT_DRIFT}
   - {id: reflection_consistency, source: canon-lock, failure: REFLECTION_FAILURE}
-  - {id: camera_axis_horizon, source: segment.dominant_camera_move, failure: CAMERA_FAILURE}
+  - {id: camera_setup_and_motion, source: shot.camera.setup_and_segment.camera_interval_map, failure: CAMERA_FAILURE}
+  - {id: camera_position_path, source: shot.camera.setup_change_from_previous_and_segment.camera_interval_map, failure: CAMERA_SETUP_MISMATCH}
+  - {id: editorial_boundary, source: editorial_boundaries, failure: EDITORIAL_BOUNDARY_FAILURE}
   - {id: dialogue_audio, source: sound-plan, failure: AUDIO_SYNC_FAILURE}
   - {id: entry_exit, source: segment.entry_state_and_exit_state, failure: HANDOFF_MISMATCH}
   - {id: media_integrity, source: render-report, failure: QC_MEDIA_SPEC_FAILURE}
 handoff:
-  reject_tail_if: [motion_blur, face_or_prop_occlusion, incomplete_expression_change, uncontrolled_water_or_smoke, unplanned_fast_pan, impossible_or_ambiguous_reflection]
-  pass_with_editorial_fix_is_never_continuation_eligible: true
+  policy_driven: true
+  stable_tail_reject_if: [motion_blur, face_or_prop_occlusion, incomplete_expression_change, uncontrolled_water_or_smoke, unplanned_fast_pan, impossible_or_ambiguous_reflection]
+  moving_endpoint_requires: [camera_path_evidence, continuity_state_match, entry_motion_compatibility]
+  pass_with_editorial_fix_is_never_generation_handoff_eligible: true

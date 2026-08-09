@@ -1,0 +1,365 @@
+artifact:
+  artifact_id: storyboard_PRJ99_v02
+  artifact_type: storyboard-package-v2
+  project_id: PRJ99
+  version: 2
+  revision_id: storyboard_PRJ99@v02
+  created_from: [scene-performance_PRJ99@v01]
+  source_versions: []
+  status: review_ready
+  content_hash: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  created_at: 2026-08-09T00:00:00Z
+  created_by: fixture
+  provenance: {user_inputs: [], source_assets: [], upstream_artifacts: []}
+planning_model_version: 2
+director_treatment:
+  dramatic_engine: discovery_to_decision
+  visual_grammar: observational_master_then_subjective_coverage
+  coverage_strategy: establish_space_then_change_position_for_reaction
+  camera_position_policy: allowed_to_change_between_shots
+  coverage_policy: {allow_sparse_coverage: false, required_roles: [establishing, coverage, terminal]}
+scene_geography:
+  geography_id: GEO01
+  coordinate_system: shower-room-landmark-frame
+  landmarks:
+    - {landmark_id: L01, kind: doorway, description: entry doorway at north wall, confidence: exact, reference_ids: [REF_ROOM]}
+    - {landmark_id: L02, kind: mirror, description: mirror on east wall, confidence: inferred, reference_ids: [REF_ROOM]}
+  axes:
+    - {axis_id: AXIS01, subject_ids: [CHAR01, L01], description: subject-to-door eyeline axis}
+  unknown_regions: [behind-west-wall]
+  allowed_camera_zones: [doorway, basin, mirror-side]
+  zones:
+    - {zone_id: doorway, kind: entrance, description: north-wall entry, adjacent_zone_ids: [basin], visibility: full, entrances: [north-door], exits: [basin], obstacles: []}
+    - {zone_id: basin, kind: action, description: basin and tap, adjacent_zone_ids: [doorway, mirror-side], visibility: full, entrances: [doorway], exits: [mirror-side], obstacles: [tap]}
+    - {zone_id: mirror-side, kind: reflective, description: east-wall mirror side, adjacent_zone_ids: [basin], visibility: partial, entrances: [basin], exits: [stillness], obstacles: [mirror]}
+  relations:
+    - {relation_id: REL01, type: adjacent, from_id: doorway, to_id: basin, constraints: [entry route remains readable]}
+    - {relation_id: REL02, type: adjacent, from_id: basin, to_id: mirror-side, constraints: [eyeline remains toward mirror]}
+  reference_views:
+    - {view_id: VIEW01, asset_id: REF_ROOM, purpose: room geography and mirror placement, provenance: fixture reference}
+  active_axis_scopes: [{axis_id: AXIS01, start_shot_index: 1, end_shot_index: 3}]
+shots:
+  - shot_id: SEQ01_SC01_SH01
+    sequence_id: SEQ01
+    scene_id: SEQ01_SC01
+    shot_index: 1
+    editorial_role: establishing
+    purpose: establish the room and the character's isolation
+    coverage_function: orient geography before action
+    coverage_phase: opening_arrival
+    plot_beat_ids: [PB01]
+    performance_beat_ids: [PB01_PHASE01]
+    staging:
+      geography_id: GEO01
+      subject_positions: [{subject_id: CHAR01, zone: basin, relation_to_landmarks: [L01-left, L02-behind]}]
+      action_path: enters from doorway and stops at basin
+      eyelines: [toward-mirror]
+      entry_exit: {entry: doorway, exit: basin}
+    camera:
+      setup:
+        setup_id: SH01_SETUP
+        position: {reference_frame: GEO01, zone: doorway, height: eye-level, depth: room-edge, lateral: north-center, relation_to_subject: observes from entrance}
+        orientation: {viewpoint: three-quarter frontal, aim: basin-and-doorway, horizon: level, roll: none}
+        optics: {lens_appearance: 28mm environmental wide, focal_length_mm: 28, focus_behavior: deep focus, depth_of_field: deep}
+        composition: {shot_size: wide master, subject_priority: [CHAR01, doorway, mirror], screen_direction: left-to-right entry, headroom: restrained, eyeline: toward mirror}
+        axis: {axis_id: AXIS01, side: north, status: held, crossing_justification: null}
+        look_at: {target: CHAR01-and-basin, mode: motivated_discovery, priority: geography before face}
+      in_shot_motion: {type: dolly, motivation: reveal the room as the character enters, path: slow push from doorway toward basin, speed_profile: slow settle, movement_character: measured discovery, start_position: doorway, end_position: basin threshold, subject_relationship: camera discovers subject}
+      setup_change_from_previous: {position_changed: false, from_shot_id: null, reason: opening establishing setup, continuity_strategy: [establishing]}
+      keyframes: [{time_seconds: 0, position: doorway, viewpoint: three-quarter frontal}, {time_seconds: 4, position: basin threshold, viewpoint: three-quarter frontal}]
+      risk_controls: [preserve doorway-to-basin geography, protect eyeline toward mirror]
+    scene_time: {start_seconds: 0, end_seconds: 4}
+    continuity_in:
+      snapshot_id: STATE01
+      character_states: [{canon_id: CHAR01, visibility: full, pose: entering upright, gaze: toward mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity and grey shirt remain stable}]
+      expected_deltas: [character moves from doorway to basin]
+      forbidden_deltas: [wardrobe change, prop invention]
+    continuity_out:
+      snapshot_id: STATE02
+      character_states: [{canon_id: CHAR01, visibility: full, pose: stopped at basin, gaze: toward mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity and grey shirt remain stable}]
+      expected_deltas: [character is now at basin]
+      forbidden_deltas: [wardrobe change, prop invention]
+    incoming_boundary_id: null
+    outgoing_boundary_id: BOUNDARY01
+    reference_bindings:
+      - {binding_id: REF_CHAR, asset_id: CHAR01_REF, property_scope: [identity, wardrobe, wetness], timeline_scope: scene, strength: canonical}
+      - {binding_id: REF_ROOM, asset_id: ROOM01_REF, property_scope: [landmarks, mirror, basin], timeline_scope: scene, strength: canonical}
+    sound_intent_ids: [SND01]
+  - shot_id: SEQ01_SC01_SH02
+    sequence_id: SEQ01
+    scene_id: SEQ01_SC01
+    shot_index: 2
+    editorial_role: coverage
+    purpose: change viewpoint to reveal the character's hesitation
+    coverage_function: low three-quarter reaction coverage
+    coverage_phase: hesitation
+    plot_beat_ids: [PB02]
+    performance_beat_ids: [PB02_PHASE01]
+    staging:
+      geography_id: GEO01
+      subject_positions: [{subject_id: CHAR01, zone: basin, relation_to_landmarks: [L02-left, L01-behind-right]}]
+      action_path: hands approach the tap and stop
+      eyelines: [down-to-tap, up-to-mirror]
+      entry_exit: {entry: basin, exit: basin}
+      blocking_change_reason: camera changes position to privilege hesitation
+    camera:
+      setup:
+        setup_id: SH02_SETUP
+        position: {reference_frame: GEO01, zone: basin, height: chest-low, depth: close-to-basin, lateral: west-side, relation_to_subject: intimate three-quarter profile}
+        orientation: {viewpoint: low three-quarter profile, aim: hands-and-face, horizon: slightly low, roll: none}
+        optics: {lens_appearance: 50mm natural perspective, focal_length_mm: 50, focus_behavior: face-to-hands rack, depth_of_field: shallow}
+        composition: {shot_size: medium close coverage, subject_priority: [hands, face, tap], screen_direction: left-facing eyeline, headroom: tight, eyeline: down then mirror}
+        axis: {axis_id: AXIS01, side: south, status: crossed_with_reset, crossing_justification: motivated cut to low coverage with eyeline retained}
+        look_at: {target: tap-to-face, mode: attention_transfer, priority: hesitation}
+      in_shot_motion: {type: rack_focus, motivation: transfer attention from the stopped hand to the face, path: tap to eyes, speed_profile: measured rack, movement_character: deliberate attention transfer, start_position: tap focus, end_position: face focus, subject_relationship: attention follows hesitation}
+      setup_change_from_previous: {position_changed: true, from_shot_id: SEQ01_SC01_SH01, reason: cut into a closer low viewpoint to make hesitation legible, continuity_strategy: [coverage, eyeline_match, axis_reset]}
+      keyframes: [{time_seconds: 0, position: basin-west-side, viewpoint: low three-quarter profile}, {time_seconds: 4, position: basin-west-side, viewpoint: low three-quarter profile}]
+      risk_controls: [retain hand-to-face eyeline, preserve basin geography after axis reset]
+    scene_time: {start_seconds: 3.5, end_seconds: 14}
+    continuity_in:
+      snapshot_id: STATE02
+      character_states: [{canon_id: CHAR01, visibility: full, pose: stopped at basin, gaze: toward mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity and grey shirt remain stable}]
+      expected_deltas: [hand approaches tap, hesitation becomes visible]
+      forbidden_deltas: [wardrobe change, water running before cue]
+    continuity_out:
+      snapshot_id: STATE03
+      character_states: [{canon_id: CHAR01, visibility: full, pose: hand withdrawn from tap, gaze: toward mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity and grey shirt remain stable}]
+      expected_deltas: [hesitation resolves into a look toward the mirror]
+      forbidden_deltas: [wardrobe change, water running before cue]
+    incoming_boundary_id: BOUNDARY01
+    outgoing_boundary_id: BOUNDARY02
+    reference_bindings:
+      - {binding_id: REF_CHAR, asset_id: CHAR01_REF, property_scope: [identity, wardrobe, wetness], timeline_scope: scene, strength: canonical}
+      - {binding_id: REF_ROOM, asset_id: ROOM01_REF, property_scope: [landmarks, mirror, basin], timeline_scope: scene, strength: canonical}
+    sound_intent_ids: [SND02]
+  - shot_id: SEQ01_SC01_SH03
+    sequence_id: SEQ01
+    scene_id: SEQ01_SC01
+    shot_index: 3
+    editorial_role: terminal
+    purpose: hold the decision in a wider reflective composition
+    coverage_function: terminal emotional image
+    coverage_phase: reflection
+    plot_beat_ids: [PB03]
+    performance_beat_ids: [PB03_PHASE01]
+    staging:
+      geography_id: GEO01
+      subject_positions: [{subject_id: CHAR01, zone: mirror-side, relation_to_landmarks: [L02-front, L01-reflection]}]
+      action_path: turns from tap toward mirror
+      eyelines: [mirror]
+      entry_exit: {entry: basin, exit: stillness}
+    camera:
+      setup:
+        setup_id: SH03_SETUP
+        position: {reference_frame: GEO01, zone: mirror-side, height: shoulder-level, depth: room-midpoint, lateral: east-side, relation_to_subject: profile through reflection}
+        orientation: {viewpoint: profile with mirror reflection, aim: face-and-reflection, horizon: level, roll: none}
+        optics: {lens_appearance: 75mm compressed reflection, focal_length_mm: 75, focus_behavior: locked reflection focus, depth_of_field: shallow}
+        composition: {shot_size: medium wide reflective frame, subject_priority: [reflection, face, mirror], screen_direction: right-facing, headroom: balanced, eyeline: mirror-held}
+        axis: {axis_id: AXIS01, side: east, status: crossed_with_reset, crossing_justification: reflection viewpoint establishes a new visual axis}
+        look_at: {target: face-and-reflection, mode: locked_observation, priority: decision}
+      in_shot_motion: {type: static, motivation: let the decision land without editorial pressure, path: locked frame, speed_profile: none, movement_character: held observation, start_position: mirror-side, end_position: mirror-side, subject_relationship: observes stillness}
+      setup_change_from_previous: {position_changed: true, from_shot_id: SEQ01_SC01_SH02, reason: move to the mirror side for a final reflective image, continuity_strategy: [subjective_reveal, axis_reset]}
+      keyframes: [{time_seconds: 0, position: mirror-side, viewpoint: profile with mirror reflection}]
+      risk_controls: [hold reflection geometry, protect terminal eyeline]
+    scene_time: {start_seconds: 14, end_seconds: 18}
+    continuity_in:
+      snapshot_id: STATE03
+      character_states: [{canon_id: CHAR01, visibility: full, pose: turning toward mirror, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity and grey shirt remain stable}]
+      expected_deltas: [character reaches stillness at mirror]
+      forbidden_deltas: [wardrobe change, unexplained room change]
+    continuity_out:
+      snapshot_id: STATE04
+      character_states: [{canon_id: CHAR01, visibility: reflection, pose: still, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone, music: held-note}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity and grey shirt remain stable}]
+      expected_deltas: [scene terminates on held reflection]
+      forbidden_deltas: [new action after terminal hold]
+    incoming_boundary_id: BOUNDARY02
+    outgoing_boundary_id: BOUNDARY03
+    reference_bindings:
+      - {binding_id: REF_CHAR, asset_id: CHAR01_REF, property_scope: [identity, wardrobe, wetness], timeline_scope: scene, strength: canonical}
+      - {binding_id: REF_ROOM, asset_id: ROOM01_REF, property_scope: [landmarks, mirror, basin], timeline_scope: scene, strength: canonical}
+    sound_intent_ids: [SND03]
+generation_segments:
+  - segment_id: SEQ01_SC01_SH01_SEG01
+    shot_id: SEQ01_SC01_SH01
+    shot_segment_index: 1
+    duration_seconds: 4
+    scene_time: {start_seconds: 0, end_seconds: 4}
+    source_time: {start_seconds: 0, end_seconds: 4}
+    record_time: {start_seconds: 0, end_seconds: 4}
+    entry_state:
+      snapshot_id: STATE01
+      character_states: [{canon_id: CHAR01, visibility: full, pose: entering upright, gaze: toward mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
+      expected_deltas: [enter]
+      forbidden_deltas: [wardrobe change]
+    exit_state:
+      snapshot_id: STATE02
+      character_states: [{canon_id: CHAR01, visibility: full, pose: stopped at basin, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
+      expected_deltas: [stop]
+      forbidden_deltas: [wardrobe change]
+    continuity_contract: {invariants: [CHAR01 identity, dry grey shirt, room intact], expected_deltas: [enter and stop], forbidden_deltas: [wardrobe change]}
+    camera_interval_map:
+      - {start_seconds: 0, end_seconds: 4, camera_setup_id: SH01_SETUP, motion: {type: dolly, motivation: reveal room, path: doorway to basin threshold, speed_profile: slow settle, movement_character: measured discovery, start_position: doorway, end_position: basin threshold, subject_relationship: discovers subject}}
+    performance_arc_id: PB01_PHASE01
+    four_track_timeline:
+      - {start_seconds: 0, end_seconds: 4, performance: enter-and-stop, camera: dolly-reveal, sound: room-tone, edit_handoff: BOUNDARY01}
+    generation_handoff_to_next: {handoff_id: HANDOFF01, from_segment_id: SEQ01_SC01_SH01_SEG01, to_segment_id: SEQ01_SC01_SH02_SEG01, relationship: independent, endpoint_policy: none, acceptance_conditions: [cut is editorially motivated], editorial_boundary_id: BOUNDARY01}
+    traceability: {plot_beat_ids: [PB01], performance_beat_id: PB01_PHASE01, canon_reference_ids: [REF_CHAR, REF_ROOM], shot_id: SEQ01_SC01_SH01, acceptance_test_ids: [AT01]}
+    acceptance_criteria: [geography readable, identity stable, dolly motivated]
+  - segment_id: SEQ01_SC01_SH02_SEG01
+    shot_id: SEQ01_SC01_SH02
+    shot_segment_index: 1
+    duration_seconds: 5
+    scene_time: {start_seconds: 3.5, end_seconds: 8.5}
+    source_time: {start_seconds: 0, end_seconds: 5}
+    record_time: {start_seconds: 4, end_seconds: 9}
+    entry_state:
+      snapshot_id: STATE02
+      character_states: [{canon_id: CHAR01, visibility: full, pose: stopped at basin, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
+      expected_deltas: [hand approaches tap]
+      forbidden_deltas: [water before cue]
+    exit_state:
+      snapshot_id: STATE03A
+      character_states: [{canon_id: CHAR01, visibility: full, pose: hand at tap, gaze: down, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
+      expected_deltas: [hand stops]
+      forbidden_deltas: [wardrobe change]
+    continuity_contract: {invariants: [CHAR01 identity, dry grey shirt, room intact], expected_deltas: [hand approaches tap], forbidden_deltas: [wardrobe change]}
+    camera_interval_map:
+      - {start_seconds: 0, end_seconds: 5, camera_setup_id: SH02_SETUP, motion: {type: rack_focus, motivation: follow hesitation from hand to face, path: tap to face, speed_profile: measured rack, movement_character: deliberate attention transfer, start_position: tap, end_position: face, subject_relationship: attention follows action}}
+    performance_arc_id: PB02_PHASE01
+    four_track_timeline:
+      - {start_seconds: 0, end_seconds: 5, performance: approach-and-stop, camera: rack-focus, sound: tap-creak, edit_handoff: same-shot-continue}
+    generation_handoff_to_next: {handoff_id: HANDOFF02, from_segment_id: SEQ01_SC01_SH02_SEG01, to_segment_id: SEQ01_SC01_SH02_SEG02, relationship: same_shot_continue, endpoint_policy: moving_endpoint, acceptance_conditions: [preserve camera path and hand state], editorial_boundary_id: null, motion_endpoint_evidence: {source_tail: tap-to-face rack tail, successor_entry: tap-to-face rack entry, comparison_fields: [camera_path, focus_target, hand_state, wardrobe_state], capability_evidence_id: H3_CAP_MOVING_ENDPOINT}}
+    traceability: {plot_beat_ids: [PB02], performance_beat_id: PB02_PHASE01, canon_reference_ids: [REF_CHAR, REF_ROOM], shot_id: SEQ01_SC01_SH02, acceptance_test_ids: [AT02]}
+    acceptance_criteria: [low coverage holds axis intent, hesitation remains legible]
+  - segment_id: SEQ01_SC01_SH02_SEG02
+    shot_id: SEQ01_SC01_SH02
+    shot_segment_index: 2
+    duration_seconds: 5
+    scene_time: {start_seconds: 8.5, end_seconds: 14}
+    source_time: {start_seconds: 0, end_seconds: 5}
+    record_time: {start_seconds: 9, end_seconds: 14}
+    entry_state:
+      snapshot_id: STATE03A
+      character_states: [{canon_id: CHAR01, visibility: full, pose: hand at tap, gaze: down, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
+      expected_deltas: [hand withdraws and gaze lifts]
+      forbidden_deltas: [wardrobe change]
+    exit_state:
+      snapshot_id: STATE03
+      character_states: [{canon_id: CHAR01, visibility: full, pose: hand withdrawn, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
+      expected_deltas: [hesitation resolves]
+      forbidden_deltas: [wardrobe change]
+    continuity_contract: {invariants: [CHAR01 identity, dry grey shirt, room intact], expected_deltas: [withdraw and look], forbidden_deltas: [wardrobe change]}
+    camera_interval_map:
+      - {start_seconds: 0, end_seconds: 5, camera_setup_id: SH02_SETUP, motion: {type: rack_focus, motivation: land the look after hesitation, path: face hold to mirror eyeline, speed_profile: gentle settle, movement_character: gentle attention release, start_position: face, end_position: mirror eyeline, subject_relationship: attention resolves}}
+    performance_arc_id: PB02_PHASE01
+    four_track_timeline:
+      - {start_seconds: 0, end_seconds: 5, performance: withdraw-and-look, camera: settle-on-face, sound: room-tone, edit_handoff: BOUNDARY02}
+    generation_handoff_to_next: {handoff_id: HANDOFF03, from_segment_id: SEQ01_SC01_SH02_SEG02, to_segment_id: SEQ01_SC01_SH03_SEG01, relationship: independent, endpoint_policy: none, acceptance_conditions: [dissolve is editorial only], editorial_boundary_id: BOUNDARY02}
+    traceability: {plot_beat_ids: [PB02], performance_beat_id: PB02_PHASE01, canon_reference_ids: [REF_CHAR, REF_ROOM], shot_id: SEQ01_SC01_SH02, acceptance_test_ids: [AT02]}
+    acceptance_criteria: [moving endpoint judged against camera path, no identity drift]
+  - segment_id: SEQ01_SC01_SH03_SEG01
+    shot_id: SEQ01_SC01_SH03
+    shot_segment_index: 1
+    duration_seconds: 4
+    scene_time: {start_seconds: 14, end_seconds: 18}
+    source_time: {start_seconds: 0, end_seconds: 4}
+    record_time: {start_seconds: 14, end_seconds: 18}
+    entry_state:
+      snapshot_id: STATE03
+      character_states: [{canon_id: CHAR01, visibility: full, pose: turning toward mirror, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
+      expected_deltas: [turn to stillness]
+      forbidden_deltas: [new action after terminal hold]
+    exit_state:
+      snapshot_id: STATE04
+      character_states: [{canon_id: CHAR01, visibility: reflection, pose: still, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}]
+      environment_state: {room: intact, water: off}
+      prop_states: []
+      sound_state: {ambience: room-tone, music: held-note}
+      invariants: [{invariant_id: INV01, owner: canon, value: character identity stable}]
+      expected_deltas: [terminal reflection hold]
+      forbidden_deltas: [new action]
+    continuity_contract: {invariants: [CHAR01 identity, dry grey shirt, room intact], expected_deltas: [turn and hold], forbidden_deltas: [new action]}
+    camera_interval_map:
+      - {start_seconds: 0, end_seconds: 4, camera_setup_id: SH03_SETUP, motion: {type: static, motivation: let decision land, path: locked mirror-side frame, speed_profile: none, movement_character: held observation, start_position: mirror-side, end_position: mirror-side, subject_relationship: observes stillness}}
+    performance_arc_id: PB03_PHASE01
+    four_track_timeline:
+      - {start_seconds: 0, end_seconds: 4, performance: turn-and-hold, camera: static, sound: held-note, edit_handoff: end}
+    generation_handoff_to_next: {handoff_id: HANDOFF04, from_segment_id: SEQ01_SC01_SH03_SEG01, to_segment_id: null, relationship: terminal, endpoint_policy: none, acceptance_conditions: [terminal image holds], editorial_boundary_id: BOUNDARY03}
+    traceability: {plot_beat_ids: [PB03], performance_beat_id: PB03_PHASE01, canon_reference_ids: [REF_CHAR, REF_ROOM], shot_id: SEQ01_SC01_SH03, acceptance_test_ids: [AT03]}
+    acceptance_criteria: [reflection remains coherent, final hold is readable]
+editorial_boundaries:
+  - {boundary_id: BOUNDARY01, from_shot_id: SEQ01_SC01_SH01, to_shot_id: SEQ01_SC01_SH02, mechanism: cut, motivations: [move from geography to hesitation], audio_behavior: room-tone carries across cut, picture_edit: {type: cut, frame: 96, pre_roll_frames: 8, post_roll_frames: 8}, audio_edit: {type: j_cut, overlap_frames: 12, room_tone_policy: preserve-room-tone, pre_roll_frames: 12, post_roll_frames: 0}, record_time: {start_seconds: 4, end_seconds: 4}}
+  - {boundary_id: BOUNDARY02, from_shot_id: SEQ01_SC01_SH02, to_shot_id: SEQ01_SC01_SH03, mechanism: dissolve, motivations: [let the decision emerge into reflection], audio_behavior: held ambience bridges and music enters, picture_edit: {type: dissolve, frame: 336, pre_roll_frames: 12, post_roll_frames: 12}, audio_edit: {type: l_cut, overlap_frames: 18, room_tone_policy: carry-and-crossfade, pre_roll_frames: 0, post_roll_frames: 18}, record_time: {start_seconds: 14, end_seconds: 14}}
+  - {boundary_id: BOUNDARY03, from_shot_id: SEQ01_SC01_SH03, to_shot_id: null, mechanism: end, motivations: [terminate on the held reflection], audio_behavior: held note resolves after picture, picture_edit: {type: end, frame: 432, pre_roll_frames: 8, post_roll_frames: 24}, audio_edit: {type: independent, overlap_frames: 0, room_tone_policy: resolve-after-picture, pre_roll_frames: 0, post_roll_frames: 24}, record_time: {start_seconds: 18, end_seconds: 18}}
+generation_handoffs:
+  - {handoff_id: HANDOFF01, from_segment_id: SEQ01_SC01_SH01_SEG01, to_segment_id: SEQ01_SC01_SH02_SEG01, relationship: independent, endpoint_policy: none, acceptance_conditions: [cut is editorially motivated], editorial_boundary_id: BOUNDARY01}
+  - {handoff_id: HANDOFF02, from_segment_id: SEQ01_SC01_SH02_SEG01, to_segment_id: SEQ01_SC01_SH02_SEG02, relationship: same_shot_continue, endpoint_policy: moving_endpoint, acceptance_conditions: [preserve camera path and hand state], editorial_boundary_id: null, motion_endpoint_evidence: {source_tail: tap-to-face rack tail, successor_entry: tap-to-face rack entry, comparison_fields: [camera_path, focus_target, hand_state, wardrobe_state], capability_evidence_id: H3_CAP_MOVING_ENDPOINT}}
+  - {handoff_id: HANDOFF03, from_segment_id: SEQ01_SC01_SH02_SEG02, to_segment_id: SEQ01_SC01_SH03_SEG01, relationship: independent, endpoint_policy: none, acceptance_conditions: [dissolve is editorial only], editorial_boundary_id: BOUNDARY02}
+  - {handoff_id: HANDOFF04, from_segment_id: SEQ01_SC01_SH03_SEG01, to_segment_id: null, relationship: terminal, endpoint_policy: none, acceptance_conditions: [terminal image holds], editorial_boundary_id: BOUNDARY03}
+continuity_registry:
+  - {snapshot_id: STATE01, character_states: [{canon_id: CHAR01, visibility: full, pose: entering, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], sound_state: {ambience: room-tone}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [enter], forbidden_deltas: [wardrobe change]}
+  - {snapshot_id: STATE02, character_states: [{canon_id: CHAR01, visibility: full, pose: basin, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], sound_state: {ambience: room-tone}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [stop], forbidden_deltas: [wardrobe change]}
+  - {snapshot_id: STATE03A, character_states: [{canon_id: CHAR01, visibility: full, pose: hand at tap, gaze: down, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], sound_state: {ambience: room-tone}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [withdraw and look], forbidden_deltas: [wardrobe change]}
+  - {snapshot_id: STATE03, character_states: [{canon_id: CHAR01, visibility: full, pose: hand withdrawn, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], sound_state: {ambience: room-tone}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [look], forbidden_deltas: [wardrobe change]}
+  - {snapshot_id: STATE04, character_states: [{canon_id: CHAR01, visibility: reflection, pose: still, gaze: mirror, wardrobe_state: dry grey shirt, wetness_state: dry}], environment_state: {room: intact}, prop_states: [], sound_state: {ambience: held-note}, invariants: [{invariant_id: INV01, owner: canon, value: identity stable}], expected_deltas: [terminate], forbidden_deltas: [new action]}
+animatic_intent:
+  scene_time_policy: preserve overlapping coverage windows for the action clock
+  source_time_policy: each generated segment starts at zero
+  record_time_policy: assemble shots in editorial order at 24 fps
+  pacing_notes: [establish space, cut into hesitation, dissolve into reflection]
+creative_acceptance_tests:
+  - {test_id: AT01, scope: shot_and_segment, assertion: camera setup and geography remain readable}
+  - {test_id: AT02, scope: same_shot_handoff, assertion: moving endpoint preserves camera path and continuity state}
+  - {test_id: AT03, scope: terminal, assertion: reflective hold ends the scene cleanly}

@@ -1,4 +1,4 @@
-version: 1
+version: 2
 categories:
   dialogue: spoken words by a scene-participating speaker
   voice_over: narrated or off-screen speech
@@ -9,12 +9,21 @@ categories:
   diegetic_music: music sourced inside the story world
   non_diegetic_music: audience-only score
 timing: {units: seconds, require_finite: true, start_minimum: 0, end_greater_than_start: true}
-transitions:
-  continue: require declared carried state
-  bridge: require both audio endpoint states and bridge policy
+boundary_and_handoff_separation:
+  editorial_boundaries: [cut, dissolve, fade, end]
+  generation_relationships: [independent, same_shot_continue, endpoint_bridge, reference_reestablish, terminal]
+  rule: sound intent is authored before storyboard; boundary-specific carry is mapped after editorial shots exist
+editorial_boundaries:
   cut: carry only when explicit; otherwise reset
-  match_cut: carry only named motif/state
-  dissolve: editorial post only
+  dissolve: editorial post only, no physical continuity claim
+  fade: declared fade and carry policy
+  end: terminate picture while audio may resolve according to plan
+generation_relationships:
+  same_shot_continue: require declared carried state and policy-specific endpoint evidence
+  endpoint_bridge: require both audio endpoint states and bridge policy
+  independent: no implicit carry
+  reference_reestablish: require explicit voice/ambience continuity intent
+  terminal: no successor state
 routing_intent:
   allowed: [native_h3, post_production, hybrid]
   every_cue_requires: [intent, rationale, fallback]

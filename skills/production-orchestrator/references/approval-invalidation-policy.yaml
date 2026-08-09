@@ -38,11 +38,24 @@ change_control:
     - story
     - performance
     - camera_intent
-    - segment_boundary
-    - transition_meaning
+    - camera_setup_position
+    - camera_viewpoint_or_optics
+    - editorial_boundary_mechanism_or_motivation
+    - generation_handoff_relationship_or_endpoint_policy
+    - editorial_shot_boundary
     - reference_role
   technical_only_changes:
-    rule: Version and revalidate without creative reapproval only when approved intent and segment boundaries remain unchanged.
+    rule: Version and revalidate without creative reapproval when a technical resplit or repack preserves the approved editorial shot boundaries, camera setup/motion and timing intent, continuity snapshots, generation relationships/policies, prompt intent, and all boundary IDs; any change to those fields is creative.
+    permitted_examples:
+      - split_or_merge_generation_segments_inside_one_approved_shot_for_model_frame_grid
+      - recompute_source_time_and_record_handles_without_changing_picture_edit_points
+      - rebind_a_workflow_template_without_changing_camera_or_generation_intent
+    required_evidence:
+      - superseding_revision_and_fresh_content_hash
+      - old_to_new_segment_map
+      - unchanged_camera_interval_map_hashes
+      - unchanged_continuity_contract_hashes
+      - unchanged_editorial_boundary_and_generation_handoff_hashes
 
 invalidation_matrix:
   project_request:
@@ -116,9 +129,9 @@ invalidation_matrix:
 localized_repair:
   rules:
     - Preserve approved unaffected segments and intervals.
-    - Invalidate a continuation segment and its transitive dependents when its approved entry tail changes.
+    - Invalidate a generation-handoff successor and its transitive dependents when its approved endpoint evidence or policy changes.
     - Do not invalidate an approved predecessor merely because a dependent middle segment fails.
-    - Require plan reapproval if repair changes segment boundaries or transition semantics.
+    - Require plan reapproval if repair changes segment boundaries, camera intent, editorial boundary semantics, or generation relationship/policy.
 
 overwrite_policy:
   approved_artifacts: forbidden

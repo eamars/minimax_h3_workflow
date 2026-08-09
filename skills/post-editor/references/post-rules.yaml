@@ -1,14 +1,19 @@
-version: 1
+version: 2
 input_gate:
   require: [approved_plan, approval_record, matching_plan_hash, approved_media_manifest, all_required_qc_PASS, delivery_spec]
   reject: [missing_hash, stale_revision, superseded_media, PASS_WITH_EDITORIAL_FIX, failed_or_pending_qc]
 canonicalization: {encoding: UTF-8, newline: LF, map_order: sorted_keys, hash: sha256}
-transitions:
+editorial_mechanisms:
   cut: {kind: hard_cut, frame_overlap: 0, audio_overlap: declared_only}
-  continue: {kind: handoff_join, require: [approved_tail_hash, successor_entry_hash], drop: successor_frame_0_only_when_hash_equal}
-  bridge: {kind: generated_bridge, require: [approved_source_tail, approved_target_head], endpoint_policy: remove_only_exact_matching_duplicates}
-  match_cut: {kind: hard_cut, require: [both_entry_frames_fixed], frame_overlap: 0}
-  dissolve: {kind: editorial_crossfade, require: [declared_duration], continuity_claim: false}
+  dissolve: {kind: editorial_crossfade, require: [declared_duration, motivation], continuity_claim: false}
+  fade: {kind: editorial_fade, require: [declared_duration, motivation]}
+  end: {kind: terminal, require: [terminal_boundary]}
+generation_relationships:
+  independent: {kind: source_join, endpoint_dependency: none}
+  same_shot_continue: {kind: handoff_join, policy_driven: true, drop_successor_frame_0_only_when_stable_hash_equal: true}
+  endpoint_bridge: {kind: generated_bridge, require: [approved_source_tail, approved_target_head], endpoint_policy: remove_only_exact_matching_duplicates}
+  reference_reestablish: {kind: source_join, require: [approved_entry_reference]}
+  terminal: {kind: terminal_source}
 media_normalization: [frame_order, fps, width, height, color, codec, audio_sample_rate, audio_channels, loudness]
 audio: {sample_accurate_trim: true, preserve_dialogue_identity: true, preserve_ambience: true, unexplained_gap_or_restart: block, undocumented_overlap: block}
 workflow: {catalog_revision_required: true, live_capability_profile_required: true, named_bindings_only: true, queue_comfyui: false, unresolved_placeholders: block, cycles: block}

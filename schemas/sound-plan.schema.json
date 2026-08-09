@@ -5,9 +5,12 @@
   "required": ["artifact", "speaker_registry", "cues", "continuity_rules", "generation_routing"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "planning_model_version": {"enum": [1, 2]},
     "speaker_registry": {"type": "array", "items": {"type": "object", "required": ["speaker_id", "canon_id"]}},
     "cues": {"type": "array", "items": {"type": "object", "required": ["cue_id", "category", "timing", "source_beat_ids"], "properties": {"category": {"enum": ["dialogue", "voice_over", "singing", "ambience", "physical_effect", "non_verbal_human", "diegetic_music", "non_diegetic_music"]}}}},
     "continuity_rules": {"type": "array"},
-    "generation_routing": {"type": "array"}
+    "generation_routing": {"type": "array"},
+    "scene_time_policy": {"type": "object"},
+    "editorial_boundary_map": {"type": "array", "items": {"type": "object", "required": ["boundary_id", "picture_edit", "audio_edit", "cue_ids"], "properties": {"boundary_id": {"type": "string"}, "picture_edit": {"enum": ["cut", "dissolve", "fade", "end"]}, "audio_edit": {"enum": ["independent", "j_cut", "l_cut", "hard_sync"]}, "overlap_frames": {"type": "integer", "minimum": 0}, "pre_roll_frames": {"type": "integer", "minimum": 0}, "post_roll_frames": {"type": "integer", "minimum": 0}, "cue_ids": {"type": "array"}}, "additionalProperties": false}}
   }
 }

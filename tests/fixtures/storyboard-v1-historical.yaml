@@ -1,0 +1,33 @@
+artifact:
+  artifact_id: storyboard_PRJ99_v01
+  artifact_type: storyboard-package
+  project_id: PRJ99
+  version: 1
+  revision_id: storyboard_PRJ99@v01
+  created_from: []
+  source_versions: []
+  status: review_ready
+  content_hash: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  created_at: 2026-08-09T00:00:00Z
+  created_by: fixture
+  provenance: {user_inputs: [], source_assets: [], upstream_artifacts: []}
+director_treatment: {visual_grammar: historical}
+shots:
+  - {shot_id: SEQ01_SC01_SH01, purpose: establish, plot_beat_ids: [PB01], blocking: readable, camera: wide, edit_intent: opening}
+generation_segments:
+  - segment_id: SEQ01_SC01_SH01_SEG01
+    shot_id: SEQ01_SC01_SH01
+    duration_seconds: 5.0
+    entry_state: {state: ready}
+    primary_performance_arc: observe
+    dominant_camera_move: static
+    four_track_timeline:
+      - {start_seconds: 0, end_seconds: 5, performance: observe, camera: static, sound: room, edit_handoff: cut}
+    exit_state: {state: settled}
+    transition_to_next: end
+    predecessor_segment_id: null
+    successor_segment_id: null
+    traceability: {plot_beat_ids: [PB01], performance_beat_id: PB01, canon_reference_ids: [], shot_id: SEQ01_SC01_SH01, acceptance_test_ids: [AT01]}
+    acceptance_criteria: [readable]
+handoffs: []
+creative_acceptance_tests: [AT01]

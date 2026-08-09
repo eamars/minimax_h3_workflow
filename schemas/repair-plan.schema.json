@@ -5,6 +5,10 @@
   "required": ["artifact", "repair_id", "qc_report_revision", "strategy", "locked_elements", "changes", "invalidation_scope", "reapproval_required", "revised_job"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "planning_model_version": {"enum": [1, 2]},
+    "editorial_boundary_change": {"type": "boolean"},
+    "generation_handoff_change": {"type": "boolean"},
+    "camera_intent_change": {"type": "boolean"},
     "strategy": {"enum": ["prompt_only", "reference_role", "reference_set", "seed_revision", "shorten_split", "mode_change", "temporal_portion", "clean_endpoint", "bridge", "transition_revision", "audio_only", "picture_only", "editorial", "upstream_revision"]},
     "locked_elements": {"type": "array"},
     "changes": {"type": "array", "minItems": 1},

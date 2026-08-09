@@ -1,19 +1,19 @@
 ---
 name: animatic-previs-planner
-description: Convert a validated storyboard and optional sound plan or seed thumbnails into a schema-valid timed paper animatic, EDL, pacing/readability findings, and optional deterministic preview specification. Use after Storyboard Director and before Production Preflight without generating media or changing shots.
+description: Convert a validated feature-film storyboard and optional sound plan or seed thumbnails into a schema-valid timed paper animatic, editorial EDL, shot-to-segment assembly map, pacing/readability findings, and optional deterministic preview specification. Use after Storyboard Director and before Production Preflight without generating media or changing shots.
 ---
 
 # Animatic and Previs Planner
 
 ## Mission
 
-Convert a valid storyboard into a time-ordered paper animatic and pacing/readability analysis. Compute edit timing, action/reaction windows, audio cue placement, handles, and transition dependencies for preflight. Optionally specify—but never execute—a static preview.
+Convert a valid storyboard into a time-ordered paper animatic and pacing/readability analysis. Compute scene-time-to-record-time mapping, editorial shot timing, action/reaction windows, audio cue placement, handles, and generation assembly dependencies for preflight. Optionally specify—but never execute—a static preview.
 
 Read the [timing rules](references/timing-readability-rules.yaml), [skill contract](references/skill-contract.yaml), and `schemas/animatic-plan.schema.json`.
 
 ## Ownership boundary
 
-Own paper timing, EDL order, pacing/readability analysis, arithmetic, action/reaction coverage, cue placement checks, and optional preview specification. Preserve shots, segments, blocking, camera, handoffs, plot, canon, and sound intent. Report defects to owners; do not redesign.
+Own paper timing, editorial EDL order, shot-to-segment assembly mapping, pacing/readability analysis, arithmetic, action/reaction coverage, cue placement checks, and optional preview specification. Produce the post-storyboard editorial sound-boundary map without changing sound intent. Preserve shots, segments, blocking, camera, generation handoffs, plot, canon, and pre-storyboard sound intent. Report defects to owners; do not redesign.
 
 ## Inputs
 
@@ -21,32 +21,32 @@ Consume exact valid revisions of storyboard, project request/timebase, condition
 
 ## Required outputs
 
-Return authoritative `animatic-plan.yaml`, `paper-edit.edl.yaml`, `pacing-review.yaml`, and optional `preview-spec.yaml`. Include shared envelope, intended runtime, handles, one timeline row per segment, pacing findings, paper edit, and machine status/affected IDs/next owner.
+Return authoritative `animatic-plan.yaml`, `paper-edit.edl.yaml`, `shot-segment-assembly.yaml`, `pacing-review.yaml`, and optional `preview-spec.yaml`. Include shared envelope, intended runtime, handles, scene/source/record time maps, shot-level editorial rows, segment rows, boundary mechanisms, generation handoffs, post-storyboard sound-boundary map, pacing findings, paper edit, and machine status/affected IDs/next owner.
 
 ## Processing method
 
 1. Validate envelopes, source hashes, IDs, status, and FPS/timebase.
-2. Copy storyboard order and exact transition semantics.
-3. Build a contiguous frame-quantized display timeline while retaining target seconds.
+2. Copy storyboard shot order and exact bilateral editorial boundary semantics; never convert a generation handoff into an editorial cut.
+3. Build contiguous frame-quantized record time while retaining scene time and source time.
 4. Mark readable entry, primary action, reaction/settle, and stable exit windows.
-5. Join sound cue IDs and check their timing and carry policy.
+5. Join sound cue IDs and create a second-pass boundary map for dialogue, ambience, effects, music, and carry policy.
 6. Run deterministic runtime, gap/overlap, readability, audio, transition, and duration checks.
 7. If requested, specify timestamped existing thumbnails/slates only; execute nothing.
 8. Emit canonical artifacts and return review-ready only without blocking findings.
 
 ## Invariants
 
-- Require every segment to be >0 and <=10 seconds; recommend shorter risk-heavy segments without splitting them here.
+- Require every generation segment to be >0 and <=10 seconds; recommend shorter risk-heavy segments without changing the editorial shot here.
 - Match intended runtime within one frame with no unexplained gap/overlap.
 - Require readable entry, action after entry, necessary reaction, and stable exit.
-- Require explicit continuation/bridge dependencies and reject unusable exits.
+- Require explicit generation relationships, moving/stable endpoint suitability, and reject unusable exits only for the declared handoff type.
 - Keep required cues within bounds and off the final frame unless expressly safe.
 - Preserve stable IDs, source hashes, reference roles, and upstream decisions.
 - Perform no generation, workflow compilation, media processing, or approval.
 
 ## Non-responsibilities
 
-Do not invent or change plot, dialogue, performance, canon, camera, shots, segments, transitions, H3 modes, workflows, keyframes, renders, QC, repair, or post decisions.
+Do not invent or change plot, dialogue, performance, canon, camera, shots, segments, editorial boundaries, generation handoffs, H3 modes, workflows, keyframes, renders, QC, repair, or final post decisions.
 
 ## Failure conditions
 
@@ -56,7 +56,7 @@ Use shared codes and evidence. Block over-cap/overloaded segments, missing entry
 
 - Validate animatic schema, metadata, IDs, hashes, and exact sources.
 - Round half-up to integer frames; require positive frames, <=10*FPS, contiguous ranges, and runtime tolerance <=1/FPS.
-- Validate transition dependencies, cue bounds/tolerances, declared audio carry, and conditional sound presence.
+- Validate bilateral editorial boundary dependencies, separate generation handoffs, cue bounds/tolerances, declared audio carry, and conditional sound presence.
 - Run deterministic fixture checks without media inspection.
 
 ## Minimal example

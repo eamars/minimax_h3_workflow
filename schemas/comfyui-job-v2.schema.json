@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "comfyui-job-v2.schema.json",
+  "type": "object",
+  "required": ["artifact", "planning_model_version", "job_id", "job_type", "approved_plan", "shot_id", "segment_id", "generation_relationship", "endpoint_policy", "scene_time", "source_time", "record_time", "camera_interval_map", "continuity_contract", "h3_prompt_packet_id", "workflow", "dependencies", "output"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "planning_model_version": {"const": 2},
+    "job_id": {"type": "string", "minLength": 1},
+    "job_type": {"enum": ["video_segment", "keyframe", "bridge"]},
+    "approved_plan": {"$ref": "common-defs.schema.json#/$defs/approvedPlan"},
+    "shot_id": {"type": "string", "pattern": "^SEQ[0-9]{2,}_SC[0-9]{2,}_SH[0-9]{2,}$"},
+    "segment_id": {"type": "string", "pattern": "^SEQ[0-9]{2,}_SC[0-9]{2,}_SH[0-9]{2,}_SEG[0-9]{2,}$"},
+    "generation_relationship": {"enum": ["independent", "same_shot_continue", "endpoint_bridge", "reference_reestablish", "terminal"]},
+    "endpoint_policy": {"enum": ["none", "moving_endpoint", "stable_tail", "approved_entry_reference", "bridge_endpoints"]},
+    "scene_time": {"$ref": "common-defs.schema.json#/$defs/cinematicTimeRange"},
+    "source_time": {"$ref": "common-defs.schema.json#/$defs/cinematicTimeRange"},
+    "record_time": {"$ref": "common-defs.schema.json#/$defs/cinematicTimeRange"},
+    "camera_interval_map": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["start_seconds", "end_seconds", "camera_setup_id", "motion"]}},
+    "continuity_contract": {"type": "object", "required": ["invariants", "expected_deltas", "forbidden_deltas"]},
+    "h3_prompt_packet_id": {"type": "string", "minLength": 1},
+    "workflow": {"type": "object", "required": ["template_id", "template_version", "workflow_hash"]},
+    "dependencies": {"type": "array", "items": {"type": "string"}},
+    "output": {"type": "object", "required": ["path", "media_hash"]},
+    "motion_endpoint_evidence": {"$ref": "common-defs.schema.json#/$defs/generationHandoff/properties/motion_endpoint_evidence"}
+  },
+  "additionalProperties": false
+}

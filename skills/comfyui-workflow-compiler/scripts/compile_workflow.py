@@ -77,6 +77,72 @@ def validate_gate(plan: dict, approval: dict):
         raise AssertionError(f"PLAN_HASH_MISMATCH: declared {declared}, computed {actual}")
 
 
+def validate_cinematic_plan(plan: dict, bindings: dict, capability_profile: dict | None = None) -> dict | None:
+    """Enforce the v2 shot/segment/boundary split before compiling a job."""
+    if plan.get("planning_model_version") != 2:
+        return None
+    required = {"director_treatment", "scene_geography", "shots", "generation_segments", "editorial_boundaries", "generation_handoffs", "continuity_registry", "animatic_intent", "creative_acceptance_tests"}
+    missing = required - set(plan)
+    if missing:
+        raise AssertionError(f"STORYBOARD_INPUT_SCHEMA_INVALID: v2 plan missing {sorted(missing)}")
+    if "handoffs" in plan:
+        raise AssertionError("EDITORIAL_GENERATION_BOUNDARY_CONFLATED: legacy handoffs field is forbidden in v2")
+    segment_id = bindings.get("segment_id")
+    if not segment_id:
+        raise AssertionError("STORYBOARD_TRACEABILITY_MISSING: v2 bindings require segment_id")
+    segments = [item for item in plan["generation_segments"] if item.get("segment_id") == segment_id]
+    if len(segments) != 1:
+        raise AssertionError(f"STORYBOARD_TRACEABILITY_MISSING: no unique v2 segment {segment_id}")
+    segment = segments[0]
+    for field in ("scene_time", "source_time", "record_time", "camera_interval_map", "generation_handoff_to_next"):
+        if field not in segment:
+            raise AssertionError(f"TIME_DOMAIN_MISSING: {segment_id} missing {field}")
+    if any(field in segment for field in ("transition_to_next", "dominant_camera_move", "primary_performance_arc")):
+        raise AssertionError(f"EDITORIAL_GENERATION_BOUNDARY_CONFLATED: v2 segment {segment_id} has a legacy field")
+    shot_id = segment.get("shot_id")
+    shots = [item for item in plan["shots"] if item.get("shot_id") == shot_id]
+    if len(shots) != 1 or not isinstance(shots[0].get("camera"), dict):
+        raise AssertionError(f"CAMERA_MODEL_OPAQUE: v2 segment {segment_id} has no typed shot camera")
+    camera = shots[0]["camera"]
+    if not isinstance(camera.get("keyframes"), list) or not camera["keyframes"] or not isinstance(camera.get("risk_controls"), list) or not camera["risk_controls"]:
+        raise AssertionError(f"CAMERA_TRACEABILITY_MISSING: v2 segment {segment_id} camera needs keyframes and risk controls")
+    if not isinstance(camera.get("setup", {}).get("look_at"), dict):
+        raise AssertionError(f"CAMERA_TRACEABILITY_MISSING: v2 segment {segment_id} camera needs look_at")
+    handoff = segment.get("generation_handoff_to_next")
+    if not isinstance(handoff, dict):
+        raise AssertionError(f"GENERATION_RELATIONSHIP_INVALID: {segment_id} needs an explicit generation handoff")
+    declarations = [item for item in plan["generation_handoffs"] if item.get("handoff_id") == handoff.get("handoff_id")]
+    if len(declarations) != 1 or declarations[0] != handoff:
+        raise AssertionError(f"GENERATION_RELATIONSHIP_INVALID: {segment_id} handoff is not exactly declared")
+    for field in ("generation_relationship", "endpoint_policy", "camera_interval_map_hash", "continuity_contract_hash"):
+        if field not in bindings:
+            raise AssertionError(f"COMPILATION_TRACEABILITY_MISSING: bindings require {field}")
+    if bindings["generation_relationship"] != handoff.get("relationship") or bindings["endpoint_policy"] != handoff.get("endpoint_policy"):
+        raise AssertionError(f"GENERATION_RELATIONSHIP_INVALID: {segment_id} bindings do not match the approved handoff")
+    if bindings["camera_interval_map_hash"] != canonical_hash(segment["camera_interval_map"]):
+        raise AssertionError(f"CAMERA_INTERVAL_BINDING_MISMATCH: {segment_id} interval hash does not match the plan")
+    if bindings["continuity_contract_hash"] != canonical_hash(segment["continuity_contract"]):
+        raise AssertionError(f"CONTINUITY_BINDING_MISMATCH: {segment_id} continuity hash does not match the plan")
+    duration = float(segment["duration_seconds"])
+    previous = 0.0
+    setup_id = shots[0]["camera"]["setup"].get("setup_id")
+    for interval in segment["camera_interval_map"]:
+        start, end = float(interval.get("start_seconds", -1)), float(interval.get("end_seconds", -1))
+        if start != previous or end <= start or end > duration or interval.get("camera_setup_id") != setup_id:
+            raise AssertionError(f"CAMERA_INTERVAL_BINDING_MISMATCH: {segment_id} camera interval map is not contiguous and setup-bound")
+        previous = end
+    if abs(previous - duration) > 0.02:
+        raise AssertionError(f"CAMERA_INTERVAL_BINDING_MISMATCH: {segment_id} camera interval map has a coverage gap")
+    if handoff.get("endpoint_policy") == "moving_endpoint":
+        if not isinstance(handoff.get("motion_endpoint_evidence"), dict):
+            raise AssertionError(f"MOVING_ENDPOINT_EVIDENCE_MISSING: {segment_id} has no approved endpoint evidence")
+        profile = capability_profile or {}
+        capabilities = profile.get("capabilities") or profile.get("evidence", {}).get("capabilities") or {}
+        if capabilities.get("moving_endpoint_continuation") is not True:
+            raise AssertionError(f"MOVING_ENDPOINT_CAPABILITY_UNPROVEN: {segment_id} requires live moving-endpoint capability evidence")
+    return segment
+
+
 def validate_bindings(bindings: dict, entry: dict, profile: dict):
     missing = set(entry["input_bindings"]) - set(bindings)
     if missing:
@@ -132,6 +198,7 @@ def main() -> int:
         raise AssertionError(f"WORKFLOW_TEMPLATE_MISSING: {args.template_id}")
     entry = entries[args.template_id]
     bindings, profile = load(args.bindings), load(args.capability_profile)
+    cinematic_segment = validate_cinematic_plan(plan, bindings, profile)
     if not profile.get("profile_hash") or not (profile.get("evidence", {}).get("object_info") or profile.get("object_info")):
         raise AssertionError("CAPABILITY_PROBE_MISSING")
     validate_bindings(bindings, entry, profile)
@@ -145,6 +212,7 @@ def main() -> int:
     payload = json.dumps(graph, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
     report = {
         "status": "PASS",
+        "planning_model_version": plan.get("planning_model_version", 1),
         "template_id": args.template_id,
         "plan_hash": approval["plan_hash"],
         "capability_profile_hash": profile["profile_hash"],
@@ -156,6 +224,15 @@ def main() -> int:
         "effective_duration_seconds": float(bindings["effective_duration_seconds"]),
         "output": args.output.as_posix(),
     }
+    if cinematic_segment is not None:
+        report.update({
+            "shot_id": cinematic_segment["shot_id"],
+            "scene_time": cinematic_segment["scene_time"],
+            "source_time": cinematic_segment["source_time"],
+            "record_time": cinematic_segment["record_time"],
+            "camera_intent_hash": canonical_hash(next(item for item in plan["shots"] if item["shot_id"] == cinematic_segment["shot_id"])["camera"]),
+            "generation_handoff": cinematic_segment["generation_handoff_to_next"],
+        })
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(payload, encoding="utf-8")

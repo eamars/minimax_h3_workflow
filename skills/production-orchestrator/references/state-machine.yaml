@@ -1,4 +1,4 @@
-version: 1
+version: 2
 scope: project_lifecycle
 initial_state: NEW
 terminal_states:
@@ -74,11 +74,12 @@ invalidation_behavior:
     actions:
       - preserve_creative_plan_approval
       - invalidate_jobs_compiled_from_changed_template
-  continuation_tail_changed:
+  generation_handoff_endpoint_changed:
     new_state: KEYFRAME_PREP
     actions:
       - preserve_approved_predecessor_media
-      - invalidate_successor_entry_frame_and_transitive_dependents
+      - evaluate_declared_endpoint_policy
+      - invalidate_successor_entry_evidence_and_transitive_dependents
 
 segment_states:
   - PLANNED

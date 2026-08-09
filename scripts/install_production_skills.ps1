@@ -8,7 +8,7 @@ $skillNames = @(
     'production-orchestrator', 'request-normalizer', 'reference-canon-manager',
     'plot-architect', 'scene-performance-writer', 'sound-dialogue-planner',
     'storyboard-director', 'animatic-previs-planner', 'production-preflight-reviewer',
-    'minimax-h3-adapter', 'keyframe-handoff-builder', 'comfyui-workflow-compiler',
+    'minimax-h3-adapter', 'keyframe-handoff-builder', 'comfyui-workflow-compiler', 'comfyui',
     'render-orchestrator', 'continuity-qc-supervisor', 'repair-director', 'post-editor'
 )
 

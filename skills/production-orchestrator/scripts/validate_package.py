@@ -1,8 +1,8 @@
 """Validate the self-contained production-orchestrator skill package.
 
-This is intentionally a small deterministic validator for the Milestone 0
-contract. Full artifact JSON schemas and runtime validators belong to later
-milestones.
+This is a deterministic validator for the approval-gated real-cinematic
+orchestrator contract. Detailed artifact validation belongs to the specialist
+validators, but topology and lifecycle invariants are checked here.
 """
 
 from __future__ import annotations
@@ -56,9 +56,17 @@ def main() -> int:
     routing = load_yaml("routing-policy.yaml")
     check(routing["default_mode"] == "PLAN_ONLY", "default mode must be PLAN_ONLY")
     check(routing["segment_policy"]["maximum_duration_seconds"] == 10, "segment cap must be 10 seconds")
-    continuation = routing["transition_policy"]["continue"]["dependency_order"]
-    check(continuation.index("qc_predecessor") < continuation.index("approve_stable_tail"), "QC must precede tail approval")
-    check(continuation.index("approve_stable_tail") < continuation.index("render_successor"), "tail approval must precede successor render")
+    check(set(routing["editorial_boundary_policy"]["allowed_mechanisms"]) == {"cut", "dissolve", "fade", "end"}, "editorial boundary mechanisms are invalid")
+    generation = routing["generation_handoff_policy"]
+    check(set(generation["allowed_relationships"]) == {"independent", "same_shot_continue", "endpoint_bridge", "reference_reestablish", "terminal"}, "generation relationships are invalid")
+    continuation = generation["same_shot_continue"]["dependency_order"]
+    check(continuation.index("qc_predecessor") < continuation.index("evaluate_declared_endpoint_policy"), "QC must precede endpoint-policy evaluation")
+    check(continuation.index("evaluate_declared_endpoint_policy") < continuation.index("compile_successor_job"), "endpoint-policy evaluation must precede successor compilation")
+    check(continuation.index("compile_successor_job") < continuation.index("render_successor"), "successor compilation must precede successor render")
+
+    approval_policy = load_yaml("approval-invalidation-policy.yaml")
+    technical_rule = approval_policy["change_control"]["technical_only_changes"]["rule"]
+    check("camera" in technical_rule and "continuity" in technical_rule and "editorial" in technical_rule, "technical resegmentation rule does not protect creative fields")
 
     state_machine = load_yaml("state-machine.yaml")
     approval_transition = next(
@@ -80,7 +88,7 @@ def main() -> int:
     required = {
         "SEGMENT_TOO_LONG", "HANDOFF_UNSPECIFIED", "PLAN_APPROVAL_REQUIRED",
         "PLAN_HASH_MISMATCH", "WORKFLOW_NODE_UNAVAILABLE", "HANDOFF_TAIL_UNAPPROVED",
-        "HANDOFF_MISMATCH", "APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN",
+        "HANDOFF_MISMATCH", "EDITORIAL_GENERATION_BOUNDARY_CONFLATED", "CAMERA_MODEL_OPAQUE", "APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN",
     }
     check(required <= codes, f"failure taxonomy missing {sorted(required - codes)}")
     check(len(codes) == len(taxonomy["failures"]), "failure taxonomy contains duplicate codes")

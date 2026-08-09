@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sound-plan-v2.schema.json",
+  "type": "object",
+  "required": ["artifact", "planning_model_version", "speaker_registry", "cues", "continuity_rules", "generation_routing", "editorial_boundary_map"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "planning_model_version": {"const": 2},
+    "speaker_registry": {"type": "array"},
+    "cues": {"type": "array"},
+    "continuity_rules": {"type": "array"},
+    "generation_routing": {"type": "array"},
+    "editorial_boundary_map": {"type": "array", "items": {"type": "object", "required": ["boundary_id", "picture_edit", "audio_edit", "cue_ids"], "properties": {"boundary_id": {"type": "string"}, "picture_edit": {"enum": ["cut", "dissolve", "fade", "end"]}, "audio_edit": {"enum": ["independent", "j_cut", "l_cut", "hard_sync"]}, "overlap_frames": {"type": "integer", "minimum": 0}, "pre_roll_frames": {"type": "integer", "minimum": 0}, "post_roll_frames": {"type": "integer", "minimum": 0}, "cue_ids": {"type": "array"}}, "additionalProperties": false}}
+  },
+  "additionalProperties": false
+}

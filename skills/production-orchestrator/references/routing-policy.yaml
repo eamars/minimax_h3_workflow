@@ -1,4 +1,4 @@
-version: 1
+version: 2
 implementation_status: complete_approval_gated_pipeline
 default_mode: PLAN_ONLY
 
@@ -117,7 +117,7 @@ segment_policy:
     - stable_continuity_checkpoint_required
     - endpoint_or_reference_mode_changes
     - localized_repair_boundary_needed
-  stable_exit_reject_if:
+  stable_exit_reject_if_when_endpoint_policy_requires_stable_tail:
     - motion_blur
     - face_occlusion
     - incomplete_expression_change
@@ -130,39 +130,41 @@ segment_policy:
     - Trim decoded video and audio to an effective duration at or below 10 seconds before QC or handoff extraction.
     - Treat the effective post-trim clip as the authoritative segment artifact.
 
-transition_policy:
-  allowed_types:
-    - cut
-    - continue
-    - bridge
-    - match_cut
-    - dissolve
-  continue:
+editorial_boundary_policy:
+  allowed_mechanisms: [cut, dissolve, fade, end]
+  bilateral_shot_references_required: true
+  audio_behavior_required: true
+  motivations_required: true
+  dissolve:
+    phase: post
+    note: Do not use a dissolve to claim semantic or physical continuity.
+
+generation_handoff_policy:
+  allowed_relationships: [independent, same_shot_continue, endpoint_bridge, reference_reestablish, terminal]
+  endpoint_policies: [none, moving_endpoint, stable_tail, approved_entry_reference, bridge_endpoints]
+  same_shot_continue:
     dependency_order:
       - render_predecessor
       - qc_predecessor
-      - approve_stable_tail
-      - extract_and_normalize_tail
-      - verify_endpoint_approval_record
-      - bind_tail_as_successor_first_frame
+      - evaluate_declared_endpoint_policy
+      - approve_endpoint_when_required
+      - bind_approved_endpoint_or_reference
       - compile_successor_job
       - render_successor
       - qc_successor
-    required_dependency_artifact: handoff-frame-selection
     parallelizable: false
-  bridge:
+  endpoint_bridge:
     requires:
       - approved_source_tail
       - approved_target_head
       - supported_first_last_frame_workflow
-    fallback: Report unsupported capability; request an approved editorial transition revision.
-  cut:
+    parallelizable: false
+  independent:
     parallelizable_when_inputs_stable: true
-  match_cut:
-    parallelizable_when_both_entry_frames_fixed: true
-  dissolve:
-    phase: post
-    note: Do not use a dissolve to claim semantic or physical continuity.
+  reference_reestablish:
+    parallelizable_when_reference_bindings_fixed: true
+  terminal:
+    requires: []
 
 dag_policy:
   - Reject cycles before execution.

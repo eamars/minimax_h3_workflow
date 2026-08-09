@@ -1,9 +1,9 @@
 name: reference-canon-manager
-version: 0.1.0
+version: 0.2.0
 stage: canon
 mode: planning
 consumes: [project-request, seed-assets, optional-reference-map, prior-canon-lock]
-produces: [asset-manifest, canon-lock, reference-conflict-report, reference-order]
+produces: [asset-manifest, canon-lock, reference-conflict-report, reference-order, geography-evidence]
 side_effects: filesystem
 approval_required: false
 may_modify_upstream_decisions: false
@@ -21,6 +21,13 @@ canon_rules:
 roles:
   allowed: [subject_identity, environment_architecture, style_rendering, wardrobe, prop, pose_expression, camera_composition, motion_reference, audio_reference, general_reference]
   primary_role_required: true
+geography:
+  confidence_values: [exact, inferred, unknown]
+  coordinates_owner: storyboard-director
+  unknown_regions_preserved: true
+camera_reference:
+  position_nonbinding: true
+  owner: storyboard-director
 endpoint:
   allowed: [none, first_frame, last_frame, both]
   default: none

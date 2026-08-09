@@ -6,8 +6,29 @@
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
     "canon_entities": {"type": "array", "items": {"type": "object", "required": ["canon_id", "entity_type", "text_anchor", "asset_ids", "locked_traits", "non_binding_traits"]}},
-    "role_bindings": {"type": "array", "items": {"type": "object", "required": ["binding_id", "asset_id", "canon_id", "role", "timeline_scope", "endpoint_role", "transfer_policy"]}},
+    "role_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["binding_id", "asset_id", "canon_id", "role", "property_scope", "timeline_scope", "strength", "endpoint_role", "transfer_policy"],
+        "properties": {
+          "binding_id": {"type": "string", "minLength": 1},
+          "asset_id": {"type": "string", "minLength": 1},
+          "canon_id": {"type": "string", "minLength": 1},
+          "role": {"type": "string", "minLength": 1},
+          "property_scope": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "timeline_scope": {"type": "string", "minLength": 1},
+          "strength": {"enum": ["canonical", "strong", "soft", "informational"]},
+          "endpoint_role": {"type": "string"},
+          "transfer_policy": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
     "source_asset_hashes": {"type": "object"},
-    "plot_handoff": {"type": "object", "required": ["ready", "blocking_scopes"]}
+    "plot_handoff": {"type": "object", "required": ["ready", "blocking_scopes"]},
+    "planning_model_version": {"enum": [1, 2]},
+    "scene_geography_evidence": {"type": "array", "items": {"type": "object", "required": ["landmark_id", "description", "confidence"]}},
+    "camera_reference_policy": {"type": "object", "required": ["position_is_nonbinding", "storyboard_owner"]}
   }
 }

@@ -1,8 +1,8 @@
 name: comfyui-workflow-compiler
-version: 0.1.0
+version: 0.2.0
 stage: compilation
 mode: compilation
-consumes: [approved-production-plan, approval-record, h3-prompt-packet-manifest, asset-manifest, canon-lock, handoff-frame-selection-optional, keyframe-report-optional, frozen-comfyui-capability-profile, versioned-workflow-catalog, output-path-policy]
+consumes: [approved-production-plan-v2, approval-record, h3-prompt-packet-manifest-v2, asset-manifest, canon-lock, generation-handoff-selection-optional, keyframe-report-optional, frozen-comfyui-capability-profile, versioned-workflow-catalog, output-path-policy]
 produces: [comfyui-workflows, comfyui-job-manifests, production-dag, compile-report, checksums]
 side_effects: filesystem
 approval_required: plan_approval
@@ -14,6 +14,7 @@ requires:
   capability_profile: {object_info_evidence: true, installed_model_evidence: true, system_stats_evidence: true, frozen_revision_hash: required}
   catalog: {validated_revision: required, template_and_mapping_hashes: required}
   execution: {queue: forbidden, render: forbidden, model_download: forbidden}
+topology: {editorial_boundaries_not_generation_edges: true, generation_relationships: [independent, same_shot_continue, endpoint_bridge, reference_reestablish, terminal], time_domains: [scene_time, source_time, record_time]}
 limits:
   target_duration_seconds: {exclusive_minimum: 0, maximum: 10}
   effective_duration_seconds: {exclusive_minimum: 0, maximum: 10}

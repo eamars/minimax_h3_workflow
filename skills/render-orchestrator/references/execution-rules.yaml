@@ -1,8 +1,10 @@
-version: 1
+version: 2
 admission:
   require: [approved_plan_hash_match, compiled_bundle_valid, dependencies_satisfied, output_path_confined]
-  continue: [predecessor_complete, predecessor_qc_pass, approved_handoff_frame]
-  bridge: [source_endpoint_approved, target_endpoint_approved]
+  same_shot_continue: [predecessor_complete, predecessor_qc_pass, declared_endpoint_policy_satisfied]
+  endpoint_bridge: [source_endpoint_approved, target_endpoint_approved]
+  moving_endpoint: [predecessor_qc_pass, camera_path_evidence_approved]
+  independent: [inputs_valid]
 scheduling:
   order: stable_topological
   concurrency: configured_positive_integer

@@ -1,14 +1,14 @@
 name: storyboard-director
-version: 0.2.0
+version: 0.3.0
 stage: storyboard
 mode: planning
 consumes: [project-request, canon-lock, asset-manifest, plot-package, scene-performance, optional-sound-plan, optional-storyboard-revision-request]
-produces: [storyboard-package, shot-table, segment-plan, handoff-manifest, creative-acceptance-tests]
+produces: [storyboard-package-v2, shot-table, segment-plan, editorial-boundary-manifest, generation-handoff-manifest, creative-acceptance-tests]
 side_effects: none
 approval_required: false
 may_modify_upstream_decisions: false
 owner: storyboard-director
-implementation_status: invokable_milestone_2_model_neutral
+implementation_status: invokable_milestone_3_real_cinematic
 routing:
   upstream: [request-normalizer, reference-canon-manager, plot-architect, scene-performance-writer, sound-dialogue-planner_when_triggered]
   downstream: [animatic-previs-planner, production-preflight-reviewer]
@@ -17,7 +17,12 @@ segment_policy:
   duration_seconds: {exclusive_minimum: 0, maximum: 10}
   preferred_seconds: {minimum: 4, maximum: 8}
   one_primary_performance_arc: true
-  one_dominant_camera_move: true
+  one_dominant_in_shot_camera_move: true
+  camera_position_change_between_shots: allowed_when_motivated
+  stable_exit_scope: typed_generation_handoff_only
+  time_domains: [scene_time, source_time, record_time]
 transition_policy:
-  allowed: [cut, continue, bridge, match_cut, dissolve, end]
-failure_codes: [STORYBOARD_INPUT_SCHEMA_INVALID, STORYBOARD_SOURCE_VERSION_MISMATCH, SHOT_HAS_NO_PURPOSE, BLOCKING_AMBIGUOUS, SEGMENT_TOO_LONG, SEGMENT_NONPOSITIVE, SEGMENT_OVERLOADED, ENTRY_STATE_MISSING, EXIT_STATE_UNSTABLE, HANDOFF_UNSPECIFIED, TRANSITION_SEMANTICS_INVALID, TIMELINE_NONMONOTONIC, CAMERA_MOVE_UNMOTIVATED, STORYBOARD_TRACEABILITY_MISSING, STORYBOARD_TECHNOLOGY_CONTAMINATION, STORYBOARD_ARTIFACT_PROVENANCE_INVALID]
+  editorial_mechanisms: [cut, dissolve, fade, end]
+  generation_relationships: [independent, same_shot_continue, endpoint_bridge, reference_reestablish, terminal]
+  mechanism_and_relationship_are_separate: true
+failure_codes: [STORYBOARD_INPUT_SCHEMA_INVALID, STORYBOARD_SOURCE_VERSION_MISMATCH, SHOT_HAS_NO_PURPOSE, COVERAGE_THIN, BLOCKING_AMBIGUOUS, SCENE_GEOGRAPHY_MISSING, UNKNOWN_GEOMETRY_UNHANDLED, CAMERA_MODEL_OPAQUE, CAMERA_SETUP_MISSING, CAMERA_POSITION_UNMOTIVATED, CAMERA_MOVE_UNMOTIVATED, SEGMENT_TOO_LONG, SEGMENT_NONPOSITIVE, SEGMENT_OVERLOADED, TIME_DOMAIN_MISSING, TIMELINE_NONMONOTONIC, ENTRY_STATE_MISSING, CONTINUITY_CONTRACT_MISSING, EXIT_STATE_UNSTABLE, HANDOFF_UNSPECIFIED, EDITORIAL_GENERATION_BOUNDARY_CONFLATED, EDITORIAL_BOUNDARY_BILATERAL_MISMATCH, TRANSITION_SEMANTICS_INVALID, GENERATION_RELATIONSHIP_INVALID, MOVING_HANDOFF_POLICY_MISSING, STORYBOARD_TRACEABILITY_MISSING, STORYBOARD_TECHNOLOGY_CONTAMINATION, STORYBOARD_ARTIFACT_PROVENANCE_INVALID]

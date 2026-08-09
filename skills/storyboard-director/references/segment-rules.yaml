@@ -1,17 +1,34 @@
-version: 1
+version: 2
+planning_model_version: 2
+time_domains:
+  scene_time: narrative_action_clock
+  source_time: generated_clip_local_clock
+  record_time: final_editorial_timeline
+editorial_shot:
+  shot_id_persists_across_segments: true
+  camera_position_change_between_shots: allowed_when_motivated
+  required_camera_fields: [setup.position, setup.orientation, setup.optics, setup.composition, setup.axis, in_shot_motion]
+  required_staging_fields: [geography_id, subject_positions, action_path, eyelines, entry_exit]
 segment:
   duration_seconds: {exclusive_minimum: 0, maximum: 10}
   preferred_seconds: {minimum: 4, maximum: 8}
   primary_performance_arc: exactly_one
-  dominant_camera_move: exactly_one_or_static
+  dominant_in_shot_camera_motion: exactly_one_or_static
+  stable_exit_required_for: [same_shot_continue, endpoint_bridge]
+  active_motion_exit_allowed_for: [independent, reference_reestablish]
   stable_exit_forbid: [motion_blur, face_or_prop_occlusion, incomplete_expression_change, uncontrolled_water_or_smoke, unplanned_fast_pan, impossible_reflection]
   timeline: {tracks: [performance, camera, sound, edit_handoff], intervals: positive_monotonic_within_duration}
-transitions:
-  cut: {continuity: independent, dependency: none, parallelizable: true}
-  continue: {continuity: exact_stable_exit_to_next_entry, dependency: approved_tail_then_successor, parallelizable: false}
-  bridge: {continuity: endpoint_transition_job, dependency: approved_source_and_target_endpoints, parallelizable: false}
-  match_cut: {continuity: named_bilateral_motif, dependency: fixed_entry_states, parallelizable: true}
-  dissolve: {continuity: editorial_only, dependency: independently_accepted_clips, semantic_continuity: false}
+editorial_boundaries:
+  mechanisms: [cut, dissolve, fade, end]
+  required_fields: [from_shot_id, to_shot_id, mechanism, motivations, audio_behavior, record_time]
+  bilateral_shot_references: true
+generation_handoffs:
+  relationships: [independent, same_shot_continue, endpoint_bridge, reference_reestablish, terminal]
+  endpoint_policies: [none, moving_endpoint, stable_tail, approved_entry_reference, bridge_endpoints]
+  editorial_mechanism_forbidden: true
+continuity:
+  required: [invariants, expected_deltas, forbidden_deltas]
+  identity_environment_state_must_survive_framing_changes: true
 creative_acceptance:
-  every_shot: [plot_trace, purpose, blocking, camera_motivation, edit_intent]
-  every_segment: [duration, entry_state, performance_arc, dominant_move, four_tracks, exit_state, transition, traceability, predicates]
+  every_shot: [plot_trace, purpose, coverage_function, geography, staging, typed_camera, continuity_in, continuity_out, editorial_boundary_links]
+  every_segment: [duration, scene_time, source_time, record_time, entry_state, performance_arc, camera_interval_map, four_tracks, exit_state, generation_handoff, traceability, predicates]

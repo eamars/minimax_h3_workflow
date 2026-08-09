@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "editorial-boundary.schema.json",
+  "type": "object",
+  "required": ["planning_model_version", "boundaries"],
+  "properties": {
+    "planning_model_version": {"const": 2},
+    "boundaries": {"type": "array", "minItems": 1, "items": {"$ref": "common-defs.schema.json#/$defs/editorialBoundary"}}
+  },
+  "additionalProperties": false
+}

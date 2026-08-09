@@ -85,7 +85,11 @@ def validate_schemas() -> None:
         "plot-package.schema.json", "scene-performance.schema.json", "sound-plan.schema.json",
         "storyboard-package.schema.json", "animatic-plan.schema.json", "preflight-report.schema.json",
         "production-plan.schema.json", "approval-record.schema.json", "h3-prompt-packet.schema.json",
+        "storyboard-package-v2.schema.json", "production-plan-v2.schema.json", "animatic-plan-v2.schema.json",
+        "h3-prompt-packet-v2.schema.json", "edit-decision-list-v2.schema.json", "camera-plan.schema.json", "scene-geography.schema.json",
+        "continuity-state.schema.json", "editorial-boundary.schema.json", "generation-handoff.schema.json",
         "keyframe-job.schema.json", "comfyui-job.schema.json", "production-dag.schema.json",
+        "keyframe-job-v2.schema.json", "comfyui-job-v2.schema.json", "production-dag-v2.schema.json", "qc-report-v2.schema.json", "sound-plan-v2.schema.json",
         "render-report.schema.json", "qc-report.schema.json", "repair-plan.schema.json",
         "edit-decision-list.schema.json", "delivery-manifest.schema.json", "project-state.schema.json",
     ]
@@ -100,6 +104,20 @@ def validate_schemas() -> None:
     common = json.loads((schema_dir / "common-defs.schema.json").read_text(encoding="utf-8"))
     duration = common["$defs"]["generationSegment"]["properties"]["duration_seconds"]
     check(duration.get("exclusiveMinimum") == 0 and duration.get("maximum") == 10, "segment duration contract invalid")
+    cinematic_segment = common["$defs"]["generationSegmentV2"]
+    check(set(("scene_time", "source_time", "record_time", "camera_interval_map", "generation_handoff_to_next")) <= set(cinematic_segment["required"]), "v2 segment contract missing cinematic fields")
+    v2_storyboard = json.loads((schema_dir / "storyboard-package-v2.schema.json").read_text(encoding="utf-8"))
+    check(v2_storyboard["properties"]["planning_model_version"].get("const") == 2, "v2 storyboard model version missing")
+    check("editorial_boundaries" in v2_storyboard["required"] and "generation_handoffs" in v2_storyboard["required"], "v2 boundary split missing")
+    job_v2 = json.loads((schema_dir / "comfyui-job-v2.schema.json").read_text(encoding="utf-8"))
+    check(job_v2["properties"]["planning_model_version"].get("const") == 2, "v2 job model version missing")
+    check({"shot_id", "segment_id", "camera_interval_map", "continuity_contract"} <= set(job_v2["required"]), "v2 job traceability fields missing")
+    dag_v2 = json.loads((schema_dir / "production-dag-v2.schema.json").read_text(encoding="utf-8"))
+    check("edges" not in dag_v2["properties"] and "generation_edges" in dag_v2["required"], "v2 DAG must separate generation and editorial topology")
+    dag_relations = dag_v2["properties"]["generation_edges"]["items"]["properties"]["relation"]["enum"]
+    check("continue" not in dag_relations and "bridge" not in dag_relations, "v2 DAG contains legacy edge relations")
+    qc_v2 = json.loads((schema_dir / "qc-report-v2.schema.json").read_text(encoding="utf-8"))
+    check({"camera_path", "generation_handoff", "editorial_boundary"} <= set(qc_v2["properties"]["mode"]["enum"]), "v2 QC modes are incomplete")
 
 
 def validate_graph(graph: dict, label: str) -> None:

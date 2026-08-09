@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "storyboard-package-v2.schema.json",
+  "type": "object",
+  "required": ["artifact", "planning_model_version", "director_treatment", "scene_geography", "shots", "generation_segments", "editorial_boundaries", "generation_handoffs", "continuity_registry", "animatic_intent", "creative_acceptance_tests"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "planning_model_version": {"const": 2},
+    "director_treatment": {
+      "type": "object",
+      "required": ["dramatic_engine", "visual_grammar", "coverage_strategy", "camera_position_policy"],
+      "properties": {
+        "dramatic_engine": {"type": "string", "minLength": 1},
+        "visual_grammar": {"type": "string", "minLength": 1},
+        "coverage_strategy": {"type": "string", "minLength": 1},
+        "camera_position_policy": {"const": "allowed_to_change_between_shots"},
+        "coverage_policy": {"type": "object"},
+        "allow_same_phase_overlap": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "scene_geography": {"$ref": "common-defs.schema.json#/$defs/sceneGeography"},
+    "shots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["shot_id", "sequence_id", "scene_id", "shot_index", "editorial_role", "purpose", "coverage_function", "plot_beat_ids", "performance_beat_ids", "staging", "camera", "scene_time", "continuity_in", "continuity_out", "incoming_boundary_id", "outgoing_boundary_id"],
+        "properties": {
+          "shot_id": {"type": "string", "pattern": "^SEQ[0-9]{2,}_SC[0-9]{2,}_SH[0-9]{2,}$"},
+          "sequence_id": {"type": "string", "minLength": 1},
+          "scene_id": {"type": "string", "minLength": 1},
+          "shot_index": {"type": "integer", "minimum": 1},
+          "editorial_role": {"enum": ["establishing", "master", "coverage", "insert", "reaction", "subjective", "transition", "terminal"]},
+          "purpose": {"type": "string", "minLength": 1},
+          "coverage_function": {"type": "string", "minLength": 1},
+          "coverage_phase": {"type": "string", "minLength": 1},
+          "plot_beat_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "performance_beat_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "staging": {"$ref": "common-defs.schema.json#/$defs/stagingPlan"},
+          "camera": {"$ref": "common-defs.schema.json#/$defs/cameraPlan"},
+          "scene_time": {"$ref": "common-defs.schema.json#/$defs/cinematicTimeRange"},
+          "continuity_in": {"$ref": "common-defs.schema.json#/$defs/continuityState"},
+          "continuity_out": {"$ref": "common-defs.schema.json#/$defs/continuityState"},
+          "incoming_boundary_id": {"type": ["string", "null"]},
+          "outgoing_boundary_id": {"type": ["string", "null"]},
+          "reference_bindings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["binding_id", "asset_id", "property_scope", "timeline_scope", "strength"],
+              "properties": {
+                "binding_id": {"type": "string", "minLength": 1},
+                "asset_id": {"type": "string", "minLength": 1},
+                "property_scope": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+                "timeline_scope": {"type": ["string", "object"]},
+                "strength": {"enum": ["canonical", "strong", "soft", "informational"]}
+              },
+              "additionalProperties": false
+            }
+          },
+          "sound_intent_ids": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "generation_segments": {"type": "array", "minItems": 1, "items": {"$ref": "common-defs.schema.json#/$defs/generationSegmentV2"}},
+    "editorial_boundaries": {"type": "array", "minItems": 1, "items": {"$ref": "common-defs.schema.json#/$defs/editorialBoundary"}},
+    "generation_handoffs": {"type": "array", "items": {"$ref": "common-defs.schema.json#/$defs/generationHandoff"}},
+    "continuity_registry": {"type": "array", "items": {"$ref": "common-defs.schema.json#/$defs/continuityState"}},
+    "animatic_intent": {"type": "object", "required": ["scene_time_policy", "record_time_policy", "pacing_notes"]},
+    "creative_acceptance_tests": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["test_id", "scope", "assertion"]}},
+    "source_reference_policy": {"type": "object"},
+    "migration": {
+      "type": "object",
+      "required": ["source_model_version", "status", "creative_fields_not_invented"],
+      "properties": {
+        "source_model_version": {"const": 1},
+        "status": {"enum": ["needs_editorial_completion", "complete"]},
+        "creative_fields_not_invented": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "source_artifact_hash": {"type": "string"},
+        "migration_tool_version": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

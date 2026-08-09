@@ -1,5 +1,11 @@
-version: 1
+version: 2
 cases:
+  - {id: historical_v1_reader, expect: {accepted: true, schema_version: 1}}
+  - {id: cinematic_v2_reader, expect: {accepted: true, required: [scene_time, source_time, record_time, scene_geography, typed_camera, editorial_boundaries, generation_handoffs, continuity_contract]}}
+  - {id: camera_position_change, expect: {accepted: true, setup_change_from_previous: true}}
+  - {id: boundary_split, expect: {rejected_when: generation_handoff_contains_editorial_mechanism}}
+  - {id: unknown_geometry, expect: {rejected_when: unknown_region_has_no_axis_or_coverage_motivation}}
+  - {id: moving_endpoint, expect: {accepted_when: same_shot_continue_declares_moving_endpoint}}
   - {id: valid_24s_continuity, expect: {minimum_segments: 3, maximum_each_seconds: 10, same_shot_id: true}}
   - {id: cap_precision, expect: {pass: 10.0, reject: [10.0001, 11.0]}}
   - {id: nonpositive, expect: {failure: SEGMENT_NONPOSITIVE}}

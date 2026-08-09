@@ -1,6 +1,6 @@
 ---
 name: keyframe-handoff-builder
-description: Prepare exact, approved endpoint images and deterministic continuation or bridge handoffs for MiniMax H3 video jobs. Use after plan approval when a user seed is an exact first/last frame, a continuation must reuse an approved tail, FL2VA/bridge endpoints are required, or a failed handoff needs a new version; never redesign canon or alter approved composition.
+description: Prepare exact, approved endpoint images and deterministic generation handoffs for MiniMax H3 video jobs, including stable tails, moving endpoints, approved entry references, and endpoint bridges. Use after plan approval when a user seed is an exact first/last frame, a same-shot continuation needs a tail, FL2VA/bridge endpoints are required, or a failed handoff needs a new version; never redesign canon or alter approved composition.
 ---
 
 # Keyframe and Handoff Builder
@@ -13,7 +13,7 @@ Read [endpoint rules](references/endpoint-handoff-rules.yaml), [validation fixtu
 
 ## Ownership boundary
 
-Own endpoint source resolution, extraction, deterministic approved normalization, candidate rejection, endpoint job specs, provenance, endpoint status, and handoff records. Do not own canon roles, transition meaning, prompt syntax, workflows, queueing, QC verdicts, or repair strategy.
+Own endpoint source resolution, extraction, deterministic approved normalization, candidate rejection, endpoint job specs, provenance, endpoint status, and generation-handoff records. Do not own canon roles, editorial boundary meaning, prompt syntax, workflows, queueing, QC verdicts, or repair strategy.
 
 ## Inputs
 
@@ -25,11 +25,11 @@ Emit approved/pending keyframes and retained candidates at deterministic paths p
 
 ## Processing method
 
-1. Verify plan approval/hash, assets, trigger, and transition authority.
+1. Verify plan approval/hash, assets, trigger, generation relationship, and endpoint-policy authority; do not derive a generation relationship from an editorial cut/dissolve.
 2. Resolve endpoints by stable IDs/hashes; never infer from names or appearance.
 3. Bind an exact declared user seed directly; preserve original bytes and record any required deterministic derived conversion.
-4. For continue, require predecessor QC PASS and approved effective clip; scan the declared final window and choose the latest candidate passing every stability check.
-5. For bridge, require approved source tail and target head.
+4. For `same_shot_continue`, evaluate the declared endpoint policy. Require a stable approved tail only for `stable_tail`; for `moving_endpoint`, preserve the moving endpoint evidence and require QC to judge the successor entry against the approved camera path; for `approved_entry_reference`, bind the declared reference without inventing a tail.
+5. For `endpoint_bridge`, require approved source tail and target head.
 6. Emit a target-still job only when the plan requires it and no approved endpoint exists; consume approved description/prompt.
 7. Normalize only via approved pad/crop/letterbox rule; never stretch, inpaint, retouch, denoise, or redesign.
 8. Validate decode, dimensions, color, paths, hashes, frame range, duplicate policy, and transforms.
@@ -41,16 +41,16 @@ Emit approved/pending keyframes and retained candidates at deterministic paths p
 - Operate on media only for an approved plan hash.
 - Keep declared user endpoints as source of truth and never regenerate them.
 - Extract only from effective post-trim clips <=10 seconds.
-- Require approved stable predecessor tail before continuation successor compile/render.
+- Require the declared endpoint policy before successor compile/render; do not impose a stable-tail rule on a valid moving-endpoint handoff.
 - Require both approved endpoints before a bridge.
 - Preserve bytes, hashes, frame indices/times, transforms, tools, stable IDs, and revisions.
 - Reject unstable/blurred/occluded/off-model/unfinished/impossible-reflection/ambiguous-hand states.
-- Preserve transitions, canon, composition, plot, performance, camera, and segment boundaries.
+- Preserve editorial boundaries, generation relationships, canon, composition, plot, performance, camera setup/motion, and segment boundaries.
 - Never submit ComfyUI jobs or select creative takes.
 
 ## Non-responsibilities
 
-Do not classify references, redesign, invent poses, write prompts, choose modes, alter segments/transitions, author graphs, queue, QC, repair, hide seams, or overwrite/delete artifacts.
+Do not classify references, redesign, invent poses, write prompts, choose modes, alter segments/editorial boundaries/generation relationships, author graphs, queue, QC, repair, hide seams, or overwrite/delete artifacts.
 
 ## Failure conditions
 
@@ -58,16 +58,16 @@ Return shared plan/hash/asset/endpoint/handoff/bridge/overwrite codes plus keyfr
 
 ## Validation rules
 
-- Validate envelope, hashes, plan link, IDs, paths, no overwrite, endpoint role, transition, source type, effective duration/FPS/frame index, dimensions, color, normalization, stability evidence, dependency order, and mode compatibility.
+- Validate envelope, hashes, plan link, IDs, paths, no overwrite, endpoint role, generation relationship, source type, effective duration/FPS/frame index, dimensions, color, normalization, policy-specific evidence, dependency order, and mode compatibility.
 - Fail closed on unknown rejection flags or missing capability; preserve sources and emit a report even when blocked.
 
 ## Minimal example
 
-For SEG01→SEG02 continue, select the latest stable frame from the approved effective SEG01 tail, normalize under the approved composition rule, record hashes/index, and bind SEG02 first frame only after endpoint approval.
+For a typed SEG01→SEG02 same-shot handoff, either select the latest stable frame when policy is `stable_tail`, preserve motion evidence when policy is `moving_endpoint`, or bind an approved entry reference. Record hashes/index/policy and bind SEG02 only after the applicable endpoint gate.
 
 ## Adversarial example
 
-For a blurry tail from an unapproved 11-second draft, return unapproved-tail/duration/unstable evidence. Do not shorten, choose a nearby frame, regenerate, cut, or emit successor-ready binding.
+For a blurry tail from an unapproved 11-second draft, return unapproved-tail/duration/unstable evidence. Do not shorten, choose a nearby frame, regenerate, change the editorial cut, or emit successor-ready binding.
 
 ## Acceptance tests
 

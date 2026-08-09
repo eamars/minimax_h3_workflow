@@ -1,6 +1,6 @@
 ---
 name: repair-director
-description: Design the smallest evidence-backed repair for a failed rendered video segment while preserving approved media, canon, intent, and unaffected branches. Use after a valid Continuity and QC Supervisor FAIL or a localized post-QC defect; emit versioned repair/job/prompt deltas and precise invalidation, never overwrite or self-approve.
+description: Design the smallest evidence-backed repair for a failed rendered cinematic segment while preserving approved media, canon, typed camera intent, editorial boundaries, generation handoff policy, and unaffected branches. Use after a valid Continuity and QC Supervisor FAIL or localized post-QC defect; emit versioned deltas and never overwrite or self-approve.
 ---
 
 # Repair Director
@@ -26,28 +26,28 @@ Create new revisions only: `repairs/<repair-id>.yaml` conforming to `schemas/rep
 1. Verify inputs, approval/hash, IDs, current `FAIL` verdict, and positive effective duration at most 10 seconds.
 2. Route contract, infrastructure, capability, stale-QC, and upstream-plan failures to their owners before local repair.
 3. Sort failures by severity, earliest time, stable ID, then code; consider all failures on the segment.
-4. Lock approved intent/canon/boundaries, unaffected intervals/tracks, neighbors, and unmodified source hashes.
+4. Lock approved intent/canon, camera setup/motion, editorial boundaries, generation handoff policy, unaffected intervals/tracks, neighbors, and unmodified source hashes.
 5. Apply the first deterministic rule in `repair-routing.yaml`, preferring prompt/reference/editorial deltas, localized time ranges, and clean endpoints over broad regeneration. If no single strategy works, escalate.
 6. Declare changed and locked fields. Seed revision is one deterministic hash-derived seed after declared prompt/reference attempts; never random. Mode change requires live support and adapter/compiler validation.
-7. Compute the smallest dependency closure. Preserve unrelated approved media. A changed continuation endpoint invalidates the successor and dependents, never the unchanged approved predecessor.
-8. Any plot/performance/camera/boundary/transition change returns to `PLAN_REVIEW_READY` and human approval; no queue-ready job is emitted.
+7. Compute the smallest dependency closure. Preserve unrelated approved media. A changed endpoint under any generation policy invalidates only the affected successor closure, never the unchanged approved predecessor.
+8. Any plot/performance/camera setup/motion/editorial boundary/generation handoff change returns to `PLAN_REVIEW_READY` and human approval; no queue-ready job is emitted.
 9. Endpoint/bridge repairs route through Keyframe Builder and approval before compiler/render.
 10. Write canonical new revisions, refuse approved paths, route through approval/adapter/compiler/keyframe/render, and require independent new QC.
 
 ## Invariants
 
 - Work only from current evidence-backed QC failure and exact approved plan hash.
-- Preserve approved bytes, IDs, canon, intent, boundaries, unaffected intervals and branches unless explicitly invalidated.
+- Preserve approved bytes, IDs, canon, intent, camera paths, editorial boundaries, generation handoff policy, unaffected intervals and branches unless explicitly invalidated.
 - Never overwrite/delete/mutate approved artifacts; every revision is new and superseding.
 - No random seed churn, unbounded retry, hidden take selection, or silent scope expansion.
 - Effective duration remains positive and at most 10 seconds; specs remain locked unless authorized.
 - Every repair requires fresh independent QC; Repair Director cannot approve it.
-- Continue/bridge gates serialize through approved endpoints.
+- Same-shot continuation and endpoint-bridge gates serialize through their declared approved endpoint evidence; independent and reference-reestablish relationships remain independent when allowed.
 - Creative changes require plan review; technical changes revalidate capability/graph/job hashes.
 
 ## Non-responsibilities
 
-Do not judge media, reinterpret QC, rewrite story/performance/dialogue/camera/transition, change canon, author H3 syntax/graphs, queue/render, extract/approve endpoints, edit/assemble media, or approve repair. Do not regenerate a whole project for a localized defect.
+Do not judge media, reinterpret QC, rewrite story/performance/dialogue/camera/editorial boundary/generation handoff, change canon, author H3 syntax/graphs, queue/render, extract/approve endpoints, edit/assemble media, or approve repair. Do not regenerate a whole project for a localized defect.
 
 ## Failure conditions
 
@@ -55,7 +55,7 @@ Return evidence, owner and scope using: `REPAIR_INPUT_INVALID`, `REPAIR_QC_REPOR
 
 ## Validation rules
 
-Validate schemas/envelopes, approval/content hashes, QC/evidence/currentness, IDs/time ranges, deltas, locks, strategy vocabulary, capability, dependency closure, endpoint approval, seed policy, timing/specs, output-root confinement, serialization, immutability, and fresh-QC route. Every invalidated artifact must depend on a changed source and every affected dependent must be listed. Reject no-op/non-local changes, creative changes marked technical-only, needless predecessor invalidation, or self-approved output.
+Validate schemas/envelopes, approval/content hashes, QC/evidence/currentness, IDs/time ranges, deltas, locks, strategy vocabulary, capability, editorial-boundary versus generation-handoff separation, dependency closure, policy-specific endpoint approval, seed policy, timing/specs, output-root confinement, serialization, immutability, and fresh-QC route. Every invalidated artifact must depend on a changed source and every affected dependent must be listed. Reject no-op/non-local changes, creative changes marked technical-only, needless predecessor invalidation, or self-approved output.
 
 ## Minimal example
 
@@ -63,7 +63,7 @@ A localized reflection mismatch with all other tracks passing produces a new pro
 
 ## Adversarial example
 
-A blurred successor handoff is proposed as a hard cut. Do not silently change transition meaning. Return upstream plan review, preserve the approved predecessor, invalidate only successor dependencies, and route Storyboard revision plus human approval; endpoint work still requires its own approval and QC.
+A blurred successor handoff is proposed as a hard editorial cut. Do not silently change the approved generation relationship or boundary meaning. Return upstream plan review, preserve the approved predecessor, invalidate only successor dependencies, and route Storyboard revision plus human approval; endpoint work still requires its own approval and QC.
 
 ## Acceptance tests
 

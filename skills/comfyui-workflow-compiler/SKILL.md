@@ -1,6 +1,6 @@
 ---
 name: comfyui-workflow-compiler
-description: Compile an approved AI-video production plan into immutable, typed ComfyUI API-format workflow jobs and an acyclic production DAG. Use after plan approval, live ComfyUI capability probing, MiniMax H3 prompt compilation, and optional endpoint handoff preparation; never use it to invent graphs, queue prompts, render media, download nodes/models, or overwrite approved artifacts.
+description: Compile an approved real-cinematic AI-video production plan into immutable, typed ComfyUI API-format workflow jobs and an acyclic production DAG while preserving editorial shots, typed camera paths, three time domains, and generation handoff policies. Use after plan approval, live ComfyUI capability probing, MiniMax H3 prompt compilation, and optional endpoint handoff preparation.
 ---
 
 # ComfyUI Workflow Compiler
@@ -11,7 +11,7 @@ Compile each approved generation segment and utility operation from the versione
 
 ## Ownership boundary
 
-Own template selection, typed binding, live capability compatibility, graph validation, deterministic compiled paths, job envelopes, DAG edges, and compile diagnostics. Preserve plan-owned plot, performance, camera, duration/segment boundaries, transition semantics, reference roles, and acceptance criteria. Treat live `/object_info`, installed model listings, and the frozen catalog revision as authority.
+Own template selection, typed binding, live capability compatibility, graph validation, deterministic compiled paths, job envelopes, DAG edges, and compile diagnostics. Preserve plan-owned plot, performance, editorial shot/camera setup/motion, duration/segment boundaries, three time domains, editorial boundary semantics, generation handoff policies, reference roles, and acceptance criteria. Treat live `/object_info`, installed model listings, and the frozen catalog revision as authority.
 
 ## Inputs
 
@@ -28,13 +28,13 @@ Write only new revisioned files under `compiled/`: `approved-plan-link.yaml`, ca
 
 1. Validate approval, exact plan hash, provenance, preflight, stable IDs, assets, and immutability.
 2. Probe and freeze live `/object_info`, `/models`, and `/system_stats`; never infer capability from a UI export or stale profile.
-3. Select a catalog template only when job type, H3 mode, transition, duration, resolution, audio, node, and model declarations match.
+3. Select a catalog template only when job type, H3 mode, generation relationship/endpoint policy, duration, resolution, audio, node, and model declarations match; editorial cut/dissolve/fade mechanisms stay in post.
 4. Expand only declared exact `${name}` placeholders. Reject embedded/unbound/unknown bindings, unsafe paths, and live-schema type/range/enum violations. Expand R2VA autogrow inputs only from live object-info order.
 5. Validate every API node, input, literal, link and output slot against the live schema. Require output nodes and an acyclic graph by topological sort.
 6. Validate target/model/effective timing separately. Target/effective are positive and at most 10 seconds. For H3, use 24 fps, the `17k+5` model grid, post-trim effective frames, dimensions divisible by 32, and live audio/resolution limits.
 7. Verify every source asset path, hash, role, and plan linkage. Reject existing approved output paths before creating any job.
 8. Emit job envelopes for keyframe, video segment, bridge, frame extract, concat, audio mix, upscale, and final export work.
-9. Build a DAG with evidenced asset, approval, continuation, bridge, and post edges. Cuts are independent; continuations wait for predecessor render, QC, stable-tail approval, handoff normalization, endpoint approval, and successor compilation; bridges wait for both endpoints; dissolves are post-only.
+9. Build a DAG with evidenced asset, approval, generation-handoff, and post edges. `independent` jobs have no false dependency; `same_shot_continue` follows its declared endpoint policy; `endpoint_bridge` waits for both endpoints; editorial cuts/dissolves/fades are post-only.
 10. Write atomically to new revisioned paths, calculate checksums, and hand off to Render Orchestrator. Never POST `/prompt`.
 
 ## Invariants
@@ -42,13 +42,13 @@ Write only new revisioned files under `compiled/`: `approved-plan-link.yaml`, ca
 - Exact approved plan hash and live capability evidence are mandatory.
 - Effective duration never exceeds 10 seconds and approved segment boundaries never change here.
 - Positional widget indices, unknown nodes/models, stale object-info, unresolved placeholders, dangling links, cycles, and false dependencies are forbidden.
-- Continuations require an approved stable post-trim tail; bridges require both approved endpoints.
+- Generation handoffs require their declared endpoint policy; stable-tail and bridge policies gate endpoints, while moving-endpoint and approved-entry-reference policies preserve their evidence without fabricating a stable tail.
 - Approved artifacts are immutable; replacement uses a new revision and `supersedes`.
 - No queue, render, download/install, plan mutation, or overwrite side effect.
 
 ## Non-responsibilities
 
-Do not author prompts creatively, choose H3 modes, redesign references, change story/camera/performance, split segments, approve plans, judge quality, select repairs, execute jobs, or assemble media. Report unsupported capability instead of substituting a template or model.
+Do not author prompts creatively, choose H3 modes, redesign references, change story/camera/performance, split editorial shots or segments, alter boundaries/handoff policies, approve plans, judge quality, select repairs, execute jobs, or assemble media. Report unsupported capability instead of substituting a template or model.
 
 ## Failure conditions
 
@@ -56,7 +56,7 @@ Return `BLOCKED` with stable IDs, evidence, owner, and invalidation scope using 
 
 ## Validation rules
 
-Validate the local contract and every consumed schema. Hash canonical UTF-8 sorted-key YAML/JSON without timestamps. Compare every template class/input to live object-info; validate literals, links, outputs, model/assets, duration/grid/resolution, paths, DAG acyclicity, transition semantics, plan/job traceability, and immutability. Run `scripts/probe_comfyui.py`, the approval-gated `scripts/compile_workflow.py`, `scripts/validate_live_graph.py`, and contract tests before handoff; validation must never POST `/prompt`.
+Validate the local contract and every consumed schema. Hash canonical UTF-8 sorted-key YAML/JSON without timestamps. Compare every template class/input to live object-info; validate literals, links, outputs, model/assets, duration/grid/resolution, paths, DAG acyclicity, editorial-boundary versus generation-handoff separation, camera/time traceability, plan/job traceability, and immutability. Run `scripts/probe_comfyui.py`, the approval-gated `scripts/compile_workflow.py`, `scripts/validate_live_graph.py`, and contract tests before handoff; validation must never POST `/prompt`.
 
 ## Minimal example
 

@@ -1,15 +1,15 @@
 ---
 name: minimax-h3-adapter
-description: Compile an explicitly approved production-plan revision into deterministic MiniMax H3 T2VA, I2VA, FL2VA, L2VA, or R2VA prompt packets for ComfyUI without changing creative intent. Invoke only after the plan approval/hash gate and frozen live H3 capability profile for mode, role, label, frame-grid, prompt, dialogue, sound, and traceability validation.
+description: Compile an explicitly approved real-cinematic production-plan revision into deterministic MiniMax H3 T2VA, I2VA, FL2VA, L2VA, or R2VA prompt packets for ComfyUI without flattening typed camera setup/motion, three time domains, continuity invariants, or generation handoffs. Invoke only after the plan approval/hash gate and frozen live H3 capability profile.
 ---
 
 # MiniMax H3 Adapter
 
 ## Mission
 
-Compile each approved generation-segment card into one schema-valid H3 packet and UTF-8 prompt text. Preserve plan meaning, reference roles/order, dialogue, camera/action/sound/exit intent, and stable IDs. Never render or call ComfyUI.
+Compile each approved generation-segment card into one schema-valid H3 packet and UTF-8 prompt text. Preserve plan meaning, reference roles/order, dialogue, typed camera setup plus in-shot motion, scene/source/record time maps, continuity invariants, audio intent, and stable IDs. Never render or call ComfyUI.
 
-Read [mode rules](references/h3-mode-rules.yaml), [prompt rules](references/prompt-rules.yaml), [skill contract](references/skill-contract.yaml), and `schemas/h3-prompt-packet.schema.json`.
+Read [mode rules](references/h3-mode-rules.yaml), [prompt rules](references/prompt-rules.yaml), [skill contract](references/skill-contract.yaml), and `schemas/h3-prompt-packet-v2.schema.json` for v2 plans; retain the v1 schema only for historical packets.
 
 ## Ownership boundary
 
@@ -29,7 +29,7 @@ Write `compiled/prompt-packets/<segment-id>.txt`, `h3-prompt-packets.yaml`, and 
 2. Build immutable reference bindings in node presentation order with one-to-one Picture/Video/Audio labels.
 3. Derive mode: no endpoints/refs T2VA; first only I2VA; first+last FL2VA; last only L2VA; nonendpoint references R2VA. Fail unsupported mixtures.
 4. Verify frozen capability support; defer continuation path binding until approved tail.
-5. Map each prompt field to exact upstream paths before prose and reuse canon anchors verbatim.
+5. Map each prompt field to exact upstream paths before prose and reuse canon anchors verbatim; preserve the camera setup/motion interval map rather than replacing it with a generic “cinematic camera” phrase.
 6. Serialize base-family or exact R2VA section order with required endpoint prefixes.
 7. Preserve dialogue verbatim and stable speakers; separate dialogue, ambience/effects, and score layers.
 8. Compute smallest `17k+5` model frame count at 24 FPS above target; keep target/model/effective values separate and require explicit trim to effective <=10 seconds.
@@ -40,14 +40,14 @@ Write `compiled/prompt-packets/<segment-id>.txt`, `h3-prompt-packets.yaml`, and 
 
 - Require exact approved plan hash and frozen live capability evidence.
 - Keep target/effective duration >0 and <=10; model duration may exceed only for frame grid and must be trimmed.
-- Preserve all approved creative fields, dialogue, reference roles/order, and IDs.
+- Preserve all approved creative fields, typed camera path, three time domains, continuity invariants/deltas, dialogue, reference roles/order, and IDs.
 - Map every label one-to-one; never reinterpret endpoints/general references.
 - Take limits from frozen capability profile.
 - Produce filesystem artifacts only; never select workflows, queue, render, judge, repair, or approve.
 
 ## Non-responsibilities
 
-Do not rewrite plot/performance/dialogue/canon/camera/shots/segments/transitions/durations. Do not generate endpoints, normalize media, choose graphs/nodes/models/seeds, call ComfyUI, render, QC, repair, or hide unsupported combinations.
+Do not rewrite plot/performance/dialogue/canon/camera setup/motion/shots/segments/editorial boundaries/generation handoffs/durations. Do not flatten a camera position change into a static reference, generate endpoints, normalize media, choose graphs/nodes/models/seeds, call ComfyUI, render, QC, repair, or hide unsupported combinations.
 
 ## Failure conditions
 
@@ -56,7 +56,7 @@ Use shared plan approval/hash, duration, H3 mode/label, missing asset, unclear s
 ## Validation rules
 
 - Validate packet schema, metadata, approved plan linkage, frozen capability hash, deterministic relative paths, and no overwrite.
-- Require exact base or R2VA field ordering, monotonic in-range timestamps, reference presentation order, verbatim dialogue, correct sound layers, deterministic grid/trim counts, and reproducible hashes.
+- Require exact base or R2VA field ordering, monotonic in-range scene/source/record timestamps, structured camera interval binding, reference presentation order, verbatim dialogue, correct sound layers, deterministic grid/trim counts, and reproducible hashes.
 - Reject any node/workflow selection or creative mutation.
 
 ## Minimal example

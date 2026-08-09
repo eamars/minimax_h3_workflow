@@ -32,9 +32,18 @@ def main() -> int:
     parser.add_argument("--markdown", type=Path, required=True)
     parser.add_argument("--yaml", type=Path, required=True)
     args = parser.parse_args()
-    contract = yaml.safe_load((ROOT / "skills/production-orchestrator/references/review-document-contract.yaml").read_text(encoding="utf-8"))
-    plan_schema = json.loads((ROOT / "schemas/production-plan.schema.json").read_text(encoding="utf-8"))
     plan = yaml.safe_load(args.yaml.read_text(encoding="utf-8"))
+    version = plan.get("planning_model_version", 1)
+    if version == 2:
+        contract_path = ROOT / "skills/production-orchestrator/references/review-document-contract-v2.yaml"
+        schema_path = ROOT / "schemas/production-plan-v2.schema.json"
+        if "handoffs" in plan:
+            raise AssertionError("v2 review YAML cannot use the legacy handoffs field")
+    else:
+        contract_path = ROOT / "skills/production-orchestrator/references/review-document-contract.yaml"
+        schema_path = ROOT / "schemas/production-plan.schema.json"
+    contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
+    plan_schema = json.loads(schema_path.read_text(encoding="utf-8"))
     missing = set(plan_schema["required"]) - set(plan)
     if missing:
         raise AssertionError(f"review YAML missing fields: {sorted(missing)}")

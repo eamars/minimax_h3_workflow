@@ -1,6 +1,6 @@
 ---
 name: production-preflight-reviewer
-description: Independently audit the complete Phase A AI-video planning package for requirement coverage, premise and canon fidelity, playable direction, safe segmentation, stable handoffs, dependency correctness, capability assumptions, and delivery readiness before human review. Emit deterministic verdicts and minimal upstream revision requests without rewriting plan artifacts.
+description: Independently audit the complete Phase A real-cinematic AI-video planning package for requirement coverage, premise and canon fidelity, playable direction, scene geography, camera coverage, typed boundaries/handoffs, safe segmentation, dependency correctness, capability assumptions, and delivery readiness before human review. Emit deterministic verdicts and minimal upstream revision requests without rewriting plan artifacts.
 ---
 
 # Production Preflight Reviewer
@@ -17,7 +17,7 @@ Own the preflight verdict, evidence, risk register, deterministic revision-reque
 
 ## Inputs
 
-Require exact current revisions of request, asset manifest, canon, plot, scene-performance, storyboard, animatic, and triggered sound plan or explicit bypass. Accept optional capability/catalog evidence. Require valid envelopes, same project ID, source links, hashes, and review-ready/approved status.
+Require exact current revisions of request, asset manifest, canon, plot, scene-performance, storyboard, animatic, and triggered sound plan or explicit bypass. For v2 require explicit scene/source/record time domains, scene geography, typed camera setup/motion, continuity registry, bilateral editorial boundaries, and separate generation handoffs. Accept optional capability/catalog evidence. Require valid envelopes, same project ID, source links, hashes, and review-ready/approved status.
 
 ## Required outputs
 
@@ -31,7 +31,7 @@ Write `preflight-report.yaml`, `risk-register.yaml`, and `revision-requests.yaml
 4. Build revision requests sorted by smallest upstream owner, stable ID, code, and request ID.
 5. Target the artifact whose owner made the earliest incorrect/missing decision; target integration or capability contracts only for their own defects.
 6. Collapse only identical requests.
-7. Choose blocked for missing/unresolvable required inputs; revise for present-but-invalid content; pass only with no failed check.
+7. Choose blocked for missing/unresolvable required inputs; revise for present-but-invalid content; pass only with no failed check. Treat a v1 package as historical evidence, not admission to a v2 real-cinematic production without migration completion.
 8. Write review artifacts only; change no source, approval, or plan hash.
 
 ## Invariants
@@ -40,7 +40,7 @@ Write `preflight-report.yaml`, `risk-register.yaml`, and `revision-requests.yaml
 - Inspect all required dimensions; omit none.
 - Never normalize, shorten, merge, split, or reinterpret sources.
 - Reject nonpositive or >10-second segments.
-- Require full segment traceability and relation-specific handoffs/dependencies.
+- Require full shot and segment traceability, relation-specific generation handoffs, bilateral editorial boundaries, and camera/time ownership.
 - Preserve exact provenance and immutable revisions.
 - Use only shared failure codes and deterministic ordering.
 - Treat unknown capability as warning unless a required capability is asserted unavailable.
@@ -56,7 +56,7 @@ Use `BLOCKED_MISSING_REQUIREMENT` for missing/invalid artifacts, triggered sound
 ## Validation rules
 
 - Validate the report and every consumed Phase A schema plus shared metadata/taxonomy.
-- Require a single project, resolvable hashes/status, stable IDs, segment bounds, traceability, acceptance IDs, acyclic relation-correct dependencies, canon roles, and stable continuation exits.
+- Require a single project, resolvable hashes/status, stable IDs, scene/source/record bounds, traceability, acceptance IDs, acyclic relation-correct dependencies, canon roles, structured camera coverage, and policy-appropriate handoff suitability.
 - Keep outputs deterministic and leave source bytes unchanged.
 
 ## Minimal example
@@ -65,7 +65,7 @@ A valid 8-second terminal segment with complete traceability and timing yields `
 
 ## Adversarial example
 
-An 11-second continuation with no stable exit and an unclassified asset yields separate duration/exit/asset revision requests targeting Storyboard and Canon. Do not shorten, invent a tail, or rewrite the lock.
+An 11-second generation segment with opaque camera language, no scene geography, a conflated `continue` transition, and an unclassified asset yields separate duration/camera/boundary/asset revision requests targeting Storyboard and Canon. Do not shorten, invent a tail, or rewrite the lock.
 
 ## Acceptance tests
 

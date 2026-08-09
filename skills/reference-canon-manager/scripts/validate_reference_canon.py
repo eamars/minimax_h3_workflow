@@ -38,6 +38,9 @@ def main() -> int:
     canon_ids = {e["canon_id"] for e in canon.get("canon_entities", canon.get("entities", []))}
     for binding in canon.get("role_bindings", []):
         if binding["asset_id"] not in by_id or binding["canon_id"] not in canon_ids: raise AssertionError("unresolved canon binding")
+        if not isinstance(binding.get("property_scope"), list) or not binding["property_scope"]: raise AssertionError("canon binding property scope missing")
+        if binding.get("strength") not in {"canonical", "strong", "soft", "informational"}: raise AssertionError("canon binding strength invalid")
+        if not binding.get("timeline_scope"): raise AssertionError("canon binding timeline scope missing")
     blocking = [c for c in conflicts.get("conflicts", []) if c.get("blocking") and not c.get("resolution")]
     ready = canon.get("plot_handoff", {}).get("ready", True)
     if blocking and ready:

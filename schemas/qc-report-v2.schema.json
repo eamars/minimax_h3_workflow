@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "qc-report-v2.schema.json",
+  "type": "object",
+  "required": ["artifact", "planning_model_version", "subject_id", "shot_id", "segment_id", "mode", "verdict", "severity", "handoff_policy", "camera_evidence", "continuity_evidence", "failures", "criteria_traceability"],
+  "properties": {
+    "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
+    "planning_model_version": {"const": 2},
+    "subject_id": {"type": "string", "minLength": 1},
+    "shot_id": {"type": "string", "minLength": 1},
+    "segment_id": {"type": "string", "minLength": 1},
+    "mode": {"enum": ["segment", "camera_path", "generation_handoff", "editorial_boundary", "final"]},
+    "verdict": {"enum": ["PASS", "PASS_WITH_EDITORIAL_FIX", "FAIL"]},
+    "severity": {"enum": ["none", "minor", "major", "critical"]},
+    "handoff_policy": {"enum": ["none", "moving_endpoint", "stable_tail", "approved_entry_reference", "bridge_endpoints"]},
+    "camera_evidence": {"type": "object", "required": ["setup_id", "interval_hash", "path_match", "viewpoint_match"]},
+    "continuity_evidence": {"type": "object", "required": ["entry_snapshot_id", "exit_snapshot_id", "invariants_match", "delta_check"]},
+    "failures": {"type": "array", "items": {"type": "object", "required": ["code", "time_range", "evidence_frames", "expected", "observed", "affected_dependencies"]}},
+    "criteria_traceability": {"type": "array", "items": {"type": "object"}}
+  },
+  "additionalProperties": false
+}
