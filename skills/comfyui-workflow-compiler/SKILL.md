@@ -30,12 +30,14 @@ Write only new revisioned files under `compiled/`: `approved-plan-link.yaml`, ca
 2. Probe and freeze live `/object_info`, `/models`, and `/system_stats`; never infer capability from a UI export or stale profile.
 3. Select a catalog template only when job type, H3 mode, generation relationship/endpoint policy, duration, resolution, audio, node, and model declarations match; editorial cut/dissolve/fade mechanisms stay in post.
 4. Expand only declared exact `${name}` placeholders. Reject embedded/unbound/unknown bindings, unsafe paths, and live-schema type/range/enum violations. Expand R2VA autogrow inputs only from live object-info order.
-5. Validate every API node, input, literal, link and output slot against the live schema. Require output nodes and an acyclic graph by topological sort.
-6. Validate target/model/effective timing separately. Target/effective are positive and at most 10 seconds. For H3, use 24 fps, the `17k+5` model grid, post-trim effective frames, dimensions divisible by 32, and live audio/resolution limits.
-7. Verify every source asset path, hash, role, and plan linkage. Reject existing approved output paths before creating any job.
-8. Emit job envelopes for keyframe, video segment, bridge, frame extract, concat, audio mix, upscale, and final export work.
-9. Build a DAG with evidenced asset, approval, generation-handoff, and post edges. `independent` jobs have no false dependency; `same_shot_continue` follows its declared endpoint policy; `endpoint_bridge` waits for both endpoints; editorial cuts/dissolves/fades are post-only.
-10. Write atomically to new revisioned paths, calculate checksums, and hand off to Render Orchestrator. Never POST `/prompt`.
+5. For every live `COMFY_DYNAMICCOMBO_V3` input, serialize the selected option as the scalar selector required by the live `/prompt` API (for example `codec: auto`); reject the UI-shaped nested object form. Expand selected nested fields only as the live dotted input names declare, then perform the validator's executor-shape round-trip check.
+6. Validate every API node, input, literal, link and output slot against the live schema. Require output nodes and an acyclic graph by topological sort.
+7. Validate target/model/effective timing separately. Target/effective are positive and at most 10 seconds. For H3, use 24 fps, the `17k+5` model grid, post-trim effective frames, dimensions divisible by 32, and live audio/resolution limits.
+8. Verify every source asset path, hash, role, and plan linkage. Reject existing approved output paths before creating any job.
+9. Emit job envelopes for keyframe, video segment, bridge, frame extract, concat, audio mix, upscale, and final export work.
+10. Build a DAG with evidenced asset, approval, generation-handoff, and post edges. `independent` jobs have no false dependency; `same_shot_continue` follows its declared endpoint policy; `endpoint_bridge` waits for both endpoints; editorial cuts/dissolves/fades are post-only.
+11. Write atomically to new revisioned paths, calculate checksums, and hand off to Render Orchestrator. Never POST `/prompt`.
+12. When an environment profile is supplied, validate every prompt-bearing node against the hard projection before writing the executable graph: require the profile ID, positive locked landmarks, boundary/unknown-space language, and negated-only forbidden architecture.
 
 ## Invariants
 
@@ -45,6 +47,7 @@ Write only new revisioned files under `compiled/`: `approved-plan-link.yaml`, ca
 - Generation handoffs require their declared endpoint policy; stable-tail and bridge policies gate endpoints, while moving-endpoint and approved-entry-reference policies preserve their evidence without fabricating a stable tail.
 - Approved artifacts are immutable; replacement uses a new revision and `supersedes`.
 - No queue, render, download/install, plan mutation, or overwrite side effect.
+- Environment profile ID and prompt projection are immutable compilation inputs; missing or positive forbidden-feature language blocks the executable graph.
 
 ## Non-responsibilities
 
@@ -52,11 +55,11 @@ Do not author prompts creatively, choose H3 modes, redesign references, change s
 
 ## Failure conditions
 
-Return `BLOCKED` with stable IDs, evidence, owner, and invalidation scope using only: `PLAN_APPROVAL_REQUIRED`, `PLAN_HASH_MISMATCH`, `PREFLIGHT_BLOCKED`, `CAPABILITY_PROBE_MISSING`, `WORKFLOW_TEMPLATE_MISSING`, `WORKFLOW_MAPPING_INVALID`, `WORKFLOW_NODE_UNAVAILABLE`, `WORKFLOW_INPUT_UNSUPPORTED`, `WORKFLOW_LINK_INVALID`, `WORKFLOW_CYCLE`, `REQUIRED_MODEL_MISSING`, `REQUIRED_ASSET_MISSING`, `SEGMENT_TOO_LONG`, `INVALID_FRAME_GRID`, `RESOLUTION_UNSUPPORTED`, `AUDIO_SPEC_UNSUPPORTED`, `HANDOFF_TAIL_UNAPPROVED`, `DAG_INVALID`, `APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN`, or `OUTPUT_PATH_UNSAFE`.
+Return `BLOCKED` with stable IDs, evidence, owner, and invalidation scope using only: `PLAN_APPROVAL_REQUIRED`, `PLAN_HASH_MISMATCH`, `PREFLIGHT_BLOCKED`, `CAPABILITY_PROBE_MISSING`, `ENVIRONMENT_PROJECTION_INVALID`, `WORKFLOW_TEMPLATE_MISSING`, `WORKFLOW_MAPPING_INVALID`, `WORKFLOW_NODE_UNAVAILABLE`, `WORKFLOW_INPUT_UNSUPPORTED`, `WORKFLOW_LINK_INVALID`, `WORKFLOW_CYCLE`, `REQUIRED_MODEL_MISSING`, `REQUIRED_ASSET_MISSING`, `SEGMENT_TOO_LONG`, `INVALID_FRAME_GRID`, `RESOLUTION_UNSUPPORTED`, `AUDIO_SPEC_UNSUPPORTED`, `HANDOFF_TAIL_UNAPPROVED`, `DAG_INVALID`, `APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN`, or `OUTPUT_PATH_UNSAFE`.
 
 ## Validation rules
 
-Validate the local contract and every consumed schema. Hash canonical UTF-8 sorted-key YAML/JSON without timestamps. Compare every template class/input to live object-info; validate literals, links, outputs, model/assets, duration/grid/resolution, paths, DAG acyclicity, editorial-boundary versus generation-handoff separation, camera/time traceability, plan/job traceability, and immutability. Run `scripts/probe_comfyui.py`, the approval-gated `scripts/compile_workflow.py`, `scripts/validate_live_graph.py`, and contract tests before handoff; validation must never POST `/prompt`.
+Validate the local contract and every consumed schema. Hash canonical UTF-8 sorted-key YAML/JSON without timestamps. Compare every template class/input to live object-info; validate literals, links, outputs, model/assets, duration/grid/resolution, paths, DAG acyclicity, editorial-boundary versus generation-handoff separation, camera/time traceability, plan/job traceability, and immutability. For dynamic-combo inputs, test both the accepted scalar selector and the rejected UI-shaped object against the live schema, and require a final pre-submit validator pass over every compiled graph. Run `scripts/probe_comfyui.py`, the approval-gated `scripts/compile_workflow.py`, `scripts/validate_live_graph.py`, and contract tests before handoff; validation must never POST `/prompt`.
 
 ## Minimal example
 
@@ -64,7 +67,7 @@ For an approved T2VA segment at 8 seconds, 1344×768, 24 fps, compile 209 model 
 
 ## Adversarial example
 
-If a template supplies `quality` to `CreateVideo` or `SaveVideo` while live object-info exposes `bit_depth` and `codec`, return `WORKFLOW_INPUT_UNSUPPORTED`. Also block an 11-second segment, unapproved continuation tail, absent GGUF model, graph cycle, stale plan hash, unresolved placeholder, or existing approved output; never silently repair it.
+If a template supplies `quality` to `CreateVideo` or `SaveVideo` while live object-info exposes `bit_depth` and `codec`, return `WORKFLOW_INPUT_UNSUPPORTED`. If live object-info exposes a `COMFY_DYNAMICCOMBO_V3` selector such as `codec` and a graph emits `{codec: {codec: auto}}` instead of `codec: auto`, return `WORKFLOW_INPUT_UNSUPPORTED` before writing the executable workflow. Also block an 11-second segment, unapproved continuation tail, absent GGUF model, graph cycle, stale plan hash, unresolved placeholder, or existing approved output; never silently repair it.
 
 ## Acceptance tests
 

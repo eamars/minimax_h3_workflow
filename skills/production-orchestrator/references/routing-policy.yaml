@@ -30,6 +30,11 @@ modes:
   PRODUCE_COMPILED_PLAN:
     requires: valid_compiled_bundle
     stop_after: ASSEMBLY_READY
+  PATH_TEST_COMPILED_PLAN:
+    requires: [valid_compiled_bundle, explicit_path_test_authorization]
+    runner_lifecycle_mode: path-test
+    quality_evaluation: skipped_by_user_instruction
+    stop_after: PATH_TEST_READY
   REPAIR_FAILED_OUTPUTS:
     requires: qc_failure_report
     stop_after: SEGMENT_QC
@@ -80,8 +85,19 @@ execution_dispatch:
   - post-editor_when_all_required_media_approved
   - continuity-qc-supervisor_final_mode
 
+path_test_dispatch:
+  - render-orchestrator_lifecycle_mode_path-test
+  - technical-path-test-validator
+  - post-editor_technical-draft-only
+  - no-continuity-qc
+  - no-repair
+  - no-final-qc
+  - no-delivery
+
 execution_gates:
   render-orchestrator: [approved_plan_hash_match, validated_compiled_bundle]
+  render-orchestrator_lifecycle_mode_path-test: [approved_plan_hash_match, validated_compiled_bundle, environment_prompt_gate, limb_target_gate, original_job_set_bound]
+  technical-path-test-validator: [path_test_status, complete_job_provenance, exact_av_video_spec, transition_disclosure]
   continuity-qc-supervisor: [completed_render_report, effective_media_hash]
   repair-director_on_failure: [current_qc_FAIL_with_evidence]
   post-editor_when_all_required_media_approved: [every_required_media_qc_PASS]

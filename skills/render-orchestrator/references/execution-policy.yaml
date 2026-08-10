@@ -12,6 +12,8 @@ gate:
   require_dag_hash_match: true
   require_endpoint_approval_for: [same_shot_continue, endpoint_bridge, stable_tail, bridge_endpoints]
   moving_endpoint_requires_qc_suitability: true
+  lifecycle_mode: [production, path-test]
+  path_test: {explicit_authorization: true, visual_qc: forbidden, delivery: forbidden, truthful_status: required, technical_validator: skills/production-orchestrator/scripts/validate_path_test.py}
 limits:
   concurrency: 1
   poll_interval_seconds: 2
@@ -34,7 +36,9 @@ idempotency:
 resume:
   reconcile_paths: ['/history/{prompt_id}', /queue, '/api/jobs/{prompt_id}']
   duplicate_submission: false
+  admission_binding: [original_job_set, lifecycle_mode, environment_profile_hash, capability_profile_hash, plan_hash, dag_hash]
 persistence:
   state_write: atomic_temp_then_replace
   events: append_only_jsonl
+  heartbeat: {required: true, interval_seconds: 30, fsync: true}
   approved_artifact_overwrite: false

@@ -9,7 +9,7 @@ description: "Model-neutral feature-film storyboard direction for AI-video proje
 
 Translate valid narrative and performance artifacts into a traceable, model-neutral feature-film storyboard. Treat the editorial shot as the creative unit and the generation segment as a production unit. Specify audience view, geography, blocking, shot purpose, camera setup, in-shot motion, sound timing, editorial cut boundaries, continuity state, and independently generated segment handoffs. Carry the canon's hard environment projection into every shot and segment so a camera move changes viewpoint within the approved space rather than inventing a different room. Leave prompts, graphs, execution, QC, repair, and post downstream.
 
-Read the [segment rules](references/segment-rules.yaml), [skill contract](references/skill-contract.yaml), `schemas/storyboard-package-v2.schema.json`, and run `scripts/validate_storyboard.py` for every v2 package. The v1 schema and validator remain available only for historical artifacts.
+Read the [segment rules](references/segment-rules.yaml), [skill contract](references/skill-contract.yaml), `schemas/storyboard-package-v2.schema.json`, and run `scripts/validate_storyboard.py` for every v2 package. When an interactive prop or fixture appears, pass the exact project interaction-target registry with `--interaction-target-registry`; the validator then checks bilateral limb semantics, target existence, prop ownership, and transfer legality. The v1 schema and validator remain available only for historical artifacts.
 
 ## Ownership boundary
 
@@ -35,7 +35,7 @@ Emit `storyboard-package.yaml`, `shot-table.md`, `segment-plan.yaml`, `editorial
 8. Build monotonic `SCENE_TIME | SOURCE_TIME | RECORD_TIME` plus `PERFORMANCE | CAMERA | SOUND | EDIT/HANDOFF` tracks with readable entry, action/reaction, and context-appropriate exit handling.
 9. Split when generation duration exceeds 10 seconds or risk/context/density/continuity/reference/repair needs demand it; splitting preserves the editorial shot and creates a typed generation handoff.
 10. Declare editorial boundaries bilaterally as `cut`, `dissolve`, `fade`, or terminal `end`, with motivations and audio behavior. Declare generation relationships separately as `independent`, `same_shot_continue`, `endpoint_bridge`, `reference_reestablish`, or `terminal`.
-11. Use one authoritative continuity registry. Shots and segments reference registered snapshots; if a payload is embedded, its interactive `prop_states` and `limb_states` must exactly match the registry.
+11. Use one authoritative continuity registry plus an exact interaction-target registry. Shots and segments reference registered snapshots; if a payload is embedded, its interactive `prop_states` and `limb_states` must exactly match the registry. A contact target may be a declared prop, fixture/surface, landmark, or subject body zone; it may never be an invented ID.
 12. Record continuity invariants, expected deltas, forbidden deltas, and moving-versus-stable handoff suitability without approving media.
 13. Generate concrete acceptance predicates and canonical hashes.
 14. Return review-ready/blocked artifacts and affected-ID failures.
@@ -51,6 +51,7 @@ Emit `storyboard-package.yaml`, `shot-table.md`, `segment-plan.yaml`, `editorial
 - Require identity, wardrobe, prop, wetness, environment, and sound invariants to be explicit even when framing changes.
 - Require the environment projection to survive every framing change: a new position may reveal approved landmarks or unknown negative space, but may not turn a partial counter edge into a vanity, add a tub, mirror, corridor, window, basket, or second person.
 - Require `limb_states` and prop states at every interactive entry, contact, transfer, release, and exit handoff. Preserve the same left/right allocation across independent cuts unless the performance state explicitly changes it.
+- Distinguish endpoint snapshots from micro-actions inside one generation segment: an in-shot contact may be documented in scene-performance and the target registry without inventing an extra segment, but every visible handoff must still have a legal state, target, and release/ownership path.
 - Treat the continuity registry as the only authority; duplicate snapshot IDs with divergent interactive payloads are invalid.
 - If geography is unknown, mark the axis/region unknown and require an explicit coverage or axis-reset motivation; never invent coordinates.
 - Emit no H3, node, workflow, queue, render, QC, repair, or post settings.
@@ -65,7 +66,7 @@ Return declared storyboard codes for invalid sources/provenance, missing or viol
 
 ## Validation rules
 
-- Validate schema, envelope/hash, stable IDs, traceability, hard environment projection, typed geography/staging, three time domains, camera setup/position/viewpoint/optics/look-at/motion/risk, one authoritative continuity registry with limb/prop payload equality and adjacent-state deltas, four-track timing, bilateral editorial boundaries with structured J/L audio edits, generation handoffs, and technical separation—in that order.
+- Validate schema, envelope/hash, stable IDs, traceability, hard environment projection, typed geography/staging, three time domains, camera setup/position/viewpoint/optics/look-at/motion/risk, one authoritative continuity registry with limb/prop payload equality, declared interaction targets, legal limb semantics, no double-held props, and adjacent-state deltas, four-track timing, bilateral editorial boundaries with structured J/L audio edits, generation handoffs, and technical separation—in that order.
 - Require editorial mechanisms `cut`, `dissolve`, `fade`, or `end`; keep generation relationships independent from those mechanisms.
 - Require one move/arc per generation segment, resolvable source links, and a moving endpoint policy when a same-shot split cannot provide a stable tail.
 - Report failures; never auto-repair creative content.

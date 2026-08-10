@@ -34,3 +34,9 @@ continuity:
   authoritative_registry: exactly_one
   interactive_actions_require_limb_states: true
   embedded_interactive_payload_must_match_registry: true
+  interaction_target_registry: required_when_holding_or_contact_target_is_used
+  target_types: [prop, body_zone, landmark, surface]
+  holding_requires_prop_target: true
+  contact_target_must_be_declared: true
+  double_held_prop: forbidden
+  unexplained_same_limb_prop_swap: forbidden

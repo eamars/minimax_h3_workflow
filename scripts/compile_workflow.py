@@ -1,8 +1,9 @@
-"""Compile a typed placeholder ComfyUI API template into an immutable workflow."""
+"""Compatibility compiler; require the frozen live profile before emitting a graph."""
 
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import re
 from pathlib import Path
@@ -30,7 +31,7 @@ def replace(value, bindings):
     return value
 
 
-def validate(graph):
+def validate(graph, object_info=None):
     node_ids = set(graph)
     for node_id, node in graph.items():
         if set(node) != {"class_type", "inputs"}:
@@ -38,21 +39,34 @@ def validate(graph):
         for value in node["inputs"].values():
             if isinstance(value, list) and len(value) == 2 and isinstance(value[0], str) and isinstance(value[1], int) and value[0] not in node_ids:
                 raise AssertionError(f"node {node_id} has dangling link {value[0]}")
+    if object_info is not None:
+        validator_path = Path(__file__).resolve().parents[1] / "skills" / "comfyui-workflow-compiler" / "scripts" / "validate_live_graph.py"
+        spec = importlib.util.spec_from_file_location("compatibility_compiler_live_validator", validator_path)
+        if spec is None or spec.loader is None:
+            raise AssertionError("live validator is unavailable")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        module.validate(graph, object_info)
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--template", type=Path, required=True)
     ap.add_argument("--bindings", type=Path, required=True)
+    ap.add_argument("--capability-profile", type=Path, required=True)
     ap.add_argument("--output", type=Path, required=True)
     args = ap.parse_args()
     template = json.loads(args.template.read_text(encoding="utf-8"))
     bindings = yaml.safe_load(args.bindings.read_text(encoding="utf-8"))
+    profile = json.loads(args.capability_profile.read_text(encoding="utf-8"))
+    object_info = profile.get("evidence", {}).get("object_info") or profile.get("object_info")
+    if not object_info:
+        raise AssertionError("CAPABILITY_PROBE_MISSING: object_info")
     duration = bindings.get("effective_duration_seconds")
     if duration is not None and not (0 < float(duration) <= 10):
         raise AssertionError("effective duration must be >0 and <=10 seconds")
     graph = replace(template, bindings)
-    validate(graph)
+    validate(graph, object_info)
     if args.output.exists():
         raise AssertionError(f"refusing to overwrite {args.output}")
     args.output.parent.mkdir(parents=True, exist_ok=True)

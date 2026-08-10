@@ -45,26 +45,21 @@ def validate_literal(value, spec, label: str):
             raise AssertionError(f"WORKFLOW_INPUT_UNSUPPORTED: {label} is not in live enum")
     elif kind == "COMBO":
         choices = spec[1].get("options", []) if len(spec) > 1 and isinstance(spec[1], dict) else []
-        if value not in choices:
+        combo_options = spec[1] if len(spec) > 1 and isinstance(spec[1], dict) else {}
+        if not choices and combo_options.get("video_upload") is True:
+            upload_path = Path(str(value)) if isinstance(value, str) else None
+            if upload_path is None or not str(value) or upload_path.is_absolute() or ".." in upload_path.parts:
+                raise AssertionError(f"WORKFLOW_INPUT_UNSUPPORTED: {label} must be a safe relative uploaded-media path")
+        elif value not in choices:
             raise AssertionError(f"WORKFLOW_INPUT_UNSUPPORTED: {label} is not in live combo")
     elif kind == "COMFY_DYNAMICCOMBO_V3":
-        if not isinstance(value, dict):
-            raise AssertionError(f"WORKFLOW_INPUT_UNSUPPORTED: {label} must be a dynamic-combo object")
+        if not isinstance(value, str):
+            raise AssertionError(f"WORKFLOW_INPUT_UNSUPPORTED: {label} must be a dynamic-combo selector string")
         selector = label.rsplit(".", 1)[-1]
-        selected = value.get(selector)
         options = spec[1].get("options", []) if len(spec) > 1 and isinstance(spec[1], dict) else []
-        option = next((item for item in options if item.get("key") == selected), None)
+        option = next((item for item in options if item.get("key") == value), None)
         if option is None:
             raise AssertionError(f"WORKFLOW_INPUT_UNSUPPORTED: {label} has unknown dynamic selection")
-        nested = option.get("inputs", {})
-        nested_specs = dict(nested.get("required", {}))
-        nested_specs.update(nested.get("optional", {}))
-        required_nested = set(nested.get("required", {}))
-        provided = set(value) - {selector}
-        if required_nested - provided or provided - set(nested_specs):
-            raise AssertionError(f"WORKFLOW_INPUT_UNSUPPORTED: {label} dynamic fields are invalid")
-        for name in provided:
-            validate_literal(value[name], nested_specs[name], f"{label}.{name}")
     elif kind in {"INT", "INTEGER"} and (not isinstance(value, int) or isinstance(value, bool)):
         raise AssertionError(f"WORKFLOW_INPUT_UNSUPPORTED: {label} must be integer")
     elif kind in {"FLOAT", "NUMBER"} and (not isinstance(value, (int, float)) or isinstance(value, bool)):
@@ -122,6 +117,34 @@ def validate(graph: dict, object_info: dict):
         for group_name, indices in dynamic_indices.items():
             if sorted(indices) != list(range(len(indices))):
                 raise AssertionError(f"WORKFLOW_INPUT_UNSUPPORTED: {group_name} autogrow ordinals must be contiguous from zero")
+        # ComfyUI's live V3 API serializes a dynamic combo as a scalar selector
+        # (for example ``codec: auto``). The executor expands that selector into
+        # the nested runtime object. Nested selectors, when present, remain
+        # dotted graph inputs such as ``codec.encoding``.
+        pending_dynamic = list(specs.items())
+        expanded_dynamic = set()
+        while pending_dynamic:
+            dynamic_name, dynamic_spec = pending_dynamic.pop(0)
+            if expected_type(dynamic_spec) != "COMFY_DYNAMICCOMBO_V3" or dynamic_name in expanded_dynamic:
+                continue
+            expanded_dynamic.add(dynamic_name)
+            if dynamic_name not in node["inputs"]:
+                continue
+            selector_value = node["inputs"][dynamic_name]
+            if not isinstance(selector_value, str):
+                raise AssertionError(f"WORKFLOW_INPUT_UNSUPPORTED: {class_type}.{dynamic_name} must be a dynamic-combo selector string")
+            options = dynamic_spec[1].get("options", []) if len(dynamic_spec) > 1 and isinstance(dynamic_spec[1], dict) else []
+            option = next((item for item in options if item.get("key") == selector_value), None)
+            if option is None:
+                raise AssertionError(f"WORKFLOW_INPUT_UNSUPPORTED: {class_type}.{dynamic_name} has unknown dynamic selection")
+            nested = option.get("inputs", {})
+            for category in ("required", "optional"):
+                for child_name, child_spec in nested.get(category, {}).items():
+                    full_name = f"{dynamic_name}.{child_name}"
+                    specs[full_name] = child_spec
+                    if category == "required":
+                        required.add(full_name)
+                    pending_dynamic.append((full_name, child_spec))
         unknown = set(node["inputs"]) - set(specs)
         if unknown:
             raise AssertionError(f"WORKFLOW_INPUT_UNSUPPORTED: {class_type}.{sorted(unknown)[0]}")

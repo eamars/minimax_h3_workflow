@@ -3,6 +3,9 @@ scope: project_lifecycle
 initial_state: NEW
 terminal_states:
   - DELIVERED
+non_delivery_stop_states:
+  - PATH_TEST_READY
+  - PATH_TEST_FAILED
 
 states:
   - NEW
@@ -15,6 +18,9 @@ states:
   - COMPILED
   - KEYFRAME_PREP
   - PRODUCING
+  - PATH_TESTING
+  - PATH_TEST_READY
+  - PATH_TEST_FAILED
   - SEGMENT_QC
   - REPAIRING
   - ASSEMBLY_READY
@@ -34,6 +40,9 @@ transitions:
   - {from: COMPILING, to: COMPILED, requires: [all_graphs_valid, production_dag_acyclic, compile_report_passed]}
   - {from: COMPILED, to: KEYFRAME_PREP, requires: [compiled_bundle_hashes_match]}
   - {from: KEYFRAME_PREP, to: PRODUCING, requires: [required_initial_endpoints_approved_or_none_required]}
+  - {from: COMPILED, to: PATH_TESTING, requires: [technical_path_test_authorized, compiled_bundle_hashes_match]}
+  - {from: PATH_TESTING, to: PATH_TEST_READY, requires: [all_admitted_jobs_technical_complete, technical_draft_disclosed]}
+  - {from: PATH_TESTING, to: PATH_TEST_FAILED, requires: [technical_gate_failed]}
   - {from: PRODUCING, to: SEGMENT_QC, requires: [one_or_more_render_outputs_complete]}
   - {from: SEGMENT_QC, to: PRODUCING, requires: [more_ready_jobs_exist, required_handoffs_approved]}
   - {from: SEGMENT_QC, to: REPAIRING, requires: [localized_qc_failure]}

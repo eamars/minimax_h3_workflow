@@ -20,6 +20,7 @@ Read the directly linked [specialist registry](references/specialist-registry.ya
 ## Inputs
 
 - User brief, seed images/audio/video, format/runtime constraints, and requested lifecycle mode.
+- Explicit execution lifecycle: `PATH_TEST` for technical route validation with visual quality skipped, or `PRODUCTION` for the approval-gated render/QC/delivery route. A path test is never a delivery state.
 - Versioned specialist artifacts with provenance and content hashes.
 - Human approval bound to the exact authoritative production-plan hash.
 - Live ComfyUI capability profile and validated workflow-catalog revision after approval.
@@ -44,6 +45,12 @@ Read the directly linked [specialist registry](references/specialist-registry.ya
 8. Route every completed segment to an independent QC pass; send only failed units and their transitive dependents to Repair Director.
 9. Assemble only approved media, preserve exact handles and audio continuity, and send the master to final QC.
 
+## Technical path-test mode
+
+Use `PATH_TEST` only when the user explicitly prioritizes proving the workflow path over visual evaluation. It may render every admitted job, write technical-intake manifests, and create a clearly labeled straight-cut draft for decode/A/V/provenance validation. It must set `quality_evaluation: not_performed_by_user_instruction`, keep the lifecycle status outside `DELIVERED`, disclose every planned editorial transition that was not realized, and stop before continuity QC, repair approval, final QC, or delivery. Use the bundled `scripts/validate_path_test.py` as the independent acceptance gate.
+
+Use `PRODUCTION` for any cinematic or deliverable claim. Every required segment must pass independent continuity QC; every declared cut/dissolve/fade must be realized by the post-editor; the assembled master must pass independent final QC; only then may the lifecycle enter `DELIVERED`. A technical draft, playable MP4, or successful ComfyUI history item never satisfies these gates by itself.
+
 ## Strict serial continuation profile
 
 When the request requires scene state to persist or explicitly forbids parallelism:
@@ -66,6 +73,7 @@ When the request requires scene state to persist or explicitly forbids paralleli
 - In a strict serial chain, require the predecessor's actual final decoded frame and its endpoint hash; validate the final stability window without selecting a substitute frame.
 - Keep continuation successor jobs endpoint-pending until the predecessor has passed segment QC and endpoint approval. Never pre-submit a successor prompt.
 - Keep editorial mechanisms (`cut`, `dissolve`, `fade`, `end`) distinct from generation relationships (`independent`, `same_shot_continue`, `endpoint_bridge`, `reference_reestablish`, `terminal`).
+- Carry a hard environment projection and a typed interaction-target registry into compilation and render admission. Camera position/viewpoint may change only inside that projection; unknown limb targets, prop ownership, or environment features fail closed.
 - Require live `/object_info` and installed model/node evidence before ComfyUI compilation; do not trust stale positional widget fallbacks or legacy UUID workflows.
 - Bind every compiled job to the approved plan revision/hash, prompt/workflow/template revisions, model/node versions, seed, paths, and source assets.
 - Record logical-to-physical GPU identity, model/CLIP/VAE placement, runtime flags, and fallback policy in the capability and run provenance.
@@ -91,9 +99,12 @@ Return one or more codes from [failure-taxonomy.yaml](references/failure-taxonom
 - Validate stable IDs and deterministic paths using [naming-conventions.yaml](references/naming-conventions.yaml); filenames never replace artifact identity.
 - Validate DAG acyclicity and generation-relation-specific dependencies: `same_shot_continue` waits for the declared endpoint policy, `endpoint_bridge` waits for approved head and tail, and `independent` relationships have no false dependency. Validate editorial boundaries separately in the EDL.
 - Validate strict serial profiles for one in-flight production job, one-way predecessor edges, exact endpoint frame binding, endpoint hash lineage, and no successor-ready state before approval.
+- Validate lifecycle mode and truthful status: `PATH_TEST` cannot emit QC-PASS or delivery artifacts, while `PRODUCTION` cannot bypass segment or final QC. Validate resume against the original admitted job set, plan/DAG/capability/environment hashes, and complete media provenance.
+- Validate the environment prompt projection immediately before queueing: required landmarks, boundary/unknown-space language, profile ID, and negated-only forbidden-feature references. Validate bilateral limb semantics, declared interaction targets, and no double-held prop.
 - Validate normalized resolution, FPS, frame order, color, codec, audio sample rate/channels, duplicate endpoint trimming, and final seam evidence before assembly.
 - Validate safety/privacy criteria over the entire segment and endpoint window, not only at a chosen handoff frame. Validate segment QC before endpoint approval, assembly before final-master QC, and final-master QC before delivery.
 - Run `python scripts/validate_package.py` after editing the package.
+- Run `python scripts/validate_path_test.py` for technical path mode; do not substitute it for continuity or final QC.
 
 ## Minimal example
 
@@ -115,3 +126,5 @@ If a caller asks to queue an 11-second same-shot successor from an unapproved re
 - Missing ComfyUI capability fails before queueing and names the affected jobs.
 - Creative repair changes return to plan review and require a new approval.
 - Approved output write attempts create a new revision rather than overwrite.
+- Path-test mode emits a truthful non-deliverable status and independently verifies every job report, QC-intake record, source/output hash, exact video frame count, and exact audio sample count.
+- A positive forbidden environment feature, undeclared limb target, missing prompt projection, stale resume selection, mismatched ComfyUI prompt ID, or unsupported editorial transition blocks before queue/assembly.

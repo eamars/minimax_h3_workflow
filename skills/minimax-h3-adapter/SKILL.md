@@ -29,7 +29,7 @@ Write `compiled/prompt-packets/<segment-id>.txt`, `h3-prompt-packets.yaml`, and 
 2. Build immutable reference bindings in node presentation order with one-to-one Picture/Video/Audio labels.
 3. Derive mode: no endpoints/refs T2VA; first only I2VA; first+last FL2VA; last only L2VA; nonendpoint references R2VA. Fail unsupported mixtures.
 4. Verify frozen capability support; defer continuation path binding until approved tail.
-5. Map each prompt field to exact upstream paths before prose and reuse canon anchors verbatim; preserve the camera setup/motion interval map rather than replacing it with a generic “cinematic camera” phrase.
+5. Map each prompt field to exact upstream paths before prose and reuse canon anchors verbatim; preserve the camera setup/motion interval map rather than replacing it with a generic “cinematic camera” phrase. Serialize the hard environment projection as positive landmark/boundary language plus a profile ID; keep forbidden architecture as negated validation-only exclusions and never as a positive scene feature.
 6. Serialize base-family or exact R2VA section order with required endpoint prefixes.
 7. Preserve dialogue verbatim and stable speakers; separate dialogue, ambience/effects, and score layers.
 8. Compute smallest `17k+5` model frame count at 24 FPS above target; keep target/model/effective values separate and require explicit trim to effective <=10 seconds.
@@ -41,6 +41,7 @@ Write `compiled/prompt-packets/<segment-id>.txt`, `h3-prompt-packets.yaml`, and 
 - Require exact approved plan hash and frozen live capability evidence.
 - Keep target/effective duration >0 and <=10; model duration may exceed only for frame grid and must be trimmed.
 - Preserve all approved creative fields, typed camera path, three time domains, continuity invariants/deltas, dialogue, reference roles/order, and IDs.
+- Preserve the hard environment profile ID and required landmarks in every prompt; reject positive forbidden-feature language and missing unknown-space/boundary language before the graph compiler.
 - Map every label one-to-one; never reinterpret endpoints/general references.
 - Take limits from frozen capability profile.
 - Produce filesystem artifacts only; never select workflows, queue, render, judge, repair, or approve.

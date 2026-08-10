@@ -12,7 +12,8 @@ implementation_status: invokable_milestone_4_contract
 requires:
   plan_gate: {production_plan_status: approved, approval_status: approved, exact_hash_match: true, blocking_preflight_count: 0}
   capability_profile: {object_info_evidence: true, installed_model_evidence: true, system_stats_evidence: true, frozen_revision_hash: required}
-  catalog: {validated_revision: required, template_and_mapping_hashes: required}
+  catalog: {validated_revision: required, template_and_mapping_hashes: required, dynamic_combo_selector_serialization: scalar_required}
+  final_graph_gate: {frozen_object_info_revalidation: required, dynamic_combo_object_form: forbidden, prompt_post_forbidden: true}
   execution: {queue: forbidden, render: forbidden, model_download: forbidden}
 topology: {editorial_boundaries_not_generation_edges: true, generation_relationships: [independent, same_shot_continue, endpoint_bridge, reference_reestablish, terminal], time_domains: [scene_time, source_time, record_time]}
 limits:

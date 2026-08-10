@@ -50,6 +50,7 @@ CAMERA_MOTION_TYPES = {
 }
 LIMB_STATES = {"unknown", "free", "occupied", "contact", "transferring"}
 LIMB_SIDES = {"left", "right"}
+INTERACTION_TARGET_TYPES = {"prop", "body_zone", "landmark", "surface"}
 LEGACY_SEGMENT_FIELDS = {
     "primary_performance_arc",
     "dominant_camera_move",
@@ -207,6 +208,98 @@ def validate_state(state: object, field: str) -> None:
     require_list(state["invariants"], f"{field}.invariants", minimum=1)
     require(isinstance(state["expected_deltas"], list), "CONTINUITY_STATE_INVALID", f"{field}.expected_deltas must be a list")
     require(isinstance(state["forbidden_deltas"], list), "CONTINUITY_STATE_INVALID", f"{field}.forbidden_deltas must be a list")
+
+
+def validate_limb_interactions(package: dict, registry: list[dict], external_targets: list[dict] | None = None) -> None:
+    """Validate semantic hand/target ownership, not only field presence.
+
+    A bilateral limb snapshot is executable continuity data.  A target may not
+    be invented at prompt time: props are declared by the snapshot prop
+    ledger, while body zones/landmarks/surfaces must be declared in the
+    package-level interaction target registry.
+    """
+    prop_ids = {
+        prop.get("prop_id")
+        for state in registry
+        for prop in state.get("prop_states", [])
+        if isinstance(prop, dict) and isinstance(prop.get("prop_id"), str) and prop.get("prop_id")
+    }
+    references = {
+        reference
+        for state in registry
+        for limb in state.get("limb_states", [])
+        for reference in (limb.get("holding_prop_id"), limb.get("contact_target"))
+        if reference
+    }
+    target_rows = package.get("interaction_targets") or external_targets
+    if references:
+        require(isinstance(target_rows, list) and target_rows, "INTERACTION_TARGET_REGISTRY_MISSING", "interactive limb references require interaction_targets")
+    target_by_id: dict[str, dict] = {}
+    for index, target in enumerate(target_rows or []):
+        require(isinstance(target, dict), "INTERACTION_TARGET_REGISTRY_INVALID", f"interaction_targets[{index}] must be an object")
+        target_id = target.get("target_id")
+        require(isinstance(target_id, str) and target_id and target_id not in target_by_id, "INTERACTION_TARGET_REGISTRY_INVALID", f"interaction_targets[{index}] has a missing or duplicate target_id")
+        require(target.get("target_type") in INTERACTION_TARGET_TYPES, "INTERACTION_TARGET_REGISTRY_INVALID", f"{target_id} has an invalid target_type")
+        require(isinstance(target.get("description"), str) and target["description"].strip(), "INTERACTION_TARGET_REGISTRY_INVALID", f"{target_id} needs a description")
+        if target["target_type"] == "body_zone":
+            require(isinstance(target.get("subject_id"), str) and target["subject_id"], "INTERACTION_TARGET_REGISTRY_INVALID", f"{target_id} body_zone needs subject_id")
+        target_by_id[target_id] = target
+
+    for reference in references:
+        require(reference in target_by_id, "INTERACTION_TARGET_UNDECLARED", f"limb reference {reference} is not declared in interaction_targets")
+    for target_id, target in target_by_id.items():
+        if target["target_type"] == "prop":
+            require(target_id in prop_ids, "INTERACTION_TARGET_PROP_UNKNOWN", f"interaction target {target_id} is not present in any prop ledger")
+
+    snapshot_character_ids = {
+        character.get("canon_id")
+        for state in registry
+        for character in state.get("character_states", [])
+        if isinstance(character, dict) and character.get("canon_id")
+    }
+    for target_id, target in target_by_id.items():
+        if target["target_type"] == "body_zone":
+            require(target["subject_id"] in snapshot_character_ids, "INTERACTION_TARGET_SUBJECT_UNKNOWN", f"{target_id} references an unknown subject")
+
+    for state in registry:
+        state_id = state["snapshot_id"]
+        snapshot_props = {
+            prop.get("prop_id")
+            for prop in state.get("prop_states", [])
+            if isinstance(prop, dict) and prop.get("prop_id")
+        }
+        held_props: dict[str, str] = {}
+        for limb in state["limb_states"]:
+            limb_id = limb["limb_id"]
+            limb_state = limb["state"]
+            holding = limb.get("holding_prop_id")
+            contact = limb.get("contact_target")
+            if limb_state in {"free", "unknown"}:
+                require(holding is None and contact is None, "LIMB_STATE_SEMANTICS_INVALID", f"{state_id}.{limb_id} {limb_state} cannot hold or contact a target")
+            elif limb_state == "contact":
+                require(holding is None and contact is not None, "LIMB_STATE_SEMANTICS_INVALID", f"{state_id}.{limb_id} contact requires only contact_target")
+            elif limb_state == "occupied":
+                require(holding is not None and contact is None, "LIMB_STATE_SEMANTICS_INVALID", f"{state_id}.{limb_id} occupied requires only holding_prop_id")
+            elif limb_state == "transferring":
+                require(holding is not None and contact is not None, "LIMB_STATE_SEMANTICS_INVALID", f"{state_id}.{limb_id} transferring requires holding_prop_id and contact_target")
+            if holding is not None:
+                require(target_by_id[holding]["target_type"] == "prop", "LIMB_HOLD_TARGET_INVALID", f"{state_id}.{limb_id} cannot hold non-prop target {holding}")
+                require(holding in snapshot_props, "LIMB_HOLD_PROP_MISSING", f"{state_id}.{limb_id} holds {holding}, absent from the snapshot prop ledger")
+                require(holding not in held_props, "LIMB_PROP_DOUBLE_HELD", f"{state_id} assigns {holding} to both {held_props.get(holding)} and {limb_id}")
+                held_props[holding] = limb_id
+            if contact is not None and target_by_id[contact]["target_type"] == "prop":
+                require(contact in snapshot_props, "LIMB_CONTACT_PROP_MISSING", f"{state_id}.{limb_id} contacts {contact}, absent from the snapshot prop ledger")
+
+    # A prop cannot jump directly between two hands while remaining occupied;
+    # the intermediate transfer/free snapshot must be represented explicitly.
+    for previous, current in zip(registry, registry[1:]):
+        previous_by_id = {limb["limb_id"]: limb for limb in previous["limb_states"]}
+        current_by_id = {limb["limb_id"]: limb for limb in current["limb_states"]}
+        for limb_id in set(previous_by_id) & set(current_by_id):
+            old = previous_by_id[limb_id]
+            new = current_by_id[limb_id]
+            if old.get("holding_prop_id") and new.get("holding_prop_id") and old["holding_prop_id"] != new["holding_prop_id"]:
+                require(new["state"] == "transferring" or old["state"] == "transferring", "LIMB_PROP_HANDOFF_UNEXPLAINED", f"{previous['snapshot_id']} -> {current['snapshot_id']} changes {limb_id} from {old['holding_prop_id']} to {new['holding_prop_id']} without a transfer state")
 
 
 def validate_geography(geography: object) -> dict:
@@ -603,7 +696,7 @@ def compare_states(previous: dict, current: dict, label: str) -> None:
             require(delta_allows(previous, field) or delta_allows(current, field), "CONTINUITY_ENVIRONMENT_CONTRADICTION", f"{label} changes environment.{field} without an expected delta")
 
 
-def validate_continuity(package: dict, shots: list[dict], segments: list[dict]) -> None:
+def validate_continuity(package: dict, shots: list[dict], segments: list[dict], external_targets: list[dict] | None = None) -> None:
     registry = package.get("continuity_registry")
     require(isinstance(registry, list), "CONTINUITY_REGISTRY_MISSING", "continuity_registry is required")
     registry_by_id: dict[str, dict] = {}
@@ -611,6 +704,7 @@ def validate_continuity(package: dict, shots: list[dict], segments: list[dict]) 
         validate_state(state, f"continuity_registry[{index}]")
         require(state["snapshot_id"] not in registry_by_id, "CONTINUITY_REGISTRY_INVALID", f"duplicate snapshot {state['snapshot_id']}")
         registry_by_id[state["snapshot_id"]] = state
+    validate_limb_interactions(package, registry, external_targets)
     embedded: list[tuple[str, dict]] = []
     for shot in shots:
         embedded.extend([(f"{shot['shot_id']}.continuity_in", shot["continuity_in"]), (f"{shot['shot_id']}.continuity_out", shot["continuity_out"])])
@@ -634,7 +728,7 @@ def validate_continuity(package: dict, shots: list[dict], segments: list[dict]) 
         require(shot["continuity_out"]["snapshot_id"] == shot_segments[-1]["exit_state"]["snapshot_id"], "CONTINUITY_SNAPSHOT_LINK_INVALID", f"{shot['shot_id']} continuity_out does not match its last segment")
     for previous, current in zip(shots, shots[1:]):
         compare_states(previous["continuity_out"], current["continuity_in"], f"{previous['shot_id']} -> {current['shot_id']}")
-def validate_v2(package: dict) -> None:
+def validate_v2(package: dict, external_targets: list[dict] | None = None) -> None:
     require(package.get("planning_model_version") == 2, "V2_VERSION_REQUIRED", "planning_model_version must be 2")
     require("handoffs" not in package, "V2_LEGACY_FIELDS_PRESENT", "use editorial_boundaries and generation_handoffs, not handoffs")
     treatment = package.get("director_treatment")
@@ -651,7 +745,7 @@ def validate_v2(package: dict) -> None:
     segments = require_list(package.get("generation_segments"), "generation_segments")
     handoffs = validate_handoffs(package, shots_by_id, segments)
     validate_segments(package, shots_by_id, handoffs)
-    validate_continuity(package, shots, segments)
+    validate_continuity(package, shots, segments, external_targets)
     require(isinstance(package.get("animatic_intent"), dict), "ANIMATIC_INTENT_MISSING", "animatic_intent is required")
     require_list(package.get("creative_acceptance_tests"), "creative_acceptance_tests")
     print("PASS: v2 real-cinematic storyboard package is valid")
@@ -661,6 +755,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--storyboard", type=Path, required=True)
     parser.add_argument("--schema-version", choices=("auto", "1", "2"), default="auto")
+    parser.add_argument("--interaction-target-registry", type=Path)
     args = parser.parse_args()
     try:
         package = load_document(args.storyboard)
@@ -668,7 +763,12 @@ def main() -> int:
         if version == "auto":
             version = "2" if package.get("planning_model_version") == 2 else "1"
         if version == "2":
-            validate_v2(package)
+            external_targets = None
+            if args.interaction_target_registry:
+                target_document = load_document(args.interaction_target_registry)
+                external_targets = target_document.get("interaction_targets")
+                require(isinstance(external_targets, list), "INTERACTION_TARGET_REGISTRY_INVALID", "interaction target registry must contain interaction_targets list")
+            validate_v2(package, external_targets)
         else:
             validate_v1(package)
         return 0

@@ -17,6 +17,8 @@ Own `edit/final-edl.yaml`, assembly/audio plans, `compiled/final-assembly-workfl
 
 Require approved plan/approval with matching SHA-256; approved-media manifest containing every required source with QC `PASS`; segment/generation-handoff QC reports and hashes; bilateral editorial boundary records; animatic/paper edit and shot-to-segment assembly map; sound/dialogue/ambience continuity rules plus the post-storyboard sound-boundary map; delivery spec; and capability/catalog utility templates when a workflow is requested. Reject stale, missing, superseded, unhashed, failed, pending, or `PASS_WITH_EDITORIAL_FIX` media.
 
+The only exception is an explicit technical path-test request. In `TECHNICAL_DRAFT` mode, accept technical-intake outputs solely to prove ordering, decode, A/V normalization, hashes, and artifact routing. Mark the result non-deliverable, disclose every unrealized boundary, and do not call it a final master or bypass QC.
+
 ## Required outputs
 
 Write new deterministic relative-path revisions only: schema-valid `edit/final-edl.yaml`; `edit/assembly-plan.yaml`; `edit/audio-mix-plan.yaml`; validated `compiled/final-assembly-workflow.json`; optionally authorized `renders/final/<project-id>_master_rNN.mp4`; and schema-valid `delivery-manifest.yaml` with full lineage, technical metadata, canonical hash, and delivery checks. Delivery is final only after independent final-mode QC `PASS` bound to the exact master.
@@ -28,8 +30,10 @@ Write new deterministic relative-path revisions only: schema-valid `edit/final-e
 3. Apply declared editorial mechanisms only: cut has no blend; dissolve/fade use their declared editorial spans and audio behavior; end terminates the record timeline. Apply generation endpoint duplication rules only to the matching generation relationship; never let an editorial cut imply a continuation.
 4. Build sample-accurate audio joins from the sound plan, normalizing declared rate/channels/loudness and preserving dialogue/ambience identity without gaps, clicks, restarts, drift, or double audio.
 5. Normalize picture to delivery FPS/dimensions/color/codec and record every trim, duplicate removal, fade, color or timing operation with reason/evidence.
-6. Build the final graph from versioned utility catalog and live capability evidence; validate named inputs, nodes/types/links/paths/revisions and output. Never queue ComfyUI here.
+6. Build the final graph from versioned utility catalog and live capability evidence; validate named inputs, nodes/types/links/paths/revisions and output. For N-way technical or production concat, use `scripts/build_concat_graph.py` so every source is represented by an explicit `LoadVideo`/`GetVideoComponents`/`ImageBatch`/`AudioConcat` chain. Never queue ComfyUI here.
 7. If execution is authorized, create a new master revision and route it with complete lineage to final QC. Only final `PASS` permits a hashed delivery manifest marked ready.
+
+For `TECHNICAL_DRAFT`, use the reusable path-test assembler/validator. If the declared EDL includes a dissolve, fade, J-cut, L-cut, overlap, or audio span that the selected utility workflow cannot realize, fail with `POST_TRANSITION_SEMANTICS_MISMATCH` in production mode; a path test may emit only an explicitly disclosed straight-cut draft.
 
 ## Invariants
 
@@ -40,6 +44,7 @@ Write new deterministic relative-path revisions only: schema-valid `edit/final-e
 - Bridge endpoints/audio overlaps must be declared and verifiable.
 - Post Editor cannot approve its own master; delivery requires exact final-QC/master/plan/EDL/workflow hash binding.
 - Canonical serialization is deterministic and paths are relative and traversal-free.
+- A technical draft has `delivery_status: not_deliverable_without_QC` and `quality_evaluation: not_performed_by_user_instruction`; it can never satisfy `ready_for_final_qc` or `delivered` by implication.
 
 ## Non-responsibilities
 

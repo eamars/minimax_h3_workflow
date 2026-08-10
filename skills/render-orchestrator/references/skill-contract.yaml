@@ -11,6 +11,9 @@ owner: render-orchestrator
 requires:
   compiled_bundle_validated: true
   execution_authorized: true
+lifecycle_modes:
+  production: {quality_route: continuity_qc, delivery_possible_only_after_final_qc: true}
+  path-test: {quality_route: technical_intake_only, visual_qc: forbidden, delivery: forbidden, acceptance_script: skills/production-orchestrator/scripts/validate_path_test.py}
 routing:
   upstream: [production-orchestrator-approval-gate, comfyui-workflow-compiler, keyframe-handoff-builder-when-required]
   downstream: [continuity-qc-supervisor, repair-director-on-qc-failure, post-editor-after-approved-media]
@@ -20,10 +23,10 @@ api:
   inspect: [{method: GET, path: /queue}, {method: GET, path: '/history/{prompt_id}'}, {method: GET, path: '/api/jobs/{prompt_id}'}]
   no_submission_for_validation: true
 state:
-  key: [project_id, plan_revision, plan_hash, run_id, execution_policy_hash]
+  key: [project_id, plan_revision, plan_hash, run_id, execution_policy_hash, lifecycle_mode, capability_profile_hash, environment_profile_hash]
   transitions: [queued, running, complete, failed, blocked]
   resume: reconcile_history_queue_before_submit
-  persistence: {run_state: atomic_replace, events: append_only_jsonl}
+  persistence: {run_state: atomic_replace, events: append_only_jsonl, heartbeat: required}
 retry:
   max_attempts_default: 3
   backoff_seconds: [2, 5, 15]
@@ -39,4 +42,4 @@ limits:
   segment_effective_seconds: {exclusiveMinimum: 0, maximum: 10}
   concurrency: positive_integer
   continue_requires: [predecessor_render_complete, predecessor_qc_pass, approved_handoff_frame_selection]
-failure_codes: [PLAN_APPROVAL_REQUIRED, PLAN_HASH_MISMATCH, COMPILED_BUNDLE_INVALID, DAG_INVALID, DAG_CYCLE, DAG_DEPENDENCY_MISSING, HANDOFF_TAIL_UNAPPROVED, COMFYUI_UNREACHABLE, COMFYUI_AUTH_FAILED, COMFYUI_QUEUE_REJECTED, COMFYUI_VALIDATION_FAILED, COMFYUI_TIMEOUT, COMFYUI_JOB_FAILED, COMFYUI_OUTPUT_MISSING, COMFYUI_OUTPUT_INVALID, TRANSIENT_RETRY_EXHAUSTED, CONCURRENCY_LIMIT_INVALID, APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN, OUTPUT_PATH_ESCAPE, RUN_STATE_CORRUPT, PROMPT_ID_COLLISION, DEPENDENCY_BLOCKED]
+failure_codes: [PLAN_APPROVAL_REQUIRED, PLAN_HASH_MISMATCH, COMPILED_BUNDLE_INVALID, DAG_INVALID, DAG_CYCLE, DAG_DEPENDENCY_MISSING, HANDOFF_TAIL_UNAPPROVED, ENVIRONMENT_PROJECTION_INVALID, STORYBOARD_CONTINUITY_INVALID, COMFYUI_UNREACHABLE, COMFYUI_AUTH_FAILED, COMFYUI_QUEUE_REJECTED, COMFYUI_VALIDATION_FAILED, COMFYUI_PROMPT_ID_MISMATCH, COMFYUI_TIMEOUT, COMFYUI_JOB_FAILED, COMFYUI_OUTPUT_MISSING, COMFYUI_OUTPUT_INVALID, TRANSIENT_RETRY_EXHAUSTED, CONCURRENCY_LIMIT_INVALID, APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN, OUTPUT_PATH_ESCAPE, RUN_STATE_CORRUPT, PROMPT_ID_COLLISION, DEPENDENCY_BLOCKED, RUN_RESUME_SELECTION_MISMATCH]

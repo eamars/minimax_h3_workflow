@@ -2,6 +2,13 @@ version: 2
 input_gate:
   require: [approved_plan, approval_record, matching_plan_hash, approved_media_manifest, all_required_qc_PASS, delivery_spec]
   reject: [missing_hash, stale_revision, superseded_media, PASS_WITH_EDITORIAL_FIX, failed_or_pending_qc]
+technical_draft_mode:
+  explicit_authorization: true
+  accepts: [technical_intake_only]
+  quality_evaluation: not_performed_by_user_instruction
+  delivery_status: not_deliverable_without_QC
+  allowed_assembly: straight_cut_only_with_transition_disclosure
+  forbidden: [qc_pass, final_qc_pass, delivery_manifest_ready, delivered]
 canonicalization: {encoding: UTF-8, newline: LF, map_order: sorted_keys, hash: sha256}
 editorial_mechanisms:
   cut: {kind: hard_cut, frame_overlap: 0, audio_overlap: declared_only}

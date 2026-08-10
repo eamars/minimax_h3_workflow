@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import copy
 import hashlib
+import importlib.util
 import json
 import re
 import sys
@@ -221,6 +222,30 @@ def expand_ordered_reference_assets(graph: dict, bindings: dict, object_info: di
         inputs[f"ref_images.{prefix}{index}"] = [loader_id, 0]
 
 
+def validate_environment_projection(graph: dict, profile_path: Path) -> str:
+    """Require the hard environment projection in every H3 prompt-bearing graph."""
+    helper_path = Path(__file__).resolve().parents[3] / "skills" / "minimax-h3-adapter" / "scripts" / "validate_environment_projection.py"
+    spec = importlib.util.spec_from_file_location("compiler_environment_projection", helper_path)
+    if spec is None or spec.loader is None:
+        raise AssertionError("ENVIRONMENT_PROJECTION_VALIDATOR_MISSING")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    profile_document = load(profile_path)
+    profile = module.environment_profile(profile_document)
+    prompts = []
+    for node in graph.values():
+        if not isinstance(node, dict):
+            continue
+        for field, value in (node.get("inputs") or {}).items():
+            if field in {"prompt", "text"} and isinstance(value, str):
+                prompts.append(value)
+    if not prompts:
+        raise AssertionError("ENVIRONMENT_PROJECTION_UNTRACEABLE: no prompt-bearing node")
+    for prompt in prompts:
+        module.validate_prompt_text(prompt, profile)
+    return str(profile["profile_id"])
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--plan", type=Path, required=True)
@@ -229,6 +254,7 @@ def main() -> int:
     parser.add_argument("--template-id", required=True)
     parser.add_argument("--bindings", type=Path, required=True)
     parser.add_argument("--capability-profile", type=Path, required=True)
+    parser.add_argument("--environment-profile", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
@@ -255,6 +281,9 @@ def main() -> int:
     if args.template_id == "h3-r2va-v1":
         expand_ordered_reference_assets(graph, bindings, object_info)
     validate_live_graph(graph, object_info)
+    environment_profile_id = None
+    if args.environment_profile is not None:
+        environment_profile_id = validate_environment_projection(graph, args.environment_profile.resolve())
 
     payload = json.dumps(graph, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
     report = {
@@ -271,6 +300,8 @@ def main() -> int:
         "effective_duration_seconds": float(bindings["effective_duration_seconds"]),
         "output": args.output.as_posix(),
     }
+    if environment_profile_id is not None:
+        report["environment_profile_id"] = environment_profile_id
     if cinematic_segment is not None:
         report.update({
             "shot_id": cinematic_segment["shot_id"],

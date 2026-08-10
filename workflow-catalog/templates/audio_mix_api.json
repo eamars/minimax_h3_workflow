@@ -4,5 +4,5 @@
   "3": {"class_type": "LoadAudio", "inputs": {"audio": "${mix_track_path}"}},
   "4": {"class_type": "AudioMerge", "inputs": {"audio1": ["2", 1], "audio2": ["3", 0], "merge_method": "mean"}},
   "5": {"class_type": "CreateVideo", "inputs": {"images": ["2", 0], "audio": ["4", 0], "fps": "${fps}", "bit_depth": 8}},
-  "6": {"class_type": "SaveVideo", "inputs": {"video": ["5", 0], "filename_prefix": "${output_prefix}", "format": "auto", "codec": {"codec": "auto"}}}
+  "6": {"class_type": "SaveVideo", "inputs": {"video": ["5", 0], "filename_prefix": "${output_prefix}", "format": "auto", "codec": "auto"}}
 }

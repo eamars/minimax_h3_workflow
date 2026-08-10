@@ -6,5 +6,5 @@
   "5": {"class_type": "ImageBatch", "inputs": {"image1": ["3", 0], "image2": ["4", 0]}},
   "6": {"class_type": "AudioConcat", "inputs": {"audio1": ["3", 1], "audio2": ["4", 1], "direction": "after"}},
   "7": {"class_type": "CreateVideo", "inputs": {"images": ["5", 0], "audio": ["6", 0], "fps": "${fps}", "bit_depth": 8}},
-  "8": {"class_type": "SaveVideo", "inputs": {"video": ["7", 0], "filename_prefix": "${output_prefix}", "format": "auto", "codec": {"codec": "auto"}}}
+  "8": {"class_type": "SaveVideo", "inputs": {"video": ["7", 0], "filename_prefix": "${output_prefix}", "format": "auto", "codec": "auto"}}
 }

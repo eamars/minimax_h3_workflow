@@ -17,15 +17,17 @@ Own queue admission, topological scheduling, concurrency, ComfyUI submission/mon
 
 Require an approved production plan and matching hash; compiler production DAG and immutable compiled bundle; approval record; compiler capability/endpoint profile; execution policy; project/run IDs; and optional prior run state. Every node must have a valid ComfyUI job, stable revision, duration at most 10 seconds, dependencies, output paths, and source hashes. Generation handoffs additionally require the endpoint evidence declared by their policy; only stable-tail relationships require a QC-approved stable tail.
 
+The runner has two explicit lifecycle modes. `production` routes completed media to continuity QC and may proceed only through the normal approval gates. `path-test` proves only queueing, rendering, provenance, decode, and technical assembly; it must label all intake/report/master artifacts as quality-not-evaluated and can never produce QC-PASS, final-QC-PASS, or delivery state.
+
 ## Required outputs
 
 Write atomically without approved overwrite: `run-state.yaml`, `job-reports/<job-id>.yaml` per attempt, revisioned `renders/draft/`, `frames/extracted/` when declared, append-only `execution-log.jsonl`, and a QC-intake record for every completed output. Each report links run/job/attempt IDs, plan/workflow/payload hashes, seed, models/nodes, endpoint, client/prompt IDs, dependencies, timestamps, outputs/hashes, retry history, state, and errors.
 
 ## Processing method
 
-1. Validate approval, exact plan hash, compiled-bundle status, sources, paths, and immutability before API calls.
+1. Validate approval, exact plan hash, compiled-bundle status, sources, paths, immutability, the job schema's authoritative time interval, the hard environment projection, the project interaction-target/limb contract, and the frozen live `/object_info` graph contract before API calls. Re-run the compiler live-graph validator over every workflow immediately before the first `POST /prompt`; reject dynamic-combo object-shaped inputs even if an older compile report says `PASS`.
 2. Validate DAG IDs/edges/cycles/job types. Admit only dependency-ready jobs; `same_shot_continue` and bridge jobs require their declared endpoint gates, while independent jobs remain independent.
-3. Load/create run state keyed by project, plan revision/hash, run ID, and execution-policy hash. On resume reconcile `/history/{prompt_id}`, `/queue`, and available job status before submission.
+3. Load/create run state keyed by project, plan revision/hash, run ID, execution-policy hash, lifecycle mode, capability hash, and environment-profile hash. On resume require the original admitted job set and reconcile `/history/{prompt_id}`, `/queue`, and available job status before submission.
 4. Schedule ready nodes in stable topological order within resource limits. Derive deterministic UUIDv5 prompt IDs from project/run/job/attempt and stable client IDs; send the compiled graph unchanged to `POST /prompt`.
 5. Monitor queue/history with bounded polling. Mark complete only after server success and declared outputs exist, decode, remain under the output root, and hash successfully.
 6. Retry only transient connection, timeout, 408/409/425/429/5xx, or temporary queue/history failures using the fixed attempt budget and deterministic 2/5/15-second backoff. Keep graph, inputs, seed, and workflow hashes unchanged.
@@ -33,15 +35,20 @@ Write atomically without approved overwrite: `run-state.yaml`, `job-reports/<job
 8. On interruption, persist in-flight IDs and stop admissions. Resume by reconciliation without duplicating known queued/running/completed prompts.
 9. Return counts, blocked branches, exhausted retries, and report/output paths and hashes. Route evidence through the production orchestrator.
 
+For `path-test`, run `skills/production-orchestrator/scripts/validate_path_test.py` after technical assembly. This is an independent technical gate, not a visual-QC substitute.
+
 ## Invariants
 
 - Exact plan approval/hash and a validated compiled bundle are mandatory.
+- Lifecycle mode is explicit and truthful; path-test status is never `DELIVERED` and never implies visual approval.
+- The final admission gate must agree with the frozen live schema, including scalar serialization of `COMFY_DYNAMICCOMBO_V3` selectors and dotted names for selected nested fields.
 - Compiled graph, prompt, seed, models, nodes, timing, and creative parameters never mutate.
 - Prompt IDs are canonical and deterministic; reconciliation precedes resubmission.
 - DAG gates are enforced, same-shot continuations serialize, moving endpoints retain their policy evidence, and independent generation relationships remain independent.
 - Effective segment duration is positive and at most 10 seconds.
 - Retry is bounded, deterministic, infrastructure-only, and spec-preserving.
 - Reports/state/events/outputs are versioned, hashed, confined, and immutable once approved.
+- Returned `prompt_id` must match the deterministic ID; a closed stdout pipe cannot convert a recorded successful job into a failure; heartbeat events make liveness and resume evidence explicit.
 - A failed node blocks only transitive dependents. This skill never approves, repairs, selects takes, or assembles.
 
 ## Non-responsibilities
@@ -54,7 +61,7 @@ Return affected job/attempt IDs, evidence, retryability, blocking scope and owne
 
 ## Validation rules
 
-Before submit validate artifacts/hashes, approval, graph API shape/hash, IDs, node/job types, model/asset paths, duration, DAG topology, endpoint approvals, output-root confinement, execution policy, and prompt-ID derivation. During/after submit validate HTTP/returned prompt ID, reconcile queue/history, enforce timeout/retries, verify outputs/decodability/hashes, and compare report hashes. Unknown errors fail closed.
+Before submit validate artifacts/hashes, approval, graph API shape/hash, IDs, node/job types, model/asset paths, duration from `record_time` (or an explicitly declared effective-duration field), DAG topology, endpoint approvals, output-root confinement, execution policy, prompt-ID derivation, hard environment projection, bilateral limb semantics, and declared interaction targets. During/after submit validate HTTP/returned prompt ID, reconcile queue/history, enforce timeout/retries, verify outputs/decodability/hashes, map provenance fields to the actual job schema, and compare report hashes. Unknown errors fail closed.
 
 ## Minimal example
 
@@ -71,5 +78,7 @@ If a successor references draft endpoint evidence and `/prompt` returns 503, blo
 - UUID prompt IDs/client ID are deterministic and resume does not duplicate submissions.
 - Transient errors retry unchanged within budget; validation/creative errors never retry.
 - Every attempt produces complete provenance and verified, confined outputs routed to QC.
+- Job-schema variants cannot cause a successful media output to be marked failed during provenance writing; duration and other report fields are derived from declared schema paths and covered by unit tests.
 - Terminal failure blocks only dependent branches and preserves unrelated work and approved artifacts.
 - Unapproved handoffs, >10-second effective media, overwrite attempts, path escape, and unknown errors fail closed.
+- A path test cannot pass with a missing/changed completion report, QC-intake hash, source/output hash, exact A/V duration, or disclosed unrealized editorial transition.
