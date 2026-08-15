@@ -14,9 +14,8 @@ position and viewpoint are allowed to change with motivation.
 
 ## Reviewer-driven corrective steps executed
 
-1. Refreshed all active installed skill packages and added
-   `scripts/validate_skill_parity.py`, which compares installed files against the
-   workspace package hashes.
+1. Consolidated all active skill packages under `.agents/skills` and added
+   `scripts/validate_repo_skill_scope.py`, which prevents duplicate global copies.
 2. Strengthened storyboard admission validation for typed geography/zones,
    staging, camera setup/look-at/keyframes/motion/risk, camera interval coverage,
    three time domains, record assembly, bilateral editorial boundaries, J/L audio
@@ -24,15 +23,15 @@ position and viewpoint are allowed to change with motivation.
 3. Made production-plan validation reuse the same graph-aware v2 storyboard
    validator instead of accepting shallow objects.
 4. Added strict downstream v2 schemas for ComfyUI jobs, generation DAGs, QC,
-   keyframes, and sound; compiler bindings now require camera/continuity hashes,
+   keyframes, and sound; compiler bindings now require camera/continuity revisions,
    generation relationship/policy, and moving-endpoint capability evidence.
 5. Corrected migration to produce a fresh, schema-shaped superseding revision with
    preserved segment timing/IDs, explicit unresolved creative markers, `--dry-run`,
-   and a review-blocking migration status. It never reuses the old approval hash.
-6. Corrected approval invalidation so technical model-grid resegmentation can be
+   and a completion-blocking migration status. It never reuses stale revision metadata.
+6. Corrected validation invalidation so technical model-grid resegmentation can be
    non-creative only when camera, continuity, editorial boundaries, generation
    topology, and prompt intent remain unchanged; creative changes still require
-   reapproval.
+   revalidation.
 7. Added sanitized PRJ01 baseline/corrected-board examples and expanded the
    executable fixture suite, including sparse single-take acceptance and negative
    cases for the previously accepted malformed topologies.
@@ -43,9 +42,9 @@ position and viewpoint are allowed to change with motivation.
 
 - `python -m unittest discover -s tests -v`: 17 tests passed.
 - `python scripts/validate_production_system.py`: passed.
-- `python scripts/validate_skill_parity.py --installed-root <active-skill-root>`: 17 active packages matched.
+- `python scripts/validate_repo_skill_scope.py`: 17 project-local packages found with no global duplicates.
 - `python scripts/validate_cinematic_package.py --storyboard tests/fixtures/storyboard-v2-real-cinematic.yaml`: passed.
-- `python scripts/migrate_storyboard_v1_to_v2.py --dry-run ...`: passed; migration remains admission-blocked until creative review.
+- `python scripts/migrate_storyboard_v1_to_v2.py --dry-run ...`: passed; migration remains blocked until creative fields are completed.
 - `git diff --check`: passed; only normal repository line-ending warnings remain.
 
 ## Operating rule after implementation
@@ -57,5 +56,5 @@ the declared character/environment properties and timeline scope; they do not
 freeze the camera. A cut, dissolve, or J/L audio decision is never inferred from
 the generation relationship.
 
-The next production-specific step is a new approved v2 PRJ01 storyboard revision;
+The next production-specific step is a new validated v2 PRJ01 storyboard revision;
 the historical PRJ01 plan and its media remain untouched.

@@ -6,6 +6,6 @@
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
     "nodes": {"type": "array", "items": {"type": "object", "required": ["job_id", "job_path", "state", "branch_id"]}},
-    "edges": {"type": "array", "items": {"type": "object", "required": ["from", "to", "relation"], "properties": {"relation": {"enum": ["asset", "approval", "continue", "bridge", "post"]}}}}
+    "edges": {"type": "array", "items": {"type": "object", "required": ["from", "to", "relation"], "properties": {"relation": {"enum": ["asset", "dependency", "continue", "bridge", "post"]}}}}
   }
 }

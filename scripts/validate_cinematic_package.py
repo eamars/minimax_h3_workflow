@@ -11,7 +11,7 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
-STORYBOARD_VALIDATOR = ROOT / "skills/storyboard-director/scripts/validate_storyboard.py"
+STORYBOARD_VALIDATOR = ROOT / ".agents/skills/storyboard-director/scripts/validate_storyboard.py"
 
 
 def load(path: Path) -> dict:

@@ -5,7 +5,7 @@
   "required": ["artifact", "verdict", "checks", "risk_register", "revision_requests"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
-    "verdict": {"enum": ["PASS_FOR_HUMAN_REVIEW", "REVISE_BEFORE_REVIEW", "BLOCKED_MISSING_REQUIREMENT"]},
+    "verdict": {"enum": ["PASS", "REVISE", "BLOCKED"]},
     "checks": {"type": "array", "items": {"type": "object", "required": ["dimension", "status", "evidence"]}},
     "risk_register": {"type": "array"},
     "revision_requests": {"type": "array", "items": {"type": "object", "required": ["failure_code", "affected_ids", "smallest_upstream_artifact", "evidence"]}}

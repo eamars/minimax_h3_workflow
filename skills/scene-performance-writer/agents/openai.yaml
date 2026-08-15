@@ -1,6 +1,0 @@
-interface:
-  display_name: "Scene & Performance Writer"
-  short_description: "Write playable behavior and performance continuity"
-  default_prompt: "Use $scene-performance-writer to turn the validated plot and canon into playable scene performance with dialogue, reactions, normalized HAND_L/HAND_R continuity, and explicit prop-contact snapshots."
-policy:
-  allow_implicit_invocation: true

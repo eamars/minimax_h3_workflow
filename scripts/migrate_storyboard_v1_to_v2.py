@@ -1,17 +1,15 @@
-"""Migrate a v1 storyboard into a schema-shaped, review-blocked v2 revision.
+"""Migrate a v1 storyboard into a schema-shaped, completion-blocked v2 revision.
 
 The migration carries stable IDs and measurable timing forward, but every camera,
 geography, continuity, and editorial decision that v1 did not contain is marked
-for human completion. The output is structurally valid v2, receives a new
-revision and hash, and is intentionally rejected by the cinematic admission
-validator until the migration status is changed to ``complete`` by review.
+for editorial completion. The output is structurally valid v2, receives a new
+revision, and is intentionally rejected by the cinematic admission validator
+until a later planning pass changes the migration status to ``complete``.
 """
 
 from __future__ import annotations
 
 import argparse
-import hashlib
-import json
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -26,11 +24,6 @@ def load(path: Path) -> dict:
     if not isinstance(value, dict):
         raise ValueError(f"{path} must contain an object")
     return value
-
-
-def stable_hash(value: object) -> str:
-    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-    return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def state(snapshot_id: str, pose: str = "MIGRATION_REVIEW_REQUIRED") -> dict:
@@ -209,15 +202,14 @@ def migrate(source: dict) -> tuple[dict, dict]:
             "version": int(source_artifact.get("version", 1)) + 1,
             "revision_id": str(source_artifact.get("revision_id", "storyboard_migrated@v01")).rsplit("@v", 1)[0] + "@v02",
             "created_from": [source_artifact.get("artifact_id", "unknown-source")],
-            "source_versions": [{"artifact_id": source_artifact.get("artifact_id", "unknown-source"), "version": int(source_artifact.get("version", 1)), "content_hash": source_artifact.get("content_hash", "sha256:" + "0" * 64)}],
+            "source_versions": [{"artifact_id": source_artifact.get("artifact_id", "unknown-source"), "version": int(source_artifact.get("version", 1)), "revision_id": source_artifact.get("revision_id", "unknown-source@v01")}],
             "status": "draft",
-            "content_hash": "sha256:" + "0" * 64,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "created_by": "migrate_storyboard_v1_to_v2",
             "provenance": {"user_inputs": [], "source_assets": [], "upstream_artifacts": [source_artifact.get("artifact_id", "unknown-source")]},
         },
         "planning_model_version": 2,
-        "migration": {"source_model_version": 1, "status": "needs_editorial_completion", "creative_fields_not_invented": ["scene_geography", "environment_lock", "camera.setup.position", "camera.setup.orientation", "camera.setup.optics", "camera.setup.composition", "camera.setup.axis", "camera.in_shot_motion", "continuity_in", "continuity_out", "limb_states", "editorial_boundaries", "generation_handoffs", "reference_bindings"], "source_artifact_hash": source_artifact.get("content_hash", ""), "migration_tool_version": "2.0"},
+        "migration": {"source_model_version": 1, "status": "needs_editorial_completion", "creative_fields_not_invented": ["scene_geography", "environment_lock", "camera.setup.position", "camera.setup.orientation", "camera.setup.optics", "camera.setup.composition", "camera.setup.axis", "camera.in_shot_motion", "continuity_in", "continuity_out", "limb_states", "editorial_boundaries", "generation_handoffs", "reference_bindings"], "source_artifact_revision": source_artifact.get("revision_id", ""), "migration_tool_version": "2.1"},
         "director_treatment": {"dramatic_engine": "MIGRATION_REVIEW_REQUIRED", "visual_grammar": "MIGRATION_REVIEW_REQUIRED", "coverage_strategy": "MIGRATION_REVIEW_REQUIRED", "camera_position_policy": "allowed_to_change_between_shots", "environment_lock": {"environment_profile_id": "MIGRATED_ENVIRONMENT", "source_asset_id": "MIGRATION_REVIEW_REQUIRED", "enforcement": "hard_reference_no_expansion", "required_landmarks": ["MIGRATION_REVIEW_REQUIRED"], "allowed_features": ["MIGRATION_ALLOWED_FEATURE_REQUIRES_REVIEW"], "forbidden_inventions": ["MIGRATION_FORBIDDEN_FEATURE_REQUIRES_REVIEW"], "unknown_regions": ["all-v1-geometry"], "negative_space_rule": "MIGRATION_REVIEW_REQUIRED", "camera_position_policy": "storyboard_owned_within_environment_lock"}},
         "scene_geography": {"geography_id": "MIGRATED_GEOGRAPHY", "coordinate_system": "MIGRATION_REVIEW_REQUIRED", "landmarks": [{"landmark_id": "unknown_landmark", "kind": "unknown", "description": "MIGRATION_REVIEW_REQUIRED", "confidence": "unknown", "reference_ids": []}], "axes": [], "unknown_regions": ["all-v1-geometry"], "allowed_camera_zones": ["unknown_zone"], "zones": [{"zone_id": "unknown_zone", "kind": "unknown", "description": "MIGRATION_REVIEW_REQUIRED", "adjacent_zone_ids": [], "visibility": "unknown"}], "relations": [], "reference_views": [{"view_id": "MIGRATION_VIEW", "asset_id": "MIGRATION_REVIEW_REQUIRED", "purpose": "MIGRATION_REVIEW_REQUIRED"}]},
         "shots": shot_rows,
@@ -228,8 +220,7 @@ def migrate(source: dict) -> tuple[dict, dict]:
         "animatic_intent": {"scene_time_policy": "MIGRATION_REVIEW_REQUIRED", "record_time_policy": "mechanically carried from v1 durations", "pacing_notes": ["MIGRATION_REVIEW_REQUIRED"]},
         "creative_acceptance_tests": [{"test_id": "MIGRATION_REVIEW_REQUIRED", "scope": "all", "assertion": "MIGRATION_REVIEW_REQUIRED"}],
     }
-    migrated["artifact"]["content_hash"] = stable_hash(migrated)
-    report = {"source_model_version": 1, "target_model_version": 2, "status": "needs_editorial_completion", "source_revision": source_artifact.get("revision_id"), "new_revision": migrated["artifact"]["revision_id"], "new_content_hash": migrated["artifact"]["content_hash"], "stable_ids_preserved": stable_shot_ids, "blocking_fields": migrated["migration"]["creative_fields_not_invented"], "next_owner": "storyboard-director", "human_approval_required": True}
+    report = {"source_model_version": 1, "target_model_version": 2, "status": "needs_editorial_completion", "source_revision": source_artifact.get("revision_id"), "new_revision": migrated["artifact"]["revision_id"], "stable_ids_preserved": stable_shot_ids, "blocking_fields": migrated["migration"]["creative_fields_not_invented"], "next_owner": "storyboard-director", "upstream_revision_required": True}
     return migrated, report
 
 
@@ -250,7 +241,7 @@ def main() -> int:
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(yaml.safe_dump(migrated, sort_keys=False), encoding="utf-8")
     args.report.write_text(yaml.safe_dump(report, sort_keys=False), encoding="utf-8")
-    print(f"Wrote review-blocked v2 migration to {args.output}")
+    print(f"Wrote completion-blocked v2 migration to {args.output}")
     return 0
 
 

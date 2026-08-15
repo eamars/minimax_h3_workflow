@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repair Director"
+  short_description: "Plan localized repairs from QC evidence"
+  default_prompt: "Use $repair-director to create the smallest evidence-backed repair and invalidation scope after QC failure."

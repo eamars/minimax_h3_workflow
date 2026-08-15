@@ -1,4 +1,0 @@
-interface:
-  display_name: "Post Editor"
-  short_description: "Assemble QC-approved media and prepare final delivery"
-  default_prompt: "Use $post-editor to assemble only QC-PASS media according to the approved editorial boundaries, generation handoffs, EDL, and sound-boundary map; route the master to independent final QC and emit a hashed delivery manifest only after final PASS."

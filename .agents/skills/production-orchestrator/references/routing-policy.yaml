@@ -1,0 +1,91 @@
+version: 3
+implementation_status: complete_automatic_pipeline
+default_mode: FULL_PIPELINE
+
+modes:
+  FULL_PIPELINE: {stop_after: DELIVERED}
+  PLAN_ONLY: {stop_after: PLAN_READY}
+  COMPILE_PLAN: {requires: [plan_ready, live_comfyui_probe], stop_after: COMPILED}
+  PRODUCE_COMPILED_PLAN: {requires: [compiled_bundle_valid], stop_after: ASSEMBLY_READY}
+  PATH_TEST_COMPILED_PLAN: {requires: [compiled_bundle_valid, explicit_path_test_request], stop_after: PATH_TEST_READY}
+  REPAIR_FAILED_OUTPUTS: {requires: [qc_failure_report], stop_after: SEGMENT_QC}
+  ASSEMBLE_QC_OUTPUTS: {requires: [qc_media_manifest], stop_after: FINAL_QC}
+
+planning_dispatch:
+  - {type: skill, skill: request-normalizer}
+  - {type: skill, skill: reference-canon-manager}
+  - {type: skill, skill: plot-architect}
+  - {type: skill, skill: scene-performance-writer}
+  - {type: skill, skill: sound-dialogue-planner, trigger: conditional_dispatch.sound-dialogue-planner}
+  - {type: skill, skill: storyboard-director}
+  - {type: skill, skill: animatic-previs-planner}
+  - {type: skill, skill: production-preflight-reviewer}
+  - {type: integration, owner: production-orchestrator, authority: merge_only}
+
+package_resolution: {registry: references/specialist-registry.yaml, root: .agents/skills}
+
+compilation_dispatch:
+  order:
+    - comfyui-live-capability-probe
+    - minimax-h3-adapter
+    - {skill: keyframe-handoff-builder, trigger: conditional_dispatch.keyframe-handoff-builder}
+    - {skill: comfyui-workflow-compiler, requires: [plan-revision, h3-packets, live-capability-profile, catalog-revision]}
+    - validate-graphs-and-production-dag
+
+execution_dispatch:
+  - render-orchestrator
+  - continuity-qc-supervisor
+  - repair-director_on_failure
+  - post-editor_when_all_required_media_pass_qc
+  - continuity-qc-supervisor_final_mode
+
+execution_requirements:
+  render-orchestrator: [plan_revision, validated_compiled_bundle]
+  continuity-qc-supervisor: [completed_render_report, decodable_effective_media]
+  repair-director_on_failure: [current_qc_FAIL_with_evidence]
+  post-editor_when_all_required_media_pass_qc: [every_required_media_qc_PASS]
+  delivered: [independent_final_qc_PASS, delivery_manifest_valid]
+
+conditional_dispatch:
+  sound-dialogue-planner:
+    any: [dialogue_present, voice_reference_present, music_requested, cross_segment_audio_continuity_required]
+  keyframe-handoff-builder:
+    any: [exact_endpoint_required, continuation_chain, fl2va_selected, bridge_required, predecessor_tail_reused]
+
+continuity_profile:
+  source: https://huggingface.co/joeygambino/MiniMax-H3-Multishot-Workflow
+  frame_relay: predecessor_actual_final_frame
+  description_policy: repeat_identity_environment_lighting_verbatim
+  later_shot_opening: hold_predecessor_closing_state_camera_audio_for_two_seconds_with_micro_motion_only
+  shot_ending: settle_action_and_dialogue_two_seconds_before_boundary
+  dialogue_policy: never_split_a_line_across_generated_shots
+  camera_policy: put_cuts_or_reframes_inside_a_shot_after_the_opening_airlock
+  endpoint_validation: compare_state_camera_audio_and_final_frame_window
+  serial_continuations: true
+  long_chain_policy: restart_on_scene_cut_and_monitor_visual_audio_drift
+
+generation_handoff_policy:
+  allowed_relationships: [independent, same_shot_continue, endpoint_bridge, reference_reestablish, terminal]
+  endpoint_policies: [none, moving_endpoint, stable_tail, declared_entry_reference, bridge_endpoints]
+  same_shot_continue:
+    dependency_order: [render_predecessor, qc_predecessor, extract_actual_final_frame, validate_endpoint, bind_successor, compile_successor, render_successor, qc_successor]
+    parallelizable: false
+  endpoint_bridge:
+    requires: [validated_source_tail, validated_target_head, supported_first_last_frame_workflow]
+    parallelizable: false
+  independent: {parallelizable_when_inputs_stable: true}
+
+segment_policy:
+  maximum_duration_seconds: 10
+  preferred_duration_seconds: {minimum: 8, maximum: 10}
+  boundary_quiet_seconds: {opening_later_shots: 2, closing_all_nonterminal_shots: 2}
+  temporal_grid_policy:
+    - Record target, model-aligned, and effective frame counts and durations separately.
+    - Trim decoded video and audio to the declared effective duration before QC or handoff extraction.
+
+comfyui_policy:
+  - Require live /object_info and installed model files as capability authority.
+  - Compile from the versioned workflow catalog and explicit binding maps.
+  - Preserve model, node, seed, timing, device, and output-path evidence for reproducibility.
+  - Validate resolution, FPS, frame count, color, audio, and seam behavior before assembly.
+

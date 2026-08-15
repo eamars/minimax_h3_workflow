@@ -2,17 +2,17 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "keyframe-job.schema.json",
   "type": "object",
-  "required": ["artifact", "job_id", "segment_id", "endpoint", "source_type", "source_revision", "normalization", "approval_status", "output_path"],
+  "required": ["artifact", "job_id", "segment_id", "endpoint", "source_type", "source_revision", "normalization", "validation_status", "output_path"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
     "job_id": {"type": "string"},
     "planning_model_version": {"enum": [1, 2]},
     "generation_relationship": {"enum": ["independent", "same_shot_continue", "endpoint_bridge", "reference_reestablish", "terminal"]},
-    "endpoint_policy": {"enum": ["none", "moving_endpoint", "stable_tail", "approved_entry_reference", "bridge_endpoints"]},
+    "endpoint_policy": {"enum": ["none", "moving_endpoint", "stable_tail", "declared_entry_reference", "bridge_endpoints"]},
     "motion_endpoint_evidence": {"type": "object", "required": ["source_tail", "successor_entry", "comparison_fields"]},
     "endpoint": {"enum": ["in", "out"]},
-    "source_type": {"enum": ["user_seed", "approved_tail", "approved_target_still_job"]},
-    "approval_status": {"enum": ["pending", "approved", "rejected"]},
+    "source_type": {"enum": ["user_seed", "validated_tail", "validated_target_still_job"]},
+    "validation_status": {"enum": ["pending", "passed", "failed"]},
     "normalization": {"type": "object", "required": ["width", "height", "color_format", "composition_rule"]},
     "output_path": {"type": "string"}
   }

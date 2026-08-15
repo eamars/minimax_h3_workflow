@@ -10,6 +10,6 @@
     "dialogue": {"type": "array", "items": {"type": "object", "required": ["cue_id", "speaker_id", "text", "timing_window"]}},
     "continuity": {"type": "object", "properties": {"invariants": {"type": "array"}, "expected_deltas": {"type": "array"}, "forbidden_deltas": {"type": "array"}}},
     "unsafe_coexistence": {"type": "array"},
-    "normalization": {"type": "object", "required": ["status", "failure_codes", "warnings", "handoff_ready", "next_skill"], "properties": {"status": {"enum": ["review_ready", "blocked", "failed"]}, "next_skill": {"const": "storyboard-director"}}}
+    "normalization": {"type": "object", "required": ["status", "failure_codes", "warnings", "handoff_ready", "next_skill"], "properties": {"status": {"enum": ["ready", "blocked", "failed"]}, "next_skill": {"const": "storyboard-director"}}}
   }
 }

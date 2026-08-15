@@ -1,6 +1,0 @@
-interface:
-  display_name: "Request Normalizer"
-  short_description: "Normalize briefs into traceable project requests"
-  default_prompt: "Use $request-normalizer to normalize this AI-video brief into a conservative project request."
-policy:
-  allow_implicit_invocation: true

@@ -1,4 +1,0 @@
-interface:
-  display_name: "AI Video Production Orchestrator"
-  short_description: "Coordinate gated cinematic production"
-  default_prompt: "Use $production-orchestrator to coordinate an approval-gated production with exact planning, compilation, rendering, QC, repair, and delivery provenance."

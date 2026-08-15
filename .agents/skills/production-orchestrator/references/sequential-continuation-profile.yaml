@@ -1,0 +1,45 @@
+version: 3
+profile_id: h3_multishot_continuity
+source: https://huggingface.co/joeygambino/MiniMax-H3-Multishot-Workflow
+purpose: Preserve character, environment, camera, motion, and audio continuity across independently generated H3 shots.
+timebase:
+  fps: 24
+  preferred_segment_seconds: {minimum: 8, maximum: 10}
+  maximum_segment_seconds: 10
+continuity:
+  serial_relationship: same_shot_continue
+  temporal_state_input: predecessor_actual_final_decoded_frame
+  substitute_earlier_endpoint: forbidden
+  first_frame_must_equal_bound_endpoint: true
+  opening_airlock_seconds: 2
+  opening_airlock_motion: micro_motion_only
+  settled_landing_seconds: 2
+  repeat_character_description_verbatim: true
+  repeat_environment_and_lighting_verbatim: true
+  split_spoken_line_across_shots: forbidden
+  camera_cuts_inside_shot: allowed
+  scene_or_shot_transition_at_generation_boundary: forbidden
+  transition_placement_ratio: {minimum: 0.4, maximum: 0.6}
+  transition_segment_must_establish_destination_before_landing: true
+  successor_starts_in_established_destination_context: true
+  continuity_transfer_between_shots: required
+  long_chain_policy: restart_from_reference_at_scene_cut
+endpoint_validation:
+  tail_window_frames: 12
+  inspect: [identity, environment, props, limb_state, camera, motion_vector, lighting, audio_state]
+  policies: [stable_tail, moving_endpoint, declared_entry_reference, bridge_endpoints]
+  failed_endpoint: block_dependent_successor
+execution_order:
+  - render_predecessor
+  - decode_output
+  - inspect_full_segment
+  - extract_actual_final_frame
+  - validate_endpoint
+  - bind_successor_first_frame
+  - compile_successor
+  - render_successor
+assembly:
+  preserve_declared_record_order: true
+  remove_boundary_frame_only_when_pixel_identical: true
+  retime_or_interpolate_without_plan: forbidden
+  final_master_qc_required: true

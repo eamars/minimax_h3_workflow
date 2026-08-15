@@ -12,7 +12,7 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILLS = ROOT / "skills"
+SKILLS = ROOT / ".agents" / "skills"
 REQUIRED_SKILLS = [
     "request-normalizer", "reference-canon-manager", "plot-architect",
     "scene-performance-writer", "sound-dialogue-planner", "storyboard-director",
@@ -62,7 +62,7 @@ def validate_skill(name: str) -> None:
     check(positions == sorted(positions), f"{name}: required sections out of order")
     check(len(body.splitlines()) <= 500, f"{name}: SKILL.md exceeds 500 lines")
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
-    for field in ("name", "version", "stage", "mode", "consumes", "produces", "side_effects", "approval_required", "may_modify_upstream_decisions", "owner"):
+    for field in ("name", "version", "stage", "mode", "consumes", "produces", "side_effects", "validation_required", "may_modify_upstream_decisions", "owner"):
         check(field in contract, f"{name}: contract missing {field}")
     check(contract["name"] == name and contract["owner"] == name, f"{name}: contract owner/name mismatch")
     check(contract["may_modify_upstream_decisions"] is False, f"{name}: may modify upstream decisions")
@@ -70,8 +70,8 @@ def validate_skill(name: str) -> None:
     enums = package_contract["sidecar"]["enums"]
     for key in ("stage", "mode", "side_effects"):
         check(contract[key] in enums[key], f"{name}: invalid {key} {contract[key]}")
-    approval_values = package_contract["sidecar"]["invariants"]["approval_required_values"]
-    check(contract["approval_required"] in approval_values, f"{name}: invalid approval_required {contract['approval_required']}")
+    validation_values = package_contract["sidecar"]["invariants"]["validation_required_values"]
+    check(contract["validation_required"] in validation_values, f"{name}: invalid validation_required {contract['validation_required']}")
     agent = yaml.safe_load(agent_path.read_text(encoding="utf-8"))
     interface = agent["interface"]
     check(25 <= len(interface["short_description"]) <= 64, f"{name}: invalid short description")
@@ -84,7 +84,7 @@ def validate_schemas() -> None:
         "project-request.schema.json", "asset-manifest.schema.json", "canon-lock.schema.json",
         "plot-package.schema.json", "scene-performance.schema.json", "sound-plan.schema.json",
         "storyboard-package.schema.json", "animatic-plan.schema.json", "preflight-report.schema.json",
-        "production-plan.schema.json", "approval-record.schema.json", "h3-prompt-packet.schema.json",
+        "production-plan.schema.json", "h3-prompt-packet.schema.json",
         "storyboard-package-v2.schema.json", "production-plan-v2.schema.json", "animatic-plan-v2.schema.json",
         "h3-prompt-packet-v2.schema.json", "edit-decision-list-v2.schema.json", "camera-plan.schema.json", "scene-geography.schema.json",
         "continuity-state.schema.json", "editorial-boundary.schema.json", "generation-handoff.schema.json",
@@ -153,7 +153,7 @@ def validate_routing() -> None:
     flattened = [item if isinstance(item, str) else item.get("skill") for item in order]
     for skill in COMPILATION_ORDER:
         check(skill in flattened, f"compilation routing missing {skill}")
-    check(routing["default_mode"] == "PLAN_ONLY", "default mode must be PLAN_ONLY")
+    check(routing["default_mode"] == "FULL_PIPELINE", "default mode must be FULL_PIPELINE")
     registry_path = SKILLS / "production-orchestrator" / "references" / "specialist-registry.yaml"
     registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
     check(set(registry["specialists"]) == set(REQUIRED_SKILLS), "specialist registry mismatch")

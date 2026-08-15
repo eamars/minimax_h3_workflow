@@ -5,7 +5,7 @@ Version: v02
 Supersedes: `real-cinematic-development-plan-v01.md`
 Scope: shared storyboard, planning, validation, compilation, QC, orchestration, and post-production contracts
 Reference failure case: `projects/PRJ01`
-Implementation status: planning only; no production artifacts or approved plans are changed by this document
+Implementation status: planning only; no production artifacts or validated plans are changed by this document
 
 Review result: the independent SOL review found the v01 direction correct but returned **revise before implementation**. This revision incorporates its required amendments.
 
@@ -99,7 +99,7 @@ scene_geography:
 
 The initial implementation should use symbolic zones and typed relationships rather than false metric precision. Geometry must record whether it is observed, user-declared, inferred, or unknown.
 
-If a new viewpoint exposes an unseen side of the environment, the plan must declare an uncovered-geometry risk or request an approved additional reference view. It must not invent hidden architecture.
+If a new viewpoint exposes an unseen side of the environment, the plan must declare an uncovered-geometry risk or request an validated additional reference view. It must not invent hidden architecture.
 
 ### 3.4 Structured camera setup and in-shot motion
 
@@ -162,7 +162,7 @@ The 180-degree rule is contextual rather than a global fixed-camera rule. Camera
 
 ### 3.5 Blocking and continuity state
 
-Scene Performance owns what the performer does, why, action order, dialogue, prop/hand state, and physical state changes. Storyboard owns spatial staging of that approved performance: marks/zones, facing, screen path, eyeline target, foreground/background relation, entrances/exits, and timing relative to the camera.
+Scene Performance owns what the performer does, why, action order, dialogue, prop/hand state, and physical state changes. Storyboard owns spatial staging of that validated performance: marks/zones, facing, screen path, eyeline target, foreground/background relation, entrances/exits, and timing relative to the camera.
 
 Use a structured staging track with stable entity IDs, performance-beat IDs, prop IDs, zone IDs, and scene/source-time references.
 
@@ -202,8 +202,8 @@ Keep mechanisms limited to `cut`, `dissolve`, and `fade`. Treat action, reaction
 Generation handoffs are separate:
 
 - `independent`: no pixel dependency;
-- `same_shot_continue`: approved predecessor endpoint becomes the successor entry;
-- `endpoint_bridge`: downstream-generated interpolation between approved endpoints;
+- `same_shot_continue`: validated predecessor endpoint becomes the successor entry;
+- `endpoint_bridge`: downstream-generated interpolation between validated endpoints;
 - `reference_reestablish`: continuity/reference state reused without predecessor pixels;
 - `terminal`: no successor.
 
@@ -215,7 +215,7 @@ Continuation suitability must support moving endpoints. Replace a universal stab
 - camera path direction/tangent recorded where applicable;
 - no accidental blur or occlusion;
 - controlled intentional motion permitted;
-- successor entry reproduces the approved motion phase;
+- successor entry reproduces the validated motion phase;
 - no visible settle unless creatively planned.
 
 Keyframe Handoff Builder and QC must jointly support moving continuation endpoints. If the installed capability cannot continue controlled motion reliably, preflight must report that limitation and block or request a creative revision; it must not force a pause into the shot.
@@ -244,8 +244,8 @@ Acceptance:
 - Three independent 4-second shots remain three editorial shots even when each uses one generation job.
 - Overlapping scene-time coverage does not duplicate or skip the underlying performance event.
 - A cut during controlled motion is valid without a continuation tail.
-- Continuation without a suitable approved endpoint fails.
-- A bridge without both approved endpoints fails.
+- Continuation without a suitable validated endpoint fails.
+- A bridge without both validated endpoints fails.
 
 ### WP0B — Scene geography, continuity state, and staging ownership
 
@@ -259,14 +259,14 @@ Steps:
 2. Add structured storyboard staging linked to Scene Performance beat IDs rather than adding camera fields to Scene Performance.
 3. Add continuity invariants, entry/exit snapshots, expected deltas, and forbidden deltas.
 4. Add property-level, timeline-scoped, strength-scoped reference bindings.
-5. Add uncovered-geometry risk and approved extra-reference routing.
+5. Add uncovered-geometry risk and validated extra-reference routing.
 
 Acceptance:
 
 - A camera setup referring to an unknown zone fails or requests an explicit reference-view decision.
 - Identity, room architecture, lighting, props, and state changes are independently traceable.
-- Wetness and wardrobe progression can change according to approved beats without being misclassified as drift.
-- Storyboard can stage an approved performance without rewriting its action or outcome.
+- Wetness and wardrobe progression can change according to validated beats without being misclassified as drift.
+- Storyboard can stage an validated performance without rewriting its action or outcome.
 - Multiple camera positions can reuse the same character and environment references.
 
 ### WP0C — Camera setup, visible motion, optics, blocking, and axes
@@ -305,7 +305,7 @@ Steps:
 3. Design coverage before generation segmentation: establishing/master, moving master, singles, over-the-shoulders, inserts, reactions, eyeline shots, and cutaways when justified.
 4. Give each shot one dramatic/editorial purpose and bilateral edit-in/edit-out reasons.
 5. Permit variable shot duration, overlapping scene-time coverage, long takes, sparse coverage, and deliberate stylistic exceptions.
-6. Split only after shot order and camera intent are approved. Preserve the camera interval and motion phase through same-shot splits.
+6. Split only after shot order and camera intent are validated. Preserve the camera interval and motion phase through same-shot splits.
 
 Acceptance:
 
@@ -326,7 +326,7 @@ Steps:
 1. Add an editorial-intent EDL and retain a separate generation-segment assembly map.
 2. Record scene-time phases, source in/out, record in/out, handles, boundary mechanisms, motivations, and overlap runtime math.
 3. Keep the pre-storyboard Sound Planner artifact focused on dialogue, effects, ambience, motifs, and music intent.
-4. Add a post-storyboard editorial sound map for boundary carry, J-cuts, L-cuts, overlaps, room tone, pre-roll, post-roll, and synchronization. Animatic owns timing checks; Post Editor conforms approved intent to actual media.
+4. Add a post-storyboard editorial sound map for boundary carry, J-cuts, L-cuts, overlaps, room tone, pre-roll, post-roll, and synchronization. Animatic owns timing checks; Post Editor conforms validated intent to actual media.
 5. Add preflight checks for coverage, camera geometry, motivated movement, impossible reframing, axis crossing, edit motivation, time-domain consistency, and shot/segment separation.
 
 Acceptance:
@@ -336,7 +336,7 @@ Acceptance:
 - Master, insert, and reaction shots can overlap scene-time without duplicating story events.
 - J-cuts and L-cuts validate picture and audio boundaries independently.
 - Coverage gaps and unexplained camera jumps are reported before human plan review.
-- Preflight never rewrites shots, camera intent, sound intent, or approval state.
+- Preflight never rewrites shots, camera intent, sound intent, or validation state.
 
 ### WP2 — Segmentation, moving handoffs, compilation, DAG, and execution
 
@@ -346,21 +346,21 @@ Depends on: WP1B and frozen camera/boundary schemas
 
 Steps:
 
-1. Compile only the approved camera-path interval and state snapshot for each generation segment.
+1. Compile only the validated camera-path interval and state snapshot for each generation segment.
 2. Preserve source-field traceability for camera setup, motion keyframes, orientation, optics, composition, blocking, and handoff suitability.
 3. Support moving continuation endpoints when the frozen capability profile proves support; otherwise block before compilation or request a creative revision.
 4. Maintain separate editorial timeline and generation dependency DAGs.
 5. Keep independent cuts parallelizable, continuation serialized, endpoint bridges dependent on both endpoints, and reference re-establish branches pixel-independent.
-6. Preserve approval/hash gates and exact endpoint lineage.
+6. Preserve automated validation and exact endpoint lineage.
 
 Acceptance:
 
 - H3 cannot silently change lens, path, angle, shot boundary, or transition.
 - H3 receives the segment camera interval rather than the entire shot as ambiguous prose.
-- Adjacent same-shot intervals reconstruct the approved camera path without a pause or jump.
+- Adjacent same-shot intervals reconstruct the validated camera path without a pause or jump.
 - A controlled moving endpoint passes continuation suitability; accidental blur or geometry drift fails.
 - Unsupported compound motion blocks at capability review without changing the storyboard.
-- Technical resegmentation invalidates affected packets, jobs, endpoints, renders, QC, post, and delivery while preserving unaffected creative approvals.
+- Technical resegmentation invalidates affected packets, jobs, endpoints, renders, QC, post, and delivery while preserving unaffected creative validations.
 
 ### WP2B — QC, repair, conform edit, and final-QC propagation
 
@@ -375,15 +375,15 @@ Steps:
 3. Allow a moving cut candidate with a valid editorial handle while continuing to reject accidental blur, occlusion, or geometry failure.
 4. Make repair changes from cut to continuation, or vice versa, return to creative plan review.
 5. Keep Animatic’s editorial-intent EDL distinct from Post Editor’s conform/final EDL using actual source revisions and handles.
-6. Preserve approved source bytes and route every repaired/revised result through new QC.
+6. Preserve validated source bytes and route every repaired/revised result through new QC.
 
 Acceptance:
 
 - Final QC distinguishes shot-grammar failure from generation-seam failure.
 - A cut does not require a motionless endpoint.
 - A continuation requires suitable motion phase, identity, geometry, and successor-entry compatibility.
-- Post realizes approved transitions without inventing coverage or camera intent.
-- A creative transition change invalidates the correct downstream closure and requires new approval.
+- Post realizes validated transitions without inventing coverage or camera intent.
+- A creative transition change invalidates the correct downstream closure and requires new validation.
 
 ### WP3 — Validators, migration, fixtures, and documentation
 
@@ -393,10 +393,10 @@ Depends on all prior contract versions
 
 Scripts and validators:
 
-- Add `skills/storyboard-director/scripts/validate_storyboard.py` for scene geography, camera setup/motion, staging, time domains, coverage, axes, bilateral boundaries, handoffs, and traceability.
+- Add `.agents/skills/storyboard-director/scripts/validate_storyboard.py` for scene geography, camera setup/motion, staging, time domains, coverage, axes, bilateral boundaries, handoffs, and traceability.
 - Extend `scripts/validate_production_system.py` for schema versions, enum parity, strict v2 objects, and ownership boundaries.
-- Extend `scripts/validate_review_document.py` for shot-level EDL, segment assembly, source/record timing, camera traceability, and boundary completeness.
-- Extend `skills/production-orchestrator/scripts/validate_package.py` for two-graph topology, invalidation scope, moving-handoff capability gates, and transition dependency rules.
+- Extend `scripts/validate_cinematic_package.py` for shot-level EDL, segment assembly, source/record timing, camera traceability, and boundary completeness.
+- Extend `.agents/skills/production-orchestrator/scripts/validate_package.py` for two-graph topology, invalidation scope, moving-handoff capability validation, and transition dependency rules.
 
 Migration requirements:
 
@@ -405,8 +405,8 @@ Migration requirements:
 - Map unresolved opaque camera fields to `migration_review_required`; never guess.
 - Reject mixed legacy and structured authoritative fields.
 - Use `additionalProperties: false` on authoritative v2 objects.
-- Never reuse an old approval hash for migrated content.
-- Validate cross-artifact IDs, hashes, timebases, boundaries, and source-field traceability.
+- Never reuse an old revision ID for migrated content.
+- Validate cross-artifact IDs, revisions, timebases, boundaries, and source-field traceability.
 
 Fixtures and tests:
 
@@ -427,21 +427,21 @@ This is a validation fixture, not a replacement production plan. Every boundary 
 | SH04 | Moving master arcs from counter toward tub-side; coordinated pan preserves eyeline | Covers the transition and settle phases in one editorial shot | No editorial boundary inside the shot | 14 seconds split into two `same_shot_continue` segments with moving handoff suitability |
 | SH05 | New close reaction setup on the same axis side, static longer lens | Overlaps the end of SH04’s reaction phase | `mechanism: cut`, motivations: reaction + eyeline | `independent` |
 | SH06 | Wider mirror composition from a deliberate new position | Reuses the relevant state without duplicating the performance event | `mechanism: cut`, motivation: declared visual match or eyeline | `independent` |
-| SH07 | Medium three-quarter tracking shot with a motivated reveal | Covers the next approved performance phase | `mechanism: cut`, motivation: action progression | `independent` |
+| SH07 | Medium three-quarter tracking shot with a motivated reveal | Covers the next validated performance phase | `mechanism: cut`, motivation: action progression | `independent` |
 | SH08 | Wide pull-back as the subject exits; settle on empty space | Terminal closing phase | No outgoing boundary; editorial timeline terminator | `terminal` |
 
 Across the fixture, identity, environment geometry, persistent props, lighting, wardrobe/state, eyelines, and active action axis remain traceable. Camera position, viewpoint, height, lens, and framing change intentionally. No boundary uses the vague phrase “match or eyeline.”
 
-## 6. Approval, migration, and invalidation
+## 6. Validation, migration, and invalidation
 
 This is a shared-skill change, not an automatic rewrite of PRJ01 production outputs.
 
-1. Approve each revised schema family, skill contract, validator, fixture, and migration tool as a versioned development revision.
+1. Validate each revised schema family, skill contract, validator, fixture, and migration tool as a versioned development revision.
 2. Run repository contract/unit/integration validation before migrating any production plan.
-3. Treat camera intent, editorial shot order, coverage, editorial mechanisms/motivations, and generation topology changes as creative changes requiring plan review and human approval.
-4. Permit technical segment re-splitting without creative reapproval only when editorial shot identity, camera path, boundary semantics, assembled timing, and continuity intent remain unchanged.
+3. Treat camera intent, editorial shot order, coverage, editorial mechanisms/motivations, and generation topology changes as creative changes requiring plan review and human validation.
+4. Permit technical segment re-splitting without creative revalidation only when editorial shot identity, camera path, boundary semantics, assembled timing, and continuity intent remain unchanged.
 5. Even technical resegmentation must invalidate and regenerate affected prompt packets, jobs, endpoints, renders, QC, post, and delivery artifacts as appropriate.
-6. Preserve all existing approved artifacts immutably; create superseding revisions rather than overwrite.
+6. Preserve all existing validated artifacts immutably; create superseding revisions rather than overwrite.
 7. Migrate PRJ01 only as a new plan revision after the shared skills pass validation and the revised plan passes preflight.
 8. Do not change H3 modes, workflow graphs, render settings, or models as part of the storyboard-model change unless capability review finds a separate blocker.
 9. Maintain a field-to-artifact invalidation matrix covering storyboard, animatic, sound map, preflight, plan, H3, keyframes, workflows, DAG, renders, QC, repair, post, and delivery.
@@ -458,10 +458,10 @@ The development is complete when:
 - references preserve character, environment, and evolving state without silently fixing the camera;
 - editorial boundaries and generation handoffs are independently represented and validated;
 - sound intent and post-storyboard J/L boundary behavior remain traceable;
-- H3, keyframe, compiler, render, QC, repair, orchestration, and post preserve approved camera/shot intent without authoring new decisions;
+- H3, keyframe, compiler, render, QC, repair, orchestration, and post preserve validated camera/shot intent without authoring new decisions;
 - PRJ01 remains valid as a historical v1 artifact but fails v2 cinematic admission for repetitive one-beat/equal-duration construction, missing camera setups, opaque paths, boundary conflation, and universal stable exits;
 - the corrected cinematic fixture passes all contract and integration tests;
 - all changed skills, schemas, scripts, and tests pass repository validation;
-- no approved production artifact was overwritten or silently reinterpreted.
+- no validated production artifact was overwritten or silently reinterpreted.
 
-Implementation begins only after this revised plan is approved. The first implementation stage is WP0A–WP0C; no render or production migration is authorized by this document.
+Implementation begins only after this revised plan is validated. The first implementation stage is WP0A–WP0C; no render or production migration is authorized by this document.

@@ -1,0 +1,15 @@
+version: 1
+fixtures:
+  - {id: valid_all_pass, expect: {status: ready_for_final_qc, edl_schema_valid: true, workflow_schema_valid: true}}
+  - {id: pass_with_editorial_fix_source, expect: {status: blocked, failure: POST_MEDIA_NOT_QC_PASSED}}
+  - {id: stale_plan_revision, expect: {status: blocked, failure: POST_PLAN_REVISION_MISMATCH}}
+  - {id: continuation_exact_duplicate, expect: {drop: successor_frame_0}}
+  - {id: continuation_nonmatching_endpoint, expect: {status: blocked, failure: POST_ENDPOINT_DUPLICATE}}
+  - {id: undocumented_dissolve, expect: {failure: POST_TRANSITION_SEMANTICS_MISMATCH}}
+  - {id: audio_gap_or_drift, expect: {failure: POST_AUDIO_CONTINUITY_FAILURE}}
+  - {id: wrong_runtime_or_specs, expect: {failure: POST_RUNTIME_MISMATCH}}
+  - {id: final_qc_missing, expect: {failure: FINAL_QC_REQUIRED, delivery: false}}
+  - {id: final_qc_fail, expect: {failure: FINAL_EDIT_CONTINUITY_FAILURE, new_revision: true}}
+  - {id: final_qc_pass_revision_match, expect: {status: delivered, manifest_valid: true}}
+  - {id: overwrite_validated_master, expect: {failure: ARTIFACT_OVERWRITE_FORBIDDEN}}
+  - {id: deterministic_repeat, expect: {canonical_edl_byte_identical: true, manifest_revision_stable: true}}

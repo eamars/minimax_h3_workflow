@@ -1,4 +1,0 @@
-interface:
-  display_name: "One-Start ComfyUI Workflow"
-  short_description: "Turn any brief into a one-start H3 workflow"
-  default_prompt: "Use $comfyui to convert my input into one ready-to-run H3 workflow that saves the final video after a single Queue Prompt action."

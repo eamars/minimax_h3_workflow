@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plot Architect"
+  short_description: "Build traceable premise-faithful plot packages"
+  default_prompt: "Use $plot-architect to turn the normalized request and canon into a causal plot package without camera or workflow decisions."

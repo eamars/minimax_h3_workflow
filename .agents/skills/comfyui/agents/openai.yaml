@@ -1,0 +1,4 @@
+interface:
+  display_name: "One-Start ComfyUI Workflow"
+  short_description: "Build boundary-validated one-start H3 videos"
+  default_prompt: "Use $comfyui to convert this input into one boundary-validated H3 workflow that saves a continuous final video after one Queue action."

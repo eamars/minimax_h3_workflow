@@ -1,0 +1,21 @@
+version: 1
+authority:
+  endpoints: {object_info: 'GET /object_info', object_info_node: 'GET /object_info/{node_class}', model_types: 'GET /models', models: 'GET /models/{folder}', system_stats: 'GET /system_stats'}
+  reject_without: [object_info, installed_model_listing, system_stats]
+  stale_fallbacks_forbidden: [ui_export, positional_widget_indices, guessed_node_versions, filesystem_only_model_names]
+profile:
+  required_fields: [base_url, probed_at, object_info_sha256, model_listing_sha256, system_stats_sha256, profile_hash]
+node_validation:
+  class_type_must_be_present: true
+  input_names_must_be_declared_by_live_schema: true
+  required_inputs_must_be_bound_or_have_live_default: true
+  literal_types_ranges_enums_live_authoritative: true
+  links: {source_exists: true, output_slot_exists: true, type_compatible: true}
+  graph: {only_class_type_and_inputs: true, duplicate_node_ids: false, unresolved_placeholders: false, acyclic: true, at_least_one_output_node: true}
+resolution:
+  width_height_multiple: 32
+  require_live_max_resolution: true
+  fps: {h3: 24}
+  h3_frame_grid: {formula: 'model_frame_count % 17 == 5', effective_positive: true, effective_le_model: true, effective_seconds_max: 10}
+assets: {require_path_exists: true, require_declared_asset_id_and_role: true, require_sha256_match: true, source_assets_read_only: true}
+outputs: {deterministic_root_required: true, validated_path_overwrite: forbidden, queue_or_render: forbidden}

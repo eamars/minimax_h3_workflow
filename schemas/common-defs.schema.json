@@ -4,15 +4,13 @@
   "$defs": {
     "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
     "stableId": {"type": "string", "pattern": "^(PRJ[0-9]{2,}|SEQ[0-9]{2,}(_SC[0-9]{2,}(_(B|SH)[0-9]{2,}(_SEG[0-9]{2,})?)?)?|JOB_[A-Z0-9_]+_R[0-9]{2,})$"},
-    "approvedPlan": {
+    "planLink": {
       "type": "object",
-      "required": ["plan_id", "plan_version", "plan_hash"],
+      "required": ["plan_id", "plan_version", "plan_revision"],
       "properties": {
         "plan_id": {"type": "string", "minLength": 1},
         "plan_version": {"type": "integer", "minimum": 1},
-        "plan_hash": {"$ref": "#/$defs/sha256"},
-        "approval_status": {"const": "approved"},
-        "approval_record_revision": {"type": "string", "minLength": 1}
+        "plan_revision": {"type": "string", "minLength": 1}
       },
       "additionalProperties": false
     },
@@ -31,7 +29,7 @@
     },
     "artifact": {
       "type": "object",
-      "required": ["artifact_id", "artifact_type", "project_id", "version", "revision_id", "created_from", "source_versions", "status", "content_hash", "created_at", "created_by", "provenance"],
+      "required": ["artifact_id", "artifact_type", "project_id", "version", "revision_id", "created_from", "source_versions", "status", "created_at", "created_by", "provenance"],
       "properties": {
         "artifact_id": {"type": "string", "minLength": 1},
         "artifact_type": {"type": "string", "minLength": 1},
@@ -39,9 +37,8 @@
         "version": {"type": "integer", "minimum": 1},
         "revision_id": {"type": "string", "pattern": "^.+@v[0-9]{2,}$"},
         "created_from": {"type": "array", "items": {"type": "string"}},
-        "source_versions": {"type": "array", "items": {"type": "object", "required": ["artifact_id", "version", "content_hash"], "properties": {"artifact_id": {"type": "string"}, "version": {"type": "integer", "minimum": 1}, "content_hash": {"$ref": "#/$defs/sha256"}}}},
-        "status": {"enum": ["draft", "review_ready", "approved", "rejected", "superseded"]},
-        "content_hash": {"$ref": "#/$defs/sha256"},
+        "source_versions": {"type": "array", "items": {"type": "object", "required": ["artifact_id", "version"], "properties": {"artifact_id": {"type": "string"}, "version": {"type": "integer", "minimum": 1}, "revision_id": {"type": "string"}}}},
+        "status": {"enum": ["draft", "ready", "blocked", "failed", "superseded"]},
         "created_at": {"type": "string", "format": "date-time"},
         "created_by": {"type": "string", "minLength": 1},
         "provenance": {"type": "object", "required": ["user_inputs", "source_assets", "upstream_artifacts"]}
@@ -395,7 +392,7 @@
         "from_segment_id": {"type": "string", "minLength": 1},
         "to_segment_id": {"type": ["string", "null"]},
         "relationship": {"enum": ["independent", "same_shot_continue", "endpoint_bridge", "reference_reestablish", "terminal"]},
-        "endpoint_policy": {"enum": ["none", "moving_endpoint", "stable_tail", "approved_entry_reference", "bridge_endpoints"]},
+        "endpoint_policy": {"enum": ["none", "moving_endpoint", "stable_tail", "declared_entry_reference", "bridge_endpoints"]},
         "acceptance_conditions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
         "editorial_boundary_id": {"type": ["string", "null"]},
         "motion_endpoint_evidence": {

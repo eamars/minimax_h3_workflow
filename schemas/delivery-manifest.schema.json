@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "delivery-manifest.schema.json",
   "type": "object",
-  "required": ["artifact", "approved_plan", "master", "source_revisions", "edl_revision", "assembly_workflow_revision", "final_qc_revision", "checksums", "delivery_checks"],
+  "required": ["artifact", "production_plan", "master", "source_revisions", "edl_revision", "assembly_workflow_revision", "final_qc_revision", "delivery_checks"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
-    "approved_plan": {"type": "object", "required": ["plan_id", "plan_version", "plan_hash"]},
+    "production_plan": {"$ref": "common-defs.schema.json#/$defs/planLink"},
     "master": {"type": "object", "required": ["path", "duration_seconds", "width", "height", "fps", "codec", "audio"]},
     "source_revisions": {"type": "array", "minItems": 1},
     "checksums": {"type": "object"},

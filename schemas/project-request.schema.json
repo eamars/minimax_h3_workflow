@@ -9,8 +9,8 @@
     "request": {"type": "object", "required": ["raw_text", "normalized_intent", "explicit_requirements"], "properties": {"raw_text": {"type": "string", "minLength": 1}, "normalized_intent": {"type": "string", "minLength": 1}, "explicit_requirements": {"type": "array"}}},
     "constraints": {"type": "object"},
     "asset_inputs": {"type": "array"},
-    "execution": {"type": "object", "required": ["requested_lifecycle_mode", "effective_mode", "compile_authorized", "render_authorized"], "properties": {"effective_mode": {"const": "PLAN_ONLY"}, "compile_authorized": {"const": false}, "render_authorized": {"const": false}}},
+    "execution": {"type": "object", "required": ["requested_lifecycle_mode", "effective_mode"], "properties": {"requested_lifecycle_mode": {"enum": ["FULL_PIPELINE", "PLAN_ONLY", "COMPILE_PLAN", "PATH_TEST", "REPAIR_ONLY", "ASSEMBLY_ONLY"]}, "effective_mode": {"enum": ["FULL_PIPELINE", "PLAN_ONLY", "COMPILE_PLAN", "PATH_TEST", "REPAIR_ONLY", "ASSEMBLY_ONLY"]}}, "additionalProperties": false},
     "policy": {"type": "object", "required": ["max_generation_segment_seconds"], "properties": {"max_generation_segment_seconds": {"const": 10}}},
-    "normalization": {"type": "object", "required": ["status", "failure_codes", "blocking_decisions", "handoff_ready", "next_skill"], "properties": {"status": {"enum": ["review_ready", "blocked", "failed"]}, "handoff_ready": {"type": "boolean"}, "next_skill": {"const": "reference-canon-manager"}}}
+    "normalization": {"type": "object", "required": ["status", "failure_codes", "blocking_decisions", "handoff_ready", "next_skill"], "properties": {"status": {"enum": ["ready", "blocked", "failed"]}, "handoff_ready": {"type": "boolean"}, "next_skill": {"const": "reference-canon-manager"}}}
   }
 }

@@ -1,5 +1,5 @@
 {
-  "1": {"class_type": "LoadVideo", "inputs": {"file": "${approved_video_path}"}},
+  "1": {"class_type": "LoadVideo", "inputs": {"file": "${validated_video_path}"}},
   "2": {"class_type": "GetVideoComponents", "inputs": {"video": ["1", 0]}},
   "3": {"class_type": "ImageFromBatch", "inputs": {"image": ["2", 0], "batch_index": "${frame_index}", "length": 1}},
   "4": {"class_type": "SaveImage", "inputs": {"images": ["3", 0], "filename_prefix": "${output_prefix}"}}

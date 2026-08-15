@@ -1,0 +1,4 @@
+interface:
+  display_name: "Production Preflight Reviewer"
+  short_description: "Run automatic production-package preflight"
+  default_prompt: "Use $production-preflight-reviewer to validate this complete planning package and return PASS, REVISE, or BLOCKED with precise findings."

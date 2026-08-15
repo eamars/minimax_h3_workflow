@@ -5,7 +5,7 @@
   "required": ["artifact", "project_id", "state", "active_plan", "artifacts", "branches", "last_transition"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
-    "state": {"enum": ["NEW", "INTAKE_VALIDATED", "PLANNING", "PLAN_PREFLIGHT", "PLAN_REVIEW_READY", "PLAN_APPROVED", "COMPILING", "COMPILED", "KEYFRAME_PREP", "PRODUCING", "SEGMENT_QC", "REPAIRING", "ASSEMBLY_READY", "ASSEMBLING", "FINAL_QC", "DELIVERED"]},
+    "state": {"enum": ["NEW", "INTAKE_VALIDATED", "PLANNING", "PLAN_PREFLIGHT", "PLAN_READY", "COMPILING", "COMPILED", "KEYFRAME_PREP", "PRODUCING", "SEGMENT_QC", "REPAIRING", "ASSEMBLY_READY", "ASSEMBLING", "FINAL_QC", "DELIVERED"]},
     "active_plan": {"type": ["object", "null"]},
     "artifacts": {"type": "array"},
     "branches": {"type": "array"},

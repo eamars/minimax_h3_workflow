@@ -79,7 +79,7 @@
         "source_model_version": {"const": 1},
         "status": {"enum": ["needs_editorial_completion", "complete"]},
         "creative_fields_not_invented": {"type": "array", "minItems": 1, "items": {"type": "string"}},
-        "source_artifact_hash": {"type": "string"},
+        "source_artifact_revision": {"type": "string"},
         "migration_tool_version": {"type": "string"}
       },
       "additionalProperties": false

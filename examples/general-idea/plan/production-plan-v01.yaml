@@ -6,8 +6,7 @@ artifact:
   revision_id: PRJ99_PLAN@v01
   created_from: [PRJ99_REQUEST@v01, PRJ99_CANON@v01, PRJ99_STORYBOARD@v01]
   source_versions: []
-  status: review_ready
-  content_hash: sha256:885b7609df81315bf8f0f519f00cfdab8fb77e379e87d7bb30ff612c50d4f9c1
+  status: ready
   created_at: 2026-08-08T00:00:00Z
   created_by: production-orchestrator
   provenance:
@@ -78,7 +77,7 @@ risks:
   - {risk_id: RISK01, category: hands, severity: medium, mitigation: static framing and singular action}
   - {risk_id: RISK02, category: fluids, severity: low, mitigation: keep wetness state continuous}
 dependencies:
-  - {from: approval, to: JOB_SEQ01_SC01_SH01_SEG01_R01, reason: exact plan hash approval}
+  - {from: PRJ99_PLAN@v01, to: JOB_SEQ01_SC01_SH01_SEG01_R01, reason: compile the declared plan revision}
 provisional_h3_modes:
   SEQ01_SC01_SH01_SEG01: T2VA
 provisional_workflow_classes:
@@ -90,17 +89,8 @@ acceptance_criteria:
 open_decisions:
   - Confirm 16:9 at 1344x768 and 24 fps.
 preflight:
-  verdict: PASS_FOR_HUMAN_REVIEW
+  verdict: PASS
   blocking_findings: []
   warnings: [Hands and wet clay require close QC.]
 rerender_exposure:
   SEQ01_SC01_SH01_SEG01: medium
-approval:
-  plan_id: PRJ99_PLAN
-  plan_version: 1
-  plan_hash: sha256:885b7609df81315bf8f0f519f00cfdab8fb77e379e87d7bb30ff612c50d4f9c1
-  status: pending
-  approved_by: null
-  approved_at: null
-  approved_scope: []
-  conditions: []

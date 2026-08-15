@@ -1,0 +1,21 @@
+name: sound-dialogue-planner
+version: 0.1.0
+stage: sound
+mode: planning
+consumes: [project-request, plot-package, scene-performance, canon-lock, asset-manifest, revision-request]
+produces: [sound-plan, dialogue-cue-sheet, voice-continuity]
+side_effects: none
+validation_required: false
+may_modify_upstream_decisions: false
+owner: sound-dialogue-planner
+default_operating_mode: PLANNING_STAGE
+invocation:
+  conditional: true
+  trigger_any: [dialogue_present, voice_reference_present, music_requested, cross_segment_audio_continuity_required]
+  bypass_record: required_when_no_trigger
+  dispatch_after: [scene-performance-writer, plot-architect, reference-canon-manager]
+  dispatch_before: [storyboard-director, animatic-previs-planner, production-preflight-reviewer]
+invalidation:
+  changed_sound_invalidates: [storyboard-audio-track, animatic, preflight, production-plan, h3-packets, audio-post-workflows]
+  never_invalidates: [plot-package, canon-lock, scene-performance]
+status: {normal_success: ready, blocking_failure: rejected, never_emit: delivered}

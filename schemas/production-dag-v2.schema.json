@@ -2,13 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "production-dag-v2.schema.json",
   "type": "object",
-  "required": ["artifact", "planning_model_version", "plan_hash", "generation_nodes", "generation_edges", "editorial_boundary_ids", "post_edges"],
+  "required": ["artifact", "planning_model_version", "plan_revision", "generation_nodes", "generation_edges", "editorial_boundary_ids", "post_edges"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
     "planning_model_version": {"const": 2},
-    "plan_hash": {"$ref": "common-defs.schema.json#/$defs/sha256"},
+    "plan_revision": {"type": "string", "minLength": 1},
     "generation_nodes": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["segment_id", "job_id", "state", "shot_id", "generation_relationship"]}},
-    "generation_edges": {"type": "array", "items": {"type": "object", "required": ["from", "to", "relation"], "properties": {"from": {"type": "string", "minLength": 1}, "to": {"type": "string", "minLength": 1}, "relation": {"enum": ["asset", "approval", "same_shot_continue", "endpoint_bridge", "reference_reestablish", "terminal"]}}, "additionalProperties": false}},
+    "generation_edges": {"type": "array", "items": {"type": "object", "required": ["from", "to", "relation"], "properties": {"from": {"type": "string", "minLength": 1}, "to": {"type": "string", "minLength": 1}, "relation": {"enum": ["asset", "dependency", "same_shot_continue", "endpoint_bridge", "reference_reestablish", "terminal"]}}, "additionalProperties": false}},
     "editorial_boundary_ids": {"type": "array", "items": {"type": "string"}},
     "post_edges": {"type": "array", "items": {"type": "object", "required": ["from", "to", "relation"], "properties": {"relation": {"enum": ["concat", "audio_mix", "upscale", "final_export"]}}, "additionalProperties": false}}
   },

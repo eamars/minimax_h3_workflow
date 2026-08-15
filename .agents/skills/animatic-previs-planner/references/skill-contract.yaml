@@ -1,0 +1,19 @@
+name: animatic-previs-planner
+version: 0.2.0
+stage: previs
+mode: planning
+consumes: [project-request, storyboard-package-v2, sound-plan-conditional, canon-lock-optional, asset-manifest-optional, seed-thumbnail-manifest-optional, prior-animatic-plan-optional]
+produces: [animatic-plan-v2, paper-edit, shot-segment-assembly, sound-boundary-map, pacing-findings, preview-spec-optional, dispatch-result]
+side_effects: none
+validation_required: false
+may_modify_upstream_decisions: false
+owner: animatic-previs-planner
+implementation_status: invokable_milestone_3_contract
+routing:
+  after: storyboard-director
+  wait_for_conditional: sound-dialogue-planner
+  next: production-preflight-reviewer
+  forbidden: [h3-compilation, comfyui-compilation, preview-execution, media-processing]
+time_domains: [scene_time, source_time, record_time]
+boundary_ownership: editorial_boundaries_only
+generation_handoff_ownership: preserve_and_map_only

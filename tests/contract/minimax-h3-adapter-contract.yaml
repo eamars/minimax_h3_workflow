@@ -1,7 +1,7 @@
 version: 1
 cases:
-  - {id: unapproved, expect: {status: BLOCKED, failure: PLAN_APPROVAL_REQUIRED, writes: false}}
-  - {id: hash_mismatch, expect: {failure: PLAN_HASH_MISMATCH}}
+  - {id: unvalidated, expect: {status: BLOCKED, failure: PLAN_NOT_READY, writes: false}}
+  - {id: superseded_plan_revision, expect: {failure: PLAN_REVISION_INVALID}}
   - {id: five_modes, expect: {mapping_exact: true}}
   - {id: mixed_endpoints_refs, expect: {failure: H3_MODE_MISMATCH}}
   - {id: bad_labels, expect: {failure: H3_REFERENCE_LABEL_MISMATCH}}

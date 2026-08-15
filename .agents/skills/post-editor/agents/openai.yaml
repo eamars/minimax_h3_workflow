@@ -1,0 +1,4 @@
+interface:
+  display_name: "Post Editor"
+  short_description: "Assemble QC-passed media and final delivery"
+  default_prompt: "Use $post-editor to assemble QC-PASS media according to the declared edit and handoff plan, then route the master through final QC."

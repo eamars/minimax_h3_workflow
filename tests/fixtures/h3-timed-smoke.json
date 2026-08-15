@@ -1,12 +1,42 @@
 {
+  "continuity_locks": {
+    "style": "Natural cinematic product footage with restrained motion.",
+    "identity": "The same small red ceramic cup with the same glaze and proportions.",
+    "environment": "The same plain wooden table in the same neutral studio.",
+    "lighting": "The same soft neutral studio light from camera left."
+  },
   "shots": [
     {
-      "prompt": "A fixed medium shot of a small red ceramic cup on a plain wooden table under soft neutral studio light. The cup remains centered while a faint reflection shifts naturally across its glaze. Quiet room tone, no speech.",
-      "target_frames": 4
+      "prompt": "A faint reflection travels slowly across the cup's glaze.",
+      "duration_seconds": 7,
+      "continuity": {
+        "opening_scene": "The same neutral studio.",
+        "opening_state": "The red cup is centered and motionless on the wooden table.",
+        "opening_camera": "A fixed medium camera faces the cup straight on.",
+        "opening_audio": "Quiet studio room tone.",
+        "opening_hold_seconds": 0,
+        "closing_scene": "The same neutral studio.",
+        "closing_state": "The red cup remains centered and motionless after the reflection settles.",
+        "closing_camera": "A fixed medium camera faces the cup straight on.",
+        "closing_audio": "Quiet studio room tone.",
+        "closing_hold_seconds": 2
+      }
     },
     {
-      "prompt": "The same fixed medium shot of the same small red ceramic cup centered on the same plain wooden table under identical soft neutral studio light. It begins in exactly the prior arrangement; the faint reflection continues shifting naturally. Quiet room tone, no speech.",
-      "target_frames": 4
+      "prompt": "A second faint reflection shifts naturally across the glaze.",
+      "duration_seconds": 7,
+      "continuity": {
+        "opening_scene": "The same neutral studio.",
+        "opening_state": "The red cup remains centered and motionless after the reflection settles.",
+        "opening_camera": "A fixed medium camera faces the cup straight on.",
+        "opening_audio": "Quiet studio room tone.",
+        "opening_hold_seconds": 2,
+        "closing_scene": "The same neutral studio.",
+        "closing_state": "The red cup remains centered and motionless after the second reflection settles.",
+        "closing_camera": "A fixed medium camera faces the cup straight on.",
+        "closing_audio": "Quiet studio room tone.",
+        "closing_hold_seconds": 2
+      }
     }
   ]
 }

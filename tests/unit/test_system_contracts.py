@@ -29,7 +29,7 @@ class SystemContracts(unittest.TestCase):
         self.assertEqual(rule, {"type": "number", "exclusiveMinimum": 0, "maximum": 10})
 
     def test_planning_order(self):
-        routing = yaml.safe_load((ROOT / "skills/production-orchestrator/references/routing-policy.yaml").read_text(encoding="utf-8"))
+        routing = yaml.safe_load((ROOT / ".agents/skills/production-orchestrator/references/routing-policy.yaml").read_text(encoding="utf-8"))
         order = [item["skill"] for item in routing["planning_dispatch"] if item.get("type") == "skill"]
         self.assertEqual(order, [
             "request-normalizer", "reference-canon-manager", "plot-architect",

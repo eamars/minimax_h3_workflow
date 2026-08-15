@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "production-plan-v2.schema.json",
   "type": "object",
-  "required": ["artifact", "planning_model_version", "request_summary", "asset_reference_map", "canon", "plot", "scene_performance", "sound", "director_treatment", "scene_geography", "shots", "generation_segments", "editorial_boundaries", "generation_handoffs", "continuity_registry", "animatic_intent", "creative_acceptance_tests", "timelines", "pacing", "risks", "dependencies", "provisional_h3_modes", "provisional_workflow_classes", "acceptance_criteria", "open_decisions", "preflight", "rerender_exposure", "approval"],
+  "required": ["artifact", "planning_model_version", "request_summary", "asset_reference_map", "canon", "plot", "scene_performance", "sound", "director_treatment", "scene_geography", "shots", "generation_segments", "editorial_boundaries", "generation_handoffs", "continuity_registry", "animatic_intent", "creative_acceptance_tests", "timelines", "pacing", "risks", "dependencies", "provisional_h3_modes", "provisional_workflow_classes", "acceptance_criteria", "open_decisions", "preflight", "rerender_exposure"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
     "planning_model_version": {"const": 2},
@@ -30,22 +30,7 @@
     "acceptance_criteria": {"type": "array", "minItems": 1},
     "open_decisions": {"type": "array"},
     "preflight": {"type": "object"},
-    "rerender_exposure": {"type": "object"},
-    "approval": {
-      "type": "object",
-      "required": ["plan_id", "plan_version", "plan_hash", "status", "approved_by", "approved_at", "approved_scope", "conditions"],
-      "properties": {
-        "plan_id": {"type": "string", "minLength": 1},
-        "plan_version": {"type": "integer", "minimum": 1},
-        "plan_hash": {"$ref": "common-defs.schema.json#/$defs/sha256"},
-        "status": {"enum": ["pending", "approved", "rejected", "revision_requested"]},
-        "approved_by": {"type": ["string", "null"]},
-        "approved_at": {"type": ["string", "null"]},
-        "approved_scope": {"type": "array"},
-        "conditions": {"type": "array"}
-      },
-      "additionalProperties": false
-    }
+    "rerender_exposure": {"type": "object"}
   },
   "additionalProperties": false
 }

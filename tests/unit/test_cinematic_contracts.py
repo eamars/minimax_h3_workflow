@@ -11,10 +11,9 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-STORYBOARD_VALIDATOR = ROOT / "skills/storyboard-director/scripts/validate_storyboard.py"
-sys.path.insert(0, str(ROOT / "skills/comfyui-workflow-compiler/scripts"))
+STORYBOARD_VALIDATOR = ROOT / ".agents/skills/storyboard-director/scripts/validate_storyboard.py"
+sys.path.insert(0, str(ROOT / ".agents/skills/comfyui-workflow-compiler/scripts"))
 import compile_workflow  # noqa: E402
-from scripts.validate_review_document import canonical_hash  # noqa: E402
 
 
 def load_validator():
@@ -137,15 +136,12 @@ class CinematicContracts(unittest.TestCase):
         plan["continuity_registry"] = copy.deepcopy(plan["continuity_registry"])
         plan["animatic_intent"] = copy.deepcopy(plan["animatic_intent"])
         plan["creative_acceptance_tests"] = copy.deepcopy(plan["creative_acceptance_tests"])
-        plan["approval"] = {"plan_id": "x", "plan_version": 2, "plan_hash": "sha256:" + "a" * 64, "status": "pending", "approved_by": None, "approved_at": None, "approved_scope": [], "conditions": []}
         segment_id = plan["generation_segments"][0]["segment_id"]
         selected = plan["generation_segments"][0]
         bindings = {
             "segment_id": segment_id,
             "generation_relationship": selected["generation_handoff_to_next"]["relationship"],
             "endpoint_policy": selected["generation_handoff_to_next"]["endpoint_policy"],
-            "camera_interval_map_hash": compile_workflow.canonical_hash(selected["camera_interval_map"]),
-            "continuity_contract_hash": compile_workflow.canonical_hash(selected["continuity_contract"]),
         }
         segment = compile_workflow.validate_cinematic_plan(plan, bindings)
         self.assertEqual(segment["shot_id"], "SEQ01_SC01_SH01")
@@ -159,8 +155,6 @@ class CinematicContracts(unittest.TestCase):
             "segment_id": moving["segment_id"],
             "generation_relationship": moving["generation_handoff_to_next"]["relationship"],
             "endpoint_policy": moving["generation_handoff_to_next"]["endpoint_policy"],
-            "camera_interval_map_hash": compile_workflow.canonical_hash(moving["camera_interval_map"]),
-            "continuity_contract_hash": compile_workflow.canonical_hash(moving["continuity_contract"]),
         }
         with self.assertRaises(AssertionError) as capability_failure:
             compile_workflow.validate_cinematic_plan(plan, moving_bindings, {"capabilities": {"moving_endpoint_continuation": False}})
@@ -185,7 +179,7 @@ class CinematicContracts(unittest.TestCase):
             self.assertIn("camera.setup.position", migration_report["blocking_fields"])
             self.assertTrue(migrated["generation_segments"])
             self.assertNotEqual(migrated["artifact"]["revision_id"], "storyboard_PRJ99@v01")
-            self.assertRegex(migrated["artifact"]["content_hash"], r"^sha256:[0-9a-f]{64}$")
+            self.assertNotIn("content_revision", migrated["artifact"])
             validator = load_validator()
             migrated_for_shape_check = copy.deepcopy(migrated)
             migrated_for_shape_check["migration"]["status"] = "complete"
@@ -200,10 +194,10 @@ class CinematicContracts(unittest.TestCase):
             )
             self.assertEqual(dry_run.returncode, 0, dry_run.stderr)
 
-    def test_v2_review_pair_uses_v2_headings_and_hash_gate(self):
+    def test_v2_plan_requires_revision_identity_but_no_gate_sidecar(self):
         storyboard = yaml.safe_load((ROOT / "tests/fixtures/storyboard-v2-real-cinematic.yaml").read_text(encoding="utf-8"))
         plan = {
-            "artifact": dict(storyboard["artifact"], artifact_id="production_plan_PRJ99_v02", artifact_type="production-plan-v2", revision_id="production_plan_PRJ99@v02", status="review_ready"),
+            "artifact": dict(storyboard["artifact"], artifact_id="production_plan_PRJ99_v02", artifact_type="production-plan-v2", revision_id="production_plan_PRJ99@v02", status="ready"),
             "planning_model_version": 2,
             "request_summary": {},
             "asset_reference_map": {},
@@ -230,24 +224,13 @@ class CinematicContracts(unittest.TestCase):
             "open_decisions": [],
             "preflight": {},
             "rerender_exposure": {},
-            "approval": {"plan_id": "production_plan_PRJ99", "plan_version": 2, "plan_hash": "", "status": "pending", "approved_by": None, "approved_at": None, "approved_scope": [], "conditions": []},
         }
-        expected = canonical_hash(plan)
-        plan["artifact"]["content_hash"] = expected
-        plan["approval"]["plan_hash"] = expected
-        headings = yaml.safe_load((ROOT / "skills/production-orchestrator/references/review-document-contract-v2.yaml").read_text(encoding="utf-8"))["required_sections"]
+        plan["artifact"].pop("content_revision", None)
+        compile_workflow.validate_plan(plan)
         with tempfile.TemporaryDirectory() as temp_dir:
             temp = Path(temp_dir)
             yaml_path = temp / "production-plan-v02.yaml"
-            markdown_path = temp / "production-plan-v02.md"
             yaml_path.write_text(yaml.safe_dump(plan, sort_keys=False), encoding="utf-8")
-            markdown_path.write_text("\n".join(f"## {heading}" for heading in headings) + "\n", encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, str(ROOT / "scripts/validate_review_document.py"), "--markdown", str(markdown_path), "--yaml", str(yaml_path)],
-                capture_output=True,
-                text=True,
-            )
-            self.assertEqual(result.returncode, 0, result.stderr)
             topology = subprocess.run(
                 [sys.executable, str(ROOT / "scripts/validate_cinematic_package.py"), "--plan", str(yaml_path)],
                 capture_output=True,

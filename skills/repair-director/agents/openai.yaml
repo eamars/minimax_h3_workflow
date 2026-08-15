@@ -1,8 +1,0 @@
-interface:
-  display_name: "Repair Director"
-  short_description: "Plan localized repairs without overwriting approved media"
-  default_prompt: "Use $repair-director to design the smallest evidence-backed repair and invalidation scope after QC."
-policy:
-  allow_implicit_invocation: true
-  side_effects: [filesystem]
-  requires_explicit_execution_authorization: true

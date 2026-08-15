@@ -1,0 +1,4 @@
+interface:
+  display_name: "MiniMax H3 Adapter"
+  short_description: "Compile MiniMax H3 prompt packets"
+  default_prompt: "Use $minimax-h3-adapter to compile continuity-aware MiniMax H3 prompt packets from this production-plan revision."

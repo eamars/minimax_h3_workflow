@@ -1,0 +1,80 @@
+version: 3
+scope: project_lifecycle
+initial_state: NEW
+terminal_states: [DELIVERED]
+non_delivery_stop_states: [PATH_TEST_READY, PATH_TEST_FAILED, BLOCKED]
+
+states:
+  - NEW
+  - INTAKE_VALIDATED
+  - PLANNING
+  - PLAN_PREFLIGHT
+  - PLAN_READY
+  - COMPILING
+  - COMPILED
+  - KEYFRAME_PREP
+  - PRODUCING
+  - PATH_TESTING
+  - PATH_TEST_READY
+  - PATH_TEST_FAILED
+  - SEGMENT_QC
+  - REPAIRING
+  - ASSEMBLY_READY
+  - ASSEMBLING
+  - FINAL_QC
+  - DELIVERED
+  - BLOCKED
+
+transitions:
+  - {from: NEW, to: INTAKE_VALIDATED, requires: [intake_valid]}
+  - {from: INTAKE_VALIDATED, to: PLANNING, requires: [project_request_ready]}
+  - {from: PLANNING, to: PLAN_PREFLIGHT, requires: [planning_artifacts_valid]}
+  - {from: PLAN_PREFLIGHT, to: PLAN_READY, requires: [preflight_pass]}
+  - {from: PLAN_PREFLIGHT, to: PLANNING, requires: [preflight_revision_request]}
+  - {from: PLAN_READY, to: COMPILING, requires: [live_comfyui_probe_available]}
+  - {from: COMPILING, to: COMPILED, requires: [all_graphs_valid, production_dag_acyclic]}
+  - {from: COMPILED, to: KEYFRAME_PREP, requires: [compiled_bundle_valid]}
+  - {from: KEYFRAME_PREP, to: PRODUCING, requires: [initial_endpoints_valid_or_not_required]}
+  - {from: COMPILED, to: PATH_TESTING, requires: [path_test_requested]}
+  - {from: PATH_TESTING, to: PATH_TEST_READY, requires: [technical_path_pass]}
+  - {from: PATH_TESTING, to: PATH_TEST_FAILED, requires: [technical_path_failed]}
+  - {from: PRODUCING, to: SEGMENT_QC, requires: [render_complete]}
+  - {from: SEGMENT_QC, to: PRODUCING, requires: [more_jobs_ready, continuation_endpoint_valid]}
+  - {from: SEGMENT_QC, to: REPAIRING, requires: [localized_qc_failure]}
+  - {from: REPAIRING, to: PRODUCING, requires: [repair_job_valid]}
+  - {from: REPAIRING, to: PLANNING, requires: [repair_changes_creative_intent]}
+  - {from: SEGMENT_QC, to: ASSEMBLY_READY, requires: [all_required_segments_qc_pass]}
+  - {from: ASSEMBLY_READY, to: ASSEMBLING, requires: [qc_media_manifest_valid]}
+  - {from: ASSEMBLING, to: FINAL_QC, requires: [master_created]}
+  - {from: FINAL_QC, to: ASSEMBLING, requires: [editorial_fix_required]}
+  - {from: FINAL_QC, to: REPAIRING, requires: [source_media_repair_required]}
+  - {from: FINAL_QC, to: DELIVERED, requires: [final_qc_pass, delivery_manifest_valid]}
+
+segment_states:
+  - PLANNED
+  - COMPILED
+  - ADMITTED
+  - RENDERED
+  - DECODED
+  - ENDPOINT_EXTRACTED
+  - QC_PENDING
+  - QC_PASSED
+  - ENDPOINT_VALIDATED
+  - SUCCESSOR_ELIGIBLE
+  - FAILED
+  - REPAIR_REQUIRED
+
+strict_serial_continuation:
+  max_in_flight_jobs: 1
+  successor_compilation: just_in_time_after_endpoint_validation
+  successor_admission: predecessor_qc_pass_and_endpoint_match
+  endpoint_frame_policy: actual_final_decoded_frame_only
+  endpoint_window_policy: validate_final_12_frames_do_not_substitute_earlier_frame
+  descendant_invalidation: transitive_from_failed_or_changed_endpoint
+  final_qc_order: segment_qc_then_assembly_then_master_qc_then_delivery
+
+revision_behavior:
+  plan_changed: [return_to_planning, rebuild_dependent_compilation, preserve_unaffected_media]
+  workflow_template_changed: [return_to_compiling, rebuild_affected_jobs]
+  generation_endpoint_changed: [return_to_keyframe_prep, revalidate_successor_closure]
+

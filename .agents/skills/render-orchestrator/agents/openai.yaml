@@ -1,0 +1,4 @@
+interface:
+  display_name: "Render Orchestrator"
+  short_description: "Execute ready ComfyUI render DAGs safely"
+  default_prompt: "Use $render-orchestrator to execute this compiled ComfyUI production DAG with bounded retries and serial continuation dependencies."

@@ -6,8 +6,7 @@ artifact:
   revision_id: storyboard_PRJ01_bad@v02
   created_from: []
   source_versions: []
-  status: review_ready
-  content_hash: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+  status: ready
   created_at: 2026-08-09T00:00:00Z
   created_by: fixture
   provenance: {user_inputs: [], source_assets: [], upstream_artifacts: []}

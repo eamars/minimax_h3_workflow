@@ -1,0 +1,4 @@
+interface:
+  display_name: "Keyframe and Handoff Builder"
+  short_description: "Prepare continuity endpoint frames and handoffs"
+  default_prompt: "Use $keyframe-handoff-builder to extract and validate actual endpoint frames for serial continuation or bridge handoffs."

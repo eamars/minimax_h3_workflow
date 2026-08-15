@@ -1,0 +1,4 @@
+interface:
+  display_name: "Storyboard Director"
+  short_description: "Direct cinematic coverage and shot continuity"
+  default_prompt: "Use $storyboard-director to turn canon, plot, performance, and sound into cinematic shots, typed camera plans, and generation handoffs."

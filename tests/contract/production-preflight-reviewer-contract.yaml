@@ -1,9 +1,9 @@
 version: 1
 cases:
-  - {id: valid, expect: {verdict: PASS_FOR_HUMAN_REVIEW, approval_created: false}}
-  - {id: eleven_seconds, expect: {verdict: REVISE_BEFORE_REVIEW, failure: SEGMENT_TOO_LONG, target: storyboard-package}}
-  - {id: missing_artifact, expect: {verdict: BLOCKED_MISSING_REQUIREMENT}}
-  - {id: missing_sound_when_triggered, expect: {verdict: BLOCKED_MISSING_REQUIREMENT}}
+  - {id: valid, expect: {verdict: PASS, next_state: PLAN_READY}}
+  - {id: eleven_seconds, expect: {verdict: REVISE, failure: SEGMENT_TOO_LONG, target: storyboard-package}}
+  - {id: missing_artifact, expect: {verdict: BLOCKED}}
+  - {id: missing_sound_when_triggered, expect: {verdict: BLOCKED}}
   - {id: dependency_cycle, expect: {failure: DEPENDENCY_CYCLE, graph_changed: false}}
   - {id: unknown_capability, expect: {status: warn}}
   - {id: deterministic_repeat, expect: {byte_identical: true}}

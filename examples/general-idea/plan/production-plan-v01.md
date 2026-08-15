@@ -50,7 +50,7 @@ Hands medium; wet-clay continuity low; overall medium rerender exposure.
 
 ## Parallel and sequential dependency proposal
 
-One job after exact plan approval; no continuation dependency.
+One job after exact plan validation; no continuation dependency.
 
 ## Provisional H3 mode per segment
 
@@ -70,12 +70,12 @@ Confirm 1344×768, 16:9, 24 fps.
 
 ## Preflight verdict
 
-`PASS_FOR_HUMAN_REVIEW`; hands and wet clay remain QC risks.
+`PASS`; hands and wet clay remain QC risks.
 
 ## Qualitative rerender exposure by segment
 
 Medium for the only segment.
 
-## Approval record placeholder
+## Validation record placeholder
 
-Pending approval bound to the authoritative YAML SHA-256.
+Pending validation bound to the authoritative YAML SHA-256.

@@ -1,0 +1,24 @@
+name: post-editor
+version: 0.2.0
+stage: post
+mode: post
+consumes: [production-plan, plan-revision, validated-media-manifest, qc-report-final-and-segment, handoff-transition-plan, animatic-plan-or-paper-edit, sound-plan, delivery-specification, capability-profile-optional, workflow-catalog-utility-templates]
+produces: [edit-decision-list, assembly-plan, audio-mix-plan, final-assembly-workflow, final-master-optional, delivery-manifest]
+side_effects: media_processing
+validation_required: plan_validation
+may_modify_upstream_decisions: false
+owner: post-editor
+schema: schemas/edit-decision-list-v2.schema.json
+routing:
+  upstream: [production-orchestrator, continuity-qc-supervisor_after_all_required_segment_and_handoff_passes, animatic-previs-planner, sound-dialogue-planner]
+  downstream: [continuity-qc-supervisor_final_mode]
+  gate: [valid_plan_validation, validated_media_manifest, every_required_media_qc_PASS]
+  final_qc: {skill: continuity-qc-supervisor, mode: final, required_verdict: PASS, independent: true}
+  delivery: {requires: [final_qc_PASS, master_decodes, matching_plan_revision, delivery_manifest_valid], state: DELIVERED}
+  on_final_qc_fail: [repair-director_or_editorial_fix, new_post_revision, new_independent_final_qc]
+  parallelizable: false
+  forbidden: [unvalidated_media, PASS_WITH_EDITORIAL_FIX_media, undocumented_transition_change, validated_artifact_overwrite, self_validation]
+transition_rules: [cut, dissolve, fade, end]
+generation_relationship_rules: [independent, same_shot_continue, endpoint_bridge, reference_reestablish, terminal]
+final_qc_required: true
+failure_codes: [POST_QC_MEDIA_REQUIRED, POST_PLAN_REVISION_INVALID, POST_MEDIA_MANIFEST_INVALID, POST_MEDIA_NOT_QC_PASSED, POST_SOURCE_REVISION_MISSING, POST_TRANSITION_SEMANTICS_MISMATCH, POST_ENDPOINT_DUPLICATE, POST_AUDIO_CONTINUITY_FAILURE, POST_RUNTIME_MISMATCH, POST_WORKFLOW_INVALID, FINAL_QC_REQUIRED, FINAL_EDIT_CONTINUITY_FAILURE, DELIVERY_SPEC_FAILURE, DELIVERY_MANIFEST_INVALID, ARTIFACT_OVERWRITE_FORBIDDEN]

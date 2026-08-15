@@ -4,7 +4,7 @@ Status: draft_for_external_review
 Version: v01
 Scope: shared storyboard, planning, validation, compilation, QC, orchestration, and post-production contracts
 Reference failure case: `projects/PRJ01`
-Implementation status: planning only; no production artifacts or approved plans are to be changed by this document
+Implementation status: planning only; no production artifacts or validated plans are to be changed by this document
 
 ## 1. Goal
 
@@ -126,7 +126,7 @@ Continuity is a separate state object. It must preserve, as applicable:
 - wardrobe, wetness, and other state progressions;
 - gaze, eyelines, screen direction, and action axis;
 - reflection geometry and required mirror relationships;
-- approved reference roles and binding strengths.
+- validated reference roles and binding strengths.
 
 An environment reference must not silently become a fixed camera reference. A camera-composition reference is hard only when the user or project explicitly declares it hard; otherwise it may be style, framing, or soft guidance.
 
@@ -148,8 +148,8 @@ Editorial transition types:
 Generation handoff types:
 
 - `independent`;
-- `same_shot_continue` using the approved effective predecessor tail;
-- `endpoint_bridge` using approved source and target endpoints;
+- `same_shot_continue` using the validated effective predecessor tail;
+- `endpoint_bridge` using validated source and target endpoints;
 - `reference_reestablish` using the continuity/reference state without pixel dependency;
 - `terminal`.
 
@@ -157,11 +157,11 @@ Rules:
 
 - A hard cut may require strong narrative and state continuity even though it has no pixel dependency.
 - A cut may occur during controlled motion and needs a valid editorial cut point, not a motionless tail.
-- `same_shot_continue` requires a stable approved tail and no visible editorial seam.
-- `endpoint_bridge` requires both approved endpoints and a supported bridge path.
+- `same_shot_continue` requires a stable validated tail and no visible editorial seam.
+- `endpoint_bridge` requires both validated endpoints and a supported bridge path.
 - A match cut is an editorial hard cut, not a generation continuation.
 - A dissolve is post-production overlap and cannot claim physical or semantic continuity by itself.
-- A transition-topology change remains a creative plan change requiring human approval.
+- A transition-topology change remains a creative plan change requiring human validation.
 
 ## 4. Implementation work packages
 
@@ -175,7 +175,7 @@ Steps:
 1. Add shared definitions for editorial shots, editorial transitions, generation handoffs, and structured camera plans.
 2. Update `storyboard-package.schema.json`, `common-defs.schema.json`, `production-plan.schema.json`, and the handoff/transition manifests.
 3. Preserve stable shot IDs across technical splits.
-4. Add a migration path from the current `transition_to_next` field; do not silently reinterpret old approved artifacts.
+4. Add a migration path from the current `transition_to_next` field; do not silently reinterpret old validated artifacts.
 5. Make `end` consistent across storyboard, orchestrator, compiler, post, and validation policies.
 
 Acceptance:
@@ -183,8 +183,8 @@ Acceptance:
 - A 24-second uninterrupted shot becomes three or more segments with one shot ID and no editorial cut.
 - Three independent 4-second shots remain three editorial shots even when each uses one generation job.
 - A cut during controlled motion is valid without a continuation tail.
-- A continuation without an approved stable tail fails.
-- A bridge without both approved endpoints fails.
+- A continuation without an validated stable tail fails.
+- A bridge without both validated endpoints fails.
 - A match cut without bilateral motifs fails.
 
 ### WP1 — Structured camera and axis model
@@ -222,7 +222,7 @@ Steps:
 3. Design coverage before generation segmentation: establishing/master, moving master, singles, over-the-shoulders, inserts, reactions, eyeline shots, and cutaways when justified.
 4. Give each shot one dramatic/editorial purpose and an edit-in/edit-out reason.
 5. Permit variable shot duration and long takes; do not infer one shot per plot beat or one equal-duration segment per beat.
-6. Split only after shot order and camera intent are approved. Preserve a continuous camera path through same-shot splits.
+6. Split only after shot order and camera intent are validated. Preserve a continuous camera path through same-shot splits.
 7. Add coverage, camera progression, editorial rhythm, handles, and transition motivation to acceptance tests.
 
 Acceptance:
@@ -248,7 +248,7 @@ Steps:
 
 Acceptance:
 
-- The same character and room references can support multiple approved camera positions.
+- The same character and room references can support multiple validated camera positions.
 - A hard camera-composition reference remains binding when explicitly declared.
 - A soft/style-only camera reference does not block a motivated relocation.
 - Identity, environment, lighting, props, wardrobe/wetness, eyeline, and axis changes are independently traceable.
@@ -283,17 +283,17 @@ Steps:
 1. Compile structured camera intent into deterministic H3 prose while preserving source-field traceability.
 2. Prevent H3 compilation from adding, removing, or changing camera path, viewpoint, optics, shot boundaries, or editorial transitions.
 3. Maintain two graphs: an editorial timeline/EDL and a generation dependency DAG.
-4. Update orchestrator invalidation: creative camera, shot, or transition changes invalidate downstream planning/compilation/render/post artifacts and require reapproval; purely technical resegmentation may be versioned and revalidated without creative reapproval when assembled shot intent is unchanged.
+4. Update orchestrator invalidation: creative camera, shot, or transition changes invalidate downstream planning/compilation/render/post artifacts and require revalidation; purely technical resegmentation may be versioned and revalidated without creative revalidation when assembled shot intent is unchanged.
 5. Separate QC modes for camera-path quality, same-shot segment seams, editorial cuts, and final assembly.
 6. Require exact stable tails only for continuation/bridge paths; allow cut candidates to retain moving exits when editorially valid.
-7. Make Post Editor realize approved transitions without inventing coverage or camera intent.
+7. Make Post Editor realize validated transitions without inventing coverage or camera intent.
 
 Acceptance:
 
 - Every compiled prompt camera statement maps to a structured source field.
 - H3 compilation cannot silently change lens, path, angle, shot boundary, or transition.
 - Independent cut branches have no false technical dependency.
-- Continuation and bridge branches serialize behind the required endpoint approvals.
+- Continuation and bridge branches serialize behind the required endpoint validations.
 - A cut with a non-motionless but editorially valid handle is accepted.
 - Final QC distinguishes a shot-grammar failure from a generation-seam failure.
 
@@ -304,10 +304,10 @@ Priority: P2
 
 Scripts and validators:
 
-- Add `skills/storyboard-director/scripts/validate_storyboard.py` for structured camera, shot/segment, transition, axis, coverage, and traceability validation.
+- Add `.agents/skills/storyboard-director/scripts/validate_storyboard.py` for structured camera, shot/segment, transition, axis, coverage, and traceability validation.
 - Extend `scripts/validate_production_system.py` for new schemas, enum parity, and ownership boundaries.
-- Extend `scripts/validate_review_document.py` for shot-level EDL, segment assembly, camera traceability, and transition completeness.
-- Extend `skills/production-orchestrator/scripts/validate_package.py` for two-graph topology, invalidation scope, and transition dependency rules.
+- Extend `scripts/validate_cinematic_package.py` for shot-level EDL, segment assembly, camera traceability, and transition completeness.
+- Extend `.agents/skills/production-orchestrator/scripts/validate_package.py` for two-graph topology, invalidation scope, and transition dependency rules.
 
 Fixtures and tests:
 
@@ -334,15 +334,15 @@ This is a validation fixture, not a replacement production plan:
 
 Across the fixture, identity, environment geometry, persistent props, lighting, wardrobe/state, eyelines, and screen direction remain locked. Camera position, viewpoint, height, lens, and framing change intentionally.
 
-## 6. Approval and change-control rules
+## 6. Validation and change-control rules
 
 This work is a shared-skill change, not an automatic rewrite of PRJ01 production outputs.
 
-1. Approve the revised schemas, skill contracts, and validator fixtures as a development revision.
+1. Validate the revised schemas, skill contracts, and validator fixtures as a development revision.
 2. Run repository contract/unit/integration validation before any production plan migration.
-3. Treat camera intent, editorial shot order, editorial transitions, and coverage as creative changes requiring plan review and human approval.
-4. Permit technical segment re-splitting without creative reapproval only when the editorial shot, camera path, transition semantics, assembled timing, and continuity intent remain unchanged.
-5. Preserve all existing approved artifacts immutably; create superseding revisions rather than overwrite.
+3. Treat camera intent, editorial shot order, editorial transitions, and coverage as creative changes requiring plan review and human validation.
+4. Permit technical segment re-splitting without creative revalidation only when the editorial shot, camera path, transition semantics, assembled timing, and continuity intent remain unchanged.
+5. Preserve all existing validated artifacts immutably; create superseding revisions rather than overwrite.
 6. Migrate PRJ01 only as a new plan revision after the shared skills pass validation and the new plan passes preflight.
 7. Do not change H3 modes, workflow graphs, render settings, or models as part of the storyboard-model change unless a downstream capability review finds a separate blocker.
 
@@ -354,9 +354,9 @@ The development is complete when:
 - the same plan can contain long takes split into technical segments without invented editorial cuts;
 - references preserve character, environment, and state continuity without silently fixing the camera;
 - editorial transitions and generation handoffs are independently represented and validated;
-- H3, QC, orchestration, and post preserve the approved camera/shot intent without authoring new decisions;
+- H3, QC, orchestration, and post preserve the validated camera/shot intent without authoring new decisions;
 - PRJ01 fails the old short-video fixture tests and the corrected cinematic fixture passes;
 - all changed skills, schemas, scripts, and tests pass the repository validation suite;
-- no approved production artifact was overwritten or silently reinterpreted.
+- no validated production artifact was overwritten or silently reinterpreted.
 
-The next action after this draft is an independent SOL review of this exact document. Implementation begins only after that review is incorporated and the development plan is approved.
+The next action after this draft is an independent SOL review of this exact document. Implementation begins only after that review is incorporated and the development plan is validated.

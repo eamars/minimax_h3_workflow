@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Video Production Orchestrator"
+  short_description: "Run the full AI-video production lifecycle"
+  default_prompt: "Use $production-orchestrator to take this brief through planning, automatic preflight, ComfyUI compilation, rendering, continuity QC, repair, assembly, and delivery."

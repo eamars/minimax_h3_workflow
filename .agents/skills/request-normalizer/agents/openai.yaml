@@ -1,0 +1,4 @@
+interface:
+  display_name: "Request Normalizer"
+  short_description: "Normalize briefs for automatic video production"
+  default_prompt: "Use $request-normalizer to turn this brief into a traceable request whose default lifecycle is FULL_PIPELINE."

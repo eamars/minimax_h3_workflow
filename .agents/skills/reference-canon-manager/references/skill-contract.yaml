@@ -1,0 +1,46 @@
+name: reference-canon-manager
+version: 0.3.0
+stage: canon
+mode: planning
+consumes: [project-request, seed-assets, optional-reference-map, prior-canon-lock]
+produces: [asset-manifest, canon-lock, environment-profile-when-environment-present, reference-conflict-report, reference-order, geography-evidence]
+side_effects: filesystem
+validation_required: false
+may_modify_upstream_decisions: false
+owner: reference-canon-manager
+implementation_status: invokable_milestone_3_contract
+asset_rules:
+  asset_id_pattern: '^AST_[0-9a-f]{12}$'
+  path_format: relative_posix
+  source_hash: {algorithm: SHA-256, format: '^sha256:[0-9a-f]{64}$', input: raw_source_bytes}
+  immutable_source: true
+canon_rules:
+  canon_id_pattern: '^CAN_(SUBJ|WORLD|STYLE|WARD|PROP|CAM|MOTION|AUDIO)_[0-9a-f]{12}$'
+  binding_id_pattern: '^BND_[0-9a-f]{12}$'
+  collision_policy: fail_with_CANON_ID_COLLISION
+roles:
+  allowed: [subject_identity, environment_architecture, style_rendering, wardrobe, prop, pose_expression, camera_composition, motion_reference, audio_reference, general_reference]
+  primary_role_required: true
+geography:
+  confidence_values: [exact, inferred, unknown]
+  coordinates_owner: storyboard-director
+  unknown_regions_preserved: true
+environment_profile:
+  required_when_role_present: environment_architecture
+  enforcement: hard_reference_no_expansion
+  required_fields: [profile_id, source_asset_id, required_landmarks, allowed_features, forbidden_inventions, unknown_features, negative_space_rule]
+  partial_edges_must_remain_partial: true
+  camera_position_remains_storyboard_owned: true
+camera_reference:
+  position_nonbinding: true
+  owner: storyboard-director
+endpoint:
+  allowed: [none, first_frame, last_frame, both]
+  default: none
+  non_none_requires: [user_declared, project_request_declared]
+  audio_endpoint_forbidden: true
+plot_handoff:
+  consumer: plot-architect
+  unresolved_blocking_scope_sets_ready_false: true
+failure_contract:
+  allowed_codes: [REQUIRED_ASSET_MISSING, ASSET_HASH_MISMATCH, ASSET_SOURCE_MUTATION_DETECTED, ASSET_ROLE_AMBIGUOUS, ENDPOINT_ROLE_AMBIGUOUS, CANON_REFERENCE_CONFLICT, ENVIRONMENT_PROFILE_MISSING, ENVIRONMENT_FEATURE_FORBIDDEN, CANON_ID_COLLISION, CANON_OUTPUT_INVALID, REFERENCE_ORDER_INVALID, PROVENANCE_MISSING]

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Animatic and Previs Planner"
+  short_description: "Time paper edits and test shot readability"
+  default_prompt: "Use $animatic-previs-planner to time this storyboard and test pacing, action readability, audio cues, and handoffs without rendering."

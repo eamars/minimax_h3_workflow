@@ -1,0 +1,22 @@
+version: 2
+
+required:
+  artifact_id: stable project-scoped identifier
+  artifact_type: schema or artifact family
+  project_id: stable PRJ identifier
+  version: positive integer
+  revision_id: immutable revision identifier
+  created_from: direct upstream revision IDs
+  status: draft | ready | blocked | failed | superseded
+  created_at: RFC3339 timestamp
+  created_by: owning skill or tool
+  provenance: user inputs, source assets, and upstream artifacts
+
+rules:
+  - Use revision IDs to determine whether an artifact is current.
+  - Create a new revision instead of overwriting an existing artifact.
+  - Keep paths relative to the project root and reject traversal.
+  - Preserve raw source bytes and record their SHA-256 only when file-integrity verification is useful.
+  - Record workflow, model, and media checksums only as diagnostic integrity evidence; never use them as human production gates.
+  - Keep lifecycle status separate from QC verdicts.
+

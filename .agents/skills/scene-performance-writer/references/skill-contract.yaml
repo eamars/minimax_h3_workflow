@@ -1,0 +1,28 @@
+name: scene-performance-writer
+version: 0.3.0
+stage: scene
+mode: planning
+consumes: [project-request, canon-lock, plot-package, prior-scene-performance-for-revision]
+produces: [scene-performance, scene-text, performance-continuity, scene-time-phases]
+side_effects: none
+validation_required: false
+may_modify_upstream_decisions: false
+owner: scene-performance-writer
+default_operating_mode: PLANNING_STAGE
+schema_refs:
+  scene_performance: schemas/scene-performance.schema.json
+  continuity_state: schemas/continuity-state.schema.json
+routing:
+  planning_position: 4
+  upstream: [request-normalizer, reference-canon-manager, plot-architect]
+  downstream: [sound-dialogue-planner_when_triggered, storyboard-director]
+  bypass_only_if: [one_subject, no_dialogue, one_simple_procedure, plot_beats_already_playable]
+  bypass_record_required: true
+failure_contract:
+  allowed_codes: [SCENE_NOT_PLAYABLE]
+  detail_codes: [missing_observable_action, missing_actor_control, missing_reaction, missing_entry_or_exit_state, invalid_timing, scene_time_phase_missing, speaker_assignment_unresolved, prop_hand_transfer_conflict, wetness_or_clothing_state_conflict, limb_state_undefined, prop_contact_snapshot_missing, hand_assignment_conflict, unknown_hardware_used_as_canon, outcome_requires_new_plot_event, camera_or_staging_leakage]
+limb_continuity:
+  required_in_continuity_snapshots: true
+  stable_ids: [HAND_L, HAND_R]
+  interaction_sequence: [before_contact, contact_or_transfer, after_contact]
+  door_actions_require_explicit_limb: true

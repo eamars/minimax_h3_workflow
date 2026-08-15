@@ -1,0 +1,29 @@
+name: request-normalizer
+version: 0.1.0
+stage: intake
+mode: planning
+consumes: [lifecycle-request, user-brief, seed-asset-inputs, user-reference-map, prior-project-request-for-revision]
+produces: [project-request, assumptions-record, open-decisions]
+side_effects: none
+validation_required: false
+may_modify_upstream_decisions: false
+owner: request-normalizer
+default_operating_mode: FULL_PIPELINE
+schema_refs:
+  project_request: schemas/project-request.schema.json
+  artifact_metadata: ../production-orchestrator/references/artifact-metadata.yaml
+routing:
+  planning_position: first
+  next_skill: reference-canon-manager
+  dispatch_guard: normalization.status == ready and normalization.handoff_ready == true
+  parallelizable: false
+  compile_or_render_allowed: false
+required_project_request_sections: [artifact, project_id, request, constraints, asset_inputs, execution, policy, normalization]
+provenance_source_values: [user_explicit, user_declared, normalizer_assumption, policy, unknown]
+normalization_status_values: [ready, blocked, failed]
+failure_contract:
+  allowed_codes: [INTAKE_MISSING_CORE_REQUIREMENT]
+  detail_reason_values: [empty_brief, missing_central_intent, conflicting_requirements, generation_segment_cap_conflict, unsupported_lifecycle_mode, invalid_project_id]
+handoff_contract:
+  consumer: reference-canon-manager
+  preserve: [request.raw_text, request.explicit_requirements, constraints, asset_inputs, policy.max_generation_segment_seconds, artifact.provenance]

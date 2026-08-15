@@ -1,9 +1,9 @@
 version: 1
 cases:
-  - {id: valid, expect: {status: review_ready, contiguous: true}}
+  - {id: valid, expect: {status: ready, contiguous: true}}
   - {id: over_cap, input_seconds: 10.001, expect: {failure: SEGMENT_TOO_LONG}}
   - {id: gap_overlap, expect: {status: blocked, finding: runtime_sum_mismatch}}
   - {id: missing_entry_exit, expect: {status: blocked}}
   - {id: audio_out_of_range, expect: {failure: AUDIO_SYNC_FAILURE}}
-  - {id: continuation_dependency, expect: {approved_tail_required: true}}
+  - {id: continuation_dependency, expect: {validated_tail_required: true}}
   - {id: preview, expect: {media_calls: 0}}

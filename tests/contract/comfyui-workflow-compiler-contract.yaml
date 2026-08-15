@@ -1,8 +1,8 @@
 name: comfyui-workflow-compiler-contract
 skill: comfyui-workflow-compiler
 checks:
-  - {id: exact_plan_hash_gate, expect: PLAN_HASH_MISMATCH, writes: false}
-  - {id: approval_gate, expect: PLAN_APPROVAL_REQUIRED, writes: false}
+  - {id: superseded_plan_revision, expect: PLAN_REVISION_INVALID, writes: false}
+  - {id: validation_gate, expect: PLAN_NOT_READY, writes: false}
   - {id: capability_gate, expect: CAPABILITY_PROBE_MISSING, writes: false}
   - {id: unavailable_node, expect: WORKFLOW_NODE_UNAVAILABLE, queue_calls: 0}
   - {id: unavailable_model, expect: REQUIRED_MODEL_MISSING}
@@ -14,7 +14,7 @@ checks:
   - {id: invalid_frame_grid, expect: INVALID_FRAME_GRID}
   - {id: unsupported_resolution, expect: RESOLUTION_UNSUPPORTED}
   - {id: missing_asset, expect: REQUIRED_ASSET_MISSING}
-  - {id: approved_overwrite, expect: APPROVED_ARTIFACT_OVERWRITE_FORBIDDEN}
+  - {id: validated_overwrite, expect: ARTIFACT_OVERWRITE_FORBIDDEN}
   - {id: independent_cut, expect: no_false_edge}
-  - {id: continuation_before_tail, expect: HANDOFF_TAIL_UNAPPROVED}
+  - {id: continuation_before_tail, expect: HANDOFF_TAIL_INVALID}
   - {id: compile_only, expect: [workflows, jobs, dag, checksums], prompt_post_count: 0, render_count: 0}

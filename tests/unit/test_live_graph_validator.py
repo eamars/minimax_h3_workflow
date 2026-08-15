@@ -9,7 +9,7 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "skills/comfyui-workflow-compiler/scripts"))
+sys.path.insert(0, str(ROOT / ".agents/skills/comfyui-workflow-compiler/scripts"))
 from validate_live_graph import validate  # noqa: E402
 
 

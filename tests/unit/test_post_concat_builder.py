@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = ROOT / "skills/post-editor/scripts/build_concat_graph.py"
+SCRIPT = ROOT / ".agents/skills/post-editor/scripts/build_concat_graph.py"
 SPEC = importlib.util.spec_from_file_location("concat_builder", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 MODULE = importlib.util.module_from_spec(SPEC)

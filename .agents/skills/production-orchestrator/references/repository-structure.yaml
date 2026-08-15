@@ -1,0 +1,78 @@
+version: 2
+purpose: Describe the project architecture that this skill routes; this file is a reference, not a requirement that an installed skill copy contain the project.
+
+toolkit_root: .
+project_root: projects/<project-id>/
+project_workspace_template: projects/_template/
+tracked_contracts:
+  - schemas/
+  - .agents/skills/
+  - workflow-catalog/
+  - tests/
+  - examples/
+  - projects/README.md
+  - projects/_template/README.md
+shared_runtime_only_paths:
+  - ComfyUI/
+project_input_paths:
+  - seeding_material/
+  - inputs/
+project_artifact_paths:
+  - plan/
+  - compiled/
+  - orchestrator/state/
+  - orchestrator/runs/
+  - scripts/
+  - workflows/
+  - storyboards/
+  - frames/
+  - renders/
+  - bridges/
+  - edit/
+  - prompts/
+  - manifests/
+  - audio/
+  - logs/
+  - outputs/
+
+planned_skill_packages:
+  planning:
+    - request-normalizer
+    - reference-canon-manager
+    - plot-architect
+    - scene-performance-writer
+    - sound-dialogue-planner
+    - storyboard-director
+    - animatic-previs-planner
+    - production-preflight-reviewer
+  compilation:
+    - minimax-h3-adapter
+    - keyframe-handoff-builder
+    - comfyui-workflow-compiler
+  execution:
+    - render-orchestrator
+  review:
+    - continuity-qc-supervisor
+  repair:
+    - repair-director
+  post:
+    - post-editor
+
+existing_package_alignment:
+  .agents/skills/plot-architect:
+    disposition: canonical_specialist
+    distribution: public_toolkit
+  .agents/skills/comfyui:
+    disposition: retain_as_generic_platform_guidance
+    note: Production compilation authority belongs to comfyui-workflow-compiler.
+  scripts/comfy_api_runner.py:
+    disposition: retain_as_local_diagnostic_runner
+    known_gap: Production compilation must add live schema, duration, provenance, and no-overwrite validation.
+
+rules:
+  - Treat user seed assets as canon; do not create a visual-development skill.
+  - Keep every project's inputs and artifacts below projects/<project-id>/; never share a root seeding_material directory between projects.
+  - Keep reusable toolkit code at the repository root and project-only adapters under the owning project's scripts/.
+  - Keep generated video segments at or below 10 seconds after validated model-grid trimming.
+  - Keep ComfyUI runtime, model weights, local workflows, renders, and logs outside tracked contracts.
+  - Keep specialist ownership separate and the top orchestrator thin.

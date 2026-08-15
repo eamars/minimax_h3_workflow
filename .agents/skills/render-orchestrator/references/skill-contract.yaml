@@ -1,0 +1,45 @@
+name: render-orchestrator
+version: 0.1.0
+stage: execution
+mode: execution
+consumes: [production-plan, plan-revision, compiled-production-dag, comfyui-jobs, workflow-hashes, capability-profile, execution-policy, prior-run-state]
+produces: [run-state, job-reports, execution-log, draft-renders, extracted-frames, qc-intake-manifest]
+side_effects: comfyui_api
+validation_required: plan_validation
+may_modify_upstream_decisions: false
+owner: render-orchestrator
+requires:
+  compiled_bundle_validated: true
+  execution_authorized: true
+lifecycle_modes:
+  production: {quality_route: continuity_qc, delivery_possible_only_after_final_qc: true}
+  path-test: {quality_route: technical_intake_only, visual_qc: forbidden, delivery: forbidden, acceptance_script: ../production-orchestrator/scripts/validate_path_test.py}
+routing:
+  upstream: [production-orchestrator, comfyui-workflow-compiler, keyframe-handoff-builder-when-required]
+  downstream: [continuity-qc-supervisor, repair-director-on-qc-failure, post-editor-after-validated-media]
+  dispatch_order: [render-orchestrator, continuity-qc-supervisor, repair-director_on_failure, post-editor_when_all_required_media_validated]
+api:
+  submit: {method: POST, path: /prompt, body_keys: [prompt, prompt_id, client_id, extra_data]}
+  inspect: [{method: GET, path: /queue}, {method: GET, path: '/history/{prompt_id}'}, {method: GET, path: '/api/jobs/{prompt_id}'}]
+  no_submission_for_validation: true
+state:
+  key: [project_id, plan_revision, plan_revision, run_id, execution_policy_hash, lifecycle_mode, capability_profile_hash, environment_profile_hash]
+  transitions: [queued, running, complete, failed, blocked]
+  resume: reconcile_history_queue_before_submit
+  persistence: {run_state: atomic_replace, events: append_only_jsonl, heartbeat: required}
+retry:
+  max_attempts_default: 3
+  backoff_seconds: [2, 5, 15]
+  mutate_job_spec: false
+  mutate_seed: false
+  random_jitter: false
+  creative_failure_retry: false
+idempotency:
+  prompt_id_formula: "uuid5(namespace, project_id + ':' + run_id + ':' + job_id + ':attempt:' + attempt)"
+  client_id_formula: "'render:' + project_id + ':' + run_id"
+  reconcile_before_resubmit: true
+limits:
+  segment_effective_seconds: {exclusiveMinimum: 0, maximum: 10}
+  concurrency: positive_integer
+  continue_requires: [predecessor_render_complete, predecessor_qc_pass, validated_handoff_frame_selection]
+failure_codes: [PLAN_REVISION_INVALID, PLAN_REVISION_INVALID, COMPILED_BUNDLE_INVALID, DAG_INVALID, DAG_CYCLE, DAG_DEPENDENCY_MISSING, HANDOFF_TAIL_INVALID, ENVIRONMENT_PROJECTION_INVALID, STORYBOARD_CONTINUITY_INVALID, COMFYUI_UNREACHABLE, COMFYUI_AUTH_FAILED, COMFYUI_QUEUE_REJECTED, COMFYUI_VALIDATION_FAILED, COMFYUI_PROMPT_ID_MISMATCH, COMFYUI_TIMEOUT, COMFYUI_JOB_FAILED, COMFYUI_OUTPUT_MISSING, COMFYUI_OUTPUT_INVALID, TRANSIENT_RETRY_EXHAUSTED, CONCURRENCY_LIMIT_INVALID, ARTIFACT_OVERWRITE_FORBIDDEN, OUTPUT_PATH_ESCAPE, RUN_STATE_CORRUPT, PROMPT_ID_COLLISION, DEPENDENCY_BLOCKED, RUN_RESUME_SELECTION_MISMATCH]

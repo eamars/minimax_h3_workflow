@@ -1,0 +1,4 @@
+interface:
+  display_name: "Continuity and QC Supervisor"
+  short_description: "Evaluate video continuity and handoffs"
+  default_prompt: "Use $continuity-qc-supervisor to inspect rendered media, score continuity, and determine endpoint handoff readiness."

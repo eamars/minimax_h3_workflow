@@ -1,3 +1,3 @@
 version: 1
-source: skills/keyframe-handoff-builder/references/validation-tests.yaml
-assertions: [source_unchanged, deterministic_selection, endpoint_gate, no_comfyui_queue, no_approved_overwrite]
+source: .agents/skills/keyframe-handoff-builder/references/validation-tests.yaml
+assertions: [source_unchanged, deterministic_selection, endpoint_gate, no_comfyui_queue, no_validated_overwrite]

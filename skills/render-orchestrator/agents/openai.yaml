@@ -1,8 +1,0 @@
-interface:
-  display_name: "Render Orchestrator"
-  short_description: "Execute approved ComfyUI render DAGs"
-  default_prompt: "Use $render-orchestrator to execute the approved, compiled ComfyUI production DAG with bounded retries and provenance."
-policy:
-  allow_implicit_invocation: true
-  side_effects: [filesystem, comfyui_api]
-  requires_explicit_execution_authorization: true

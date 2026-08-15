@@ -80,7 +80,7 @@ templates:
     file: templates/frame_extract_api.json
     job_type: frame_extract
     required_nodes: [LoadVideo, GetVideoComponents, ImageFromBatch, SaveImage]
-    input_bindings: [approved_video_path, frame_index, output_prefix]
+    input_bindings: [validated_video_path, frame_index, output_prefix]
     output_bindings: [image]
     audio_support: none
   - <<: *h3_defaults
@@ -89,7 +89,7 @@ templates:
     job_type: bridge
     supported_modes: [FL2VA]
     required_nodes: [LoadImage, CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ImageToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
-    input_bindings: [prompt, approved_source_tail_path, approved_target_head_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+    input_bindings: [prompt, validated_source_tail_path, validated_target_head_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
   - <<: *utility_defaults
     template_id: concat-v1
     file: templates/concat_api.json
@@ -114,5 +114,5 @@ templates:
     supported_modes: [POST]
     required_nodes: [LoadVideo, GetVideoComponents, UpscaleModelLoader, ImageUpscaleWithModel, CreateVideo, SaveVideo]
     required_models: [upscale_model]
-    input_bindings: [approved_video_path, upscale_model, fps, output_prefix]
+    input_bindings: [validated_video_path, upscale_model, fps, output_prefix]
     output_bindings: [video]

@@ -1,0 +1,19 @@
+name: keyframe-handoff-builder
+version: 0.2.0
+stage: keyframe
+mode: compilation
+consumes: [production-plan, storyboard-package-v2, segment-plan, generation-handoff-manifest, asset-manifest, canon-lock, validated-render-and-qc-for-handoff, validated-target-endpoint-for-bridge, h3-prompt-packet-when-generating, capability-profile-when-generating]
+produces: [keyframe-report, handoff-frame-selection]
+side_effects: media_processing
+validation_required: plan_validation
+may_modify_upstream_decisions: false
+owner: keyframe-handoff-builder
+routing:
+  upstream: [production-orchestrator, minimax-h3-adapter, storyboard-director, reference-canon-manager, continuity-qc-supervisor-when-continuing]
+  downstream: [comfyui-workflow-compiler, render-orchestrator]
+  conditional: true
+triggers: [exact_endpoint_required, same_shot_continue, moving_endpoint, fl2va_selected, endpoint_bridge, prior_tail_must_be_reused]
+endpoint_policies: [none, moving_endpoint, stable_tail, declared_entry_reference, bridge_endpoints]
+endpoint_status_values: [pending, validated, rejected, superseded]
+source_types: [user_seed, validated_tail, validated_target_still_job]
+determinism: {hash: sha256, candidate_tie_break: latest_passing_frame, no_random_generation: true}

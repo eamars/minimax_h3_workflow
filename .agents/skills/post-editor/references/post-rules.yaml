@@ -1,0 +1,28 @@
+version: 2
+input_validation:
+  require: [production_plan_revision, media_manifest, all_required_qc_PASS, delivery_spec]
+  reject: [missing_revision, superseded_media, PASS_WITH_EDITORIAL_FIX, failed_or_pending_qc]
+technical_draft_mode:
+  explicit_authorization: true
+  accepts: [technical_intake_only]
+  quality_evaluation: not_performed_by_user_instruction
+  delivery_status: not_deliverable_without_QC
+  allowed_assembly: straight_cut_only_with_transition_disclosure
+  forbidden: [qc_pass, final_qc_pass, delivery_manifest_ready, delivered]
+canonicalization: {encoding: UTF-8, newline: LF, map_order: sorted_keys}
+editorial_mechanisms:
+  cut: {kind: hard_cut, frame_overlap: 0, audio_overlap: declared_only}
+  dissolve: {kind: editorial_crossfade, require: [declared_duration, motivation], continuity_claim: false}
+  fade: {kind: editorial_fade, require: [declared_duration, motivation]}
+  end: {kind: terminal, require: [terminal_boundary]}
+generation_relationships:
+  independent: {kind: source_join, endpoint_dependency: none}
+  same_shot_continue: {kind: handoff_join, policy_driven: true, drop_successor_frame_0_only_when_pixel_identical: true}
+  endpoint_bridge: {kind: generated_bridge, require: [validated_source_tail, validated_target_head], endpoint_policy: remove_only_exact_matching_duplicates}
+  reference_reestablish: {kind: source_join, require: [declared_entry_reference]}
+  terminal: {kind: terminal_source}
+media_normalization: [frame_order, fps, width, height, color, codec, audio_sample_rate, audio_channels, loudness]
+audio: {sample_accurate_trim: true, preserve_dialogue_identity: true, preserve_ambience: true, unexplained_gap_or_restart: block, undocumented_overlap: block}
+workflow: {catalog_revision_required: true, live_capability_profile_required: true, named_bindings_only: true, queue_comfyui: false, unresolved_placeholders: block, cycles: block}
+final_qc: {skill: continuity-qc-supervisor, mode: final, verdict: PASS, independent: true, revision_bindings: [master, edl, workflow, plan]}
+delivery: {manifest_required: true, completed_artifacts_immutable: true, latest_alias_forbidden: true}

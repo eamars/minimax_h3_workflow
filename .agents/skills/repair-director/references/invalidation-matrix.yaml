@@ -1,0 +1,17 @@
+version: 1
+validated_overwrite: {allowed: false, failure_code: ARTIFACT_OVERWRITE_FORBIDDEN}
+base_scope:
+  always_invalidate: [failed_render_revision, failed_qc_revision, changed_prompt_or_job, downstream_consumers]
+  always_preserve: [validated_unaffected_segments, validated_assets_and_canon, validated_predecessor_media_unless_changed]
+by_strategy:
+  prompt_only: {invalidate: [segment_job, segment_render, segment_qc, dependent_post_joins], revalidation: false}
+  mode_change: {invalidate: [segment_prompt, segment_job, segment_render, segment_qc, dependents], revalidation: false_if_technical_only}
+  clean_endpoint: {invalidate: [failed_endpoint, successor_entry_and_transitive_dependents], preserve: [validated_predecessor_media]}
+  shorten_split: {invalidate: [all_artifacts_from_superseded_plan], revalidation: true}
+  audio_only: {invalidate: [audio_track_or_mix, audio_qc, affected_post_joins], preserve: [validated_picture]}
+  picture_only: {invalidate: [picture_segment, picture_qc, affected_post_joins], preserve: [validated_audio]}
+continuation_rule:
+  when: repaired_entry_or_tail_changes
+  invalidate: [successor_entry, successor_job, successor_render, successor_qc, transitive_dependents]
+  preserve: [validated_predecessor_media]
+post_rule: {no_manifest_inclusion_before_new_qc_pass: true}

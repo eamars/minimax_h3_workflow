@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scene and Performance Writer"
+  short_description: "Write playable behavior and continuity"
+  default_prompt: "Use $scene-performance-writer to turn the plot and canon into playable actions, reactions, dialogue timing, and continuity states."

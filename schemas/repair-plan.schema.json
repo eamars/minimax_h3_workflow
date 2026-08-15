@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "repair-plan.schema.json",
   "type": "object",
-  "required": ["artifact", "repair_id", "qc_report_revision", "strategy", "locked_elements", "changes", "invalidation_scope", "reapproval_required", "revised_job"],
+  "required": ["artifact", "repair_id", "qc_report_revision", "strategy", "locked_elements", "changes", "invalidation_scope", "upstream_revision_required", "revised_job"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
     "planning_model_version": {"enum": [1, 2]},
@@ -13,6 +13,6 @@
     "locked_elements": {"type": "array"},
     "changes": {"type": "array", "minItems": 1},
     "invalidation_scope": {"type": "array"},
-    "reapproval_required": {"type": "boolean"}
+    "upstream_revision_required": {"type": "boolean"}
   }
 }

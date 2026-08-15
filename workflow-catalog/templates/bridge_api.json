@@ -1,6 +1,6 @@
 {
-  "1": {"class_type": "LoadImage", "inputs": {"image": "${approved_source_tail_path}"}},
-  "2": {"class_type": "LoadImage", "inputs": {"image": "${approved_target_head_path}"}},
+  "1": {"class_type": "LoadImage", "inputs": {"image": "${validated_source_tail_path}"}},
+  "2": {"class_type": "LoadImage", "inputs": {"image": "${validated_target_head_path}"}},
   "10": {"class_type": "CLIPLoader", "inputs": {"clip_name": "${text_encoder}", "type": "minimax", "device": "default"}},
   "11": {"class_type": "VAELoader", "inputs": {"vae_name": "${video_vae}"}},
   "12": {"class_type": "VAELoader", "inputs": {"vae_name": "${audio_vae}"}},

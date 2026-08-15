@@ -1,0 +1,11 @@
+version: 1
+source_precedence: [user_explicit, user_declared, normalizer_assumption, policy, unknown]
+field_rules:
+  runtime: {explicit_value_wins: true, absent_value: null, total_runtime_above_segment_cap: allowed}
+  generation_segment: {project_policy_max_seconds: 10, explicit_single_segment_above_cap: blocking}
+  assets: {copy_path: true, copy_user_role: true, infer_role: false, inspect_content: false}
+  lifecycle: {default_mode: FULL_PIPELINE, automatic_after_preflight: true}
+question_policy:
+  ask_only_if: [premise_changes, safety_changes, irreversible_production_choice_changes]
+  otherwise: record_assumption
+forbidden_fields_to_invent: [plot, plot_beats, scene, performance, dialogue, camera, blocking, canon, shot, generation_segment, h3_prompt, comfyui_workflow]
