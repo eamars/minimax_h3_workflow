@@ -12,19 +12,100 @@ workspace.
 
 - `scripts/` — reusable ComfyUI setup, model-download, API, launcher, and H3
   compatibility utilities.
-- `skills/production-orchestrator/` — the invokable approval-gated router for
-  the complete planning, compilation, execution, QC, repair, and delivery
-  lifecycle.
+- `skills/comfyui/` — the default direct route from any brief, plot, script,
+  storyboard, or shot list to one ready-to-use H3 workflow and its final video.
+- `skills/production-orchestrator/` — the optional approval-gated router for a
+  formal planning, compilation, execution, QC, repair, and delivery lifecycle.
 - `skills/` — 15 specialist production packages covering request/canon/plot,
   performance/sound/storyboard/previs/preflight, MiniMax H3 and ComfyUI
   compilation, rendering, QC, repair, and post-production.
 - `schemas/` and `workflow-catalog/` — shared artifact contracts and typed,
   live-capability-validated ComfyUI API templates.
-- `skills/comfyui/` — generic ComfyUI workflow design and validation guidance.
 - `skills/storyboard-director/` — model-neutral feature-film storyboard
   direction, scene geography, typed camera setup/motion, editorial boundaries,
   timelines, continuity, and generation handoffs.
 - `.gitignore` — keeps local runtime and production artifacts out of commits.
+
+## AI-agent instruction: create the complete video workflow
+
+When a user asks an AI agent to turn **any** supplied input into a ready H3
+video workflow, the default route is `$comfyui`. Input may be a sentence,
+brief, plot, script, storyboard, shot list, or optional image/audio/video
+references. Do not require a pre-existing project package, approval record,
+content hash, production DAG, per-shot API jobs, or manual endpoint approval.
+Use `$production-orchestrator` only when the user explicitly requests that
+formal lifecycle.
+
+The required deliverable is one ComfyUI UI-format workflow that contains the
+whole ordered multi-shot sequence, continues each shot from the previous
+shot's final frame, combines the generated video and audio, and saves the final
+muxed video. The user must only need to load the workflow and click **Queue
+Prompt** once; they must not need to wire nodes, queue individual shots, or
+assemble the final video manually.
+
+AI agents must follow this procedure:
+
+1. Read all supplied material and preserve its story, order, characters,
+   setting, continuity, and requested runtime. Infer only the production
+   details required to make the workflow executable. Ask a question only when
+   a missing choice would materially change the user's story.
+2. Convert the material into concise, ordered MiniMax H3 prompts with explicit
+   durations. Repeat fixed character, wardrobe, environment, lighting, and
+   voice anchors in every applicable shot. Start each later shot from the
+   exact closing arrangement of its predecessor. Honor supplied timing;
+   otherwise choose practical 4–8 second shots and preserve the requested
+   total runtime.
+3. Write the builder input in this shape:
+
+   ```json
+   {
+     "shots": [
+       {"prompt": "complete H3 shot prompt", "duration_seconds": 6.0}
+     ]
+   }
+   ```
+
+4. Build a new workflow from the verified CORE template:
+
+   ```powershell
+   python skills/comfyui/scripts/build_h3_seamless_chain.py `
+     --input <shot-specs.json> `
+     --output <H3_Seamless_Chain.ui.json> `
+     --output-prefix <output-name>
+   ```
+
+5. Do not change the machine configuration while creating or repairing the
+   workflow. Preserve the intentional RTX 4090/cuda:0 mapping,
+   `UnetLoaderGGUFDynamicVRAM`, Q8 FL2VA checkpoint, installed CLIP and VAEs,
+   VRAM cap, host-memory offload, 24 fps, resolution, sampler, scheduler, and
+   step settings.
+6. Before delivery, parse the generated JSON; verify every node, link, prompt,
+   duration, protected runtime setting, and output node; confirm no placeholder
+   remains; and validate against live ComfyUI `/object_info` when the runtime
+   is available. After changes to runtime code or nodes, run a minimal two-shot
+   proof before claiming the workflow is ready.
+7. Return the workflow path and output prefix. If the user asks the agent to
+   execute it, launch ComfyUI with the existing hardware settings, submit the
+   workflow once, monitor the queue and logs through completion, and repair
+   technical failures directly without adding approval/hash steps.
+
+The generated graph's `SaveVideo` node writes the final muxed MP4 below:
+
+```text
+ComfyUI/output/video/<output-prefix>_NNNNN_.mp4
+```
+
+The matching audio is retained below:
+
+```text
+ComfyUI/output/audio/<output-prefix>_NNNNN.flac
+```
+
+ComfyUI assigns the numeric suffix. First-shot previews and recoverable
+per-shot clips may also be saved under `ComfyUI/output/video/H3_FIRSTSHOT/`
+and `ComfyUI/output/video/H3_SHOTS/`, but those are diagnostics. The MP4 from
+the final `SaveVideo` node is the requested finished output and requires no
+separate assembly step.
 
 ## Repository and project layout
 
@@ -92,14 +173,16 @@ project root. Add sanitized reusable examples under `examples/`, not under a
 real project workspace.
 
 Install or refresh the complete local skill set with
-`scripts\install_production_skills.ps1`, then invoke
-`$production-orchestrator` after the skill registry refreshes. The default
-`PLAN_ONLY` mode writes the full Markdown/YAML review document and stops for
-approval; `COMPILE_APPROVED_PLAN` compiles the matching ComfyUI workflow bundle
-only after the exact YAML hash is approved.
+`scripts\install_production_skills.ps1`. For the normal one-start workflow,
+invoke `$comfyui` and follow the procedure above. `$production-orchestrator`
+is an optional formal route: its `PLAN_ONLY` mode writes a Markdown/YAML review
+document and stops for approval, while `COMPILE_APPROVED_PLAN` requires the
+approved YAML. Do not send a simple ready-workflow request through that formal
+route.
 
-The architecture enforces independently generated video segments of at most 10
-seconds, but the editorial shot remains the creative unit. Longer intended
+The optional formal production-orchestrator architecture enforces independently
+generated video segments of at most 10 seconds, but the editorial shot remains
+the creative unit. Longer intended
 shots retain one shot ID across multiple generation segments. Each join declares
 its generation relationship and endpoint policy (`stable_tail`,
 `moving_endpoint`, `approved_entry_reference`, or bridge); a stable tail is not

@@ -133,6 +133,19 @@ def convert_workflow(workflow: dict, widget_orders: dict[str, list[str]]) -> dic
         #    converted-but-unlinked widgets keep their value in widgets_values.
         values = list(node.get("widgets_values", []))
         order = widget_orders.get(ntype) or FALLBACK_WIDGET_ORDER.get(ntype, [])
+        named_values = node.get("properties", {}).get("h3_widget_values")
+        if isinstance(named_values, dict):
+            # H3-Multishot stores a name->value shadow specifically because
+            # its widgets evolved over time and old positional arrays shift.
+            # The UI restores this map on load; API conversion must do the
+            # same or booleans can land in sampler_name/scheduler.
+            for name in order:
+                inp = node_inputs.get(name)
+                if inp is not None and inp.get("link") is not None:
+                    continue
+                if name in named_values:
+                    prompt[nid]["inputs"][name] = named_values[name]
+            continue
         vi = 0
         for name in order:
             inp = node_inputs.get(name)

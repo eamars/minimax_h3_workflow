@@ -1,14 +1,15 @@
 ---
 name: comfyui
-description: Design, inspect, validate, automate, and debug ComfyUI workflows for image, video, audio, and multimodal generation. Use for node-graph design, model and custom-node selection, workflow JSON, local ComfyUI API execution, MiniMax H3 video workflows, deterministic render packaging, and joining storyboard scenes through frame handoffs, bridge clips, interpolation, or video assembly.
+description: Convert briefs, plots, storyboards, shot lists, and optional media references into ready-to-use ComfyUI workflows; also inspect, validate, automate, and debug image, video, audio, and multimodal graphs. Use for MiniMax H3 multi-shot workflows that must generate and save the final video from one Queue/Start action while preserving the verified local GPU, DynamicVRAM, and offload setup.
 ---
 
 # ComfyUI workflow design
 
 Use ComfyUI as a typed, executable graph. Treat the prompt, model stack, latent
 shape, sampler, decoder, compositor, and output node as one reproducible
-artifact. Keep narrative planning in the storyboard skill and consume its scene
-cards and handoff fields here.
+artifact. For a requested one-start H3 workflow, interpret the user's source
+directly in this skill. Route through storyboard or production-planning skills
+only when the user explicitly requests those separate planning artifacts.
 
 ## Start with the right operating mode
 
@@ -21,7 +22,8 @@ Choose the smallest graph that satisfies the output contract.
 | Image-to-video | load or generate a keyframe -> image/video conditioning -> sampler -> decode -> save |
 | First/last-frame motion | provide both endpoint images to a model that explicitly supports them; otherwise generate a bridge clip with the model's supported controls |
 | Reference-driven video | pass only the references that have a job: identity, style, motion, environment, or audio; bind each reference to the exact tag required by the model |
-| Long-form story | generate one shot-sized scene unit per job, export a tail frame and continuity manifest, then generate the next unit and assemble the approved clips |
+| Ready-to-click local H3 multi-shot | clone the verified `H3_Seamless_Chain_CORE.json`, inject the complete ordered shot script with the bundled builder, validate the locked runtime, and return one UI-format workflow plus its manifest |
+| Formal independently repairable production | generate one shot-sized scene unit per job, export a tail frame and continuity manifest, then assemble reviewed clips |
 | Post-production only | load decoded frames or videos, normalize them, trim overlap, concatenate or blend, mux audio, and save; do not invoke a diffusion model merely to edit media |
 
 Prefer built-in nodes. Add a custom-node package only when it supplies a needed
@@ -103,6 +105,75 @@ and link identifiers, and write the UI workflow, API workflow, and manifest
 together. Validate that every link endpoint and required node type still
 exists. Stage reference assets idempotently and refuse to overwrite an existing
 asset whose contents differ from the requested source.
+
+## Build a one-start local H3 multi-shot workflow
+
+Use this as the default route whenever the user asks for a ready workflow or a
+final multi-shot video. Accept any useful source: a sentence, brief, plot,
+script, storyboard, shot list, or optional image/audio/video references. Do not
+require a pre-existing project package.
+
+This route has no planning approval, approval hash, production DAG, per-shot API
+job bundle, QC bureaucracy, or manual endpoint gate. Do not invoke those systems
+unless the user explicitly asks for that production lifecycle. The normal
+deliverable is one UI-format workflow that runs every shot sequentially and
+saves the final muxed video after one Queue Prompt action.
+
+1. Read every supplied input. Infer only missing production details needed to
+   make it executable: ordered shots, duration, camera, action, sound, opening
+   and closing state, and continuity. Ask the user only when a missing choice
+   would materially change their story.
+2. Compile a concise H3 prompt for every generated shot. Repeat fixed identity,
+   wardrobe, environment, lighting, and voice anchors verbatim. Begin each shot
+   from its predecessor's exact closing arrangement and end it in a usable
+   handoff state.
+3. Assign every shot an explicit duration. Honor supplied timing. Otherwise
+   choose practical 4–8 second shots and preserve the requested total runtime.
+   Split any generated shot whose aligned H3 length would exceed the verified
+   362-frame maximum.
+4. Write one temporary authoring input in this exact shape:
+
+   ```json
+   {
+     "shots": [
+       {"prompt": "complete H3 shot prompt", "duration_seconds": 6.0}
+     ]
+   }
+   ```
+
+5. Build from the verified local template only:
+
+   ```powershell
+   python skills/comfyui/scripts/build_h3_seamless_chain.py `
+     --input <shot-specs.json> `
+     --output <H3_Seamless_Chain.ui.json> `
+     --output-prefix <output-name>
+   ```
+
+   The builder embeds the script and exact timing into one
+   `H3MultishotSampler`. The node generates each shot on the H3 `17k+5` model
+   grid, trims decoded video/audio to its declared duration, relays the final
+   frame into the next shot, removes the duplicated boundary frame, and returns
+   one exact-length master to `SaveVideo`.
+6. Preserve the local runtime without negotiation: RTX 4090, cuda:0 mapping,
+   `UnetLoaderGGUFDynamicVRAM`, Q8 FL2VA checkpoint, installed CLIP and VAEs,
+   VRAM cap, host-memory offload, 24 fps, resolution, sampler, scheduler, and
+   step settings. Never solve a workflow error by changing this hardware or
+   memory configuration.
+7. Keep `shot_count: 0`, per-shot seeds, first-shot preview, and per-shot saves.
+   Use `chain_gain_control: flatten` for chains longer than five shots. Patch
+   both `widgets_values` and `properties.h3_widget_values` so the UI cannot
+   restore stale values over the generated script.
+8. Validate before delivery: parse the UI JSON, verify every node/link and
+   output node, confirm no placeholder remains, confirm prompt count and summed
+   duration, confirm the protected runtime fingerprint, load against live
+   `/object_info`, and run a minimal two-shot proof after runtime changes.
+
+Return the workflow path and the final output prefix. The user should only need
+to load the workflow and click Queue Prompt. If execution is requested, monitor
+the queue and logs, use the first-shot preview to catch a bad route early, and
+repair technical failures directly without asking the user to operate nodes or
+repeat approval steps.
 
 ### 5. Run a small proof first
 

@@ -1,0 +1,12 @@
+{
+  "shots": [
+    {
+      "prompt": "A fixed medium shot of a small red ceramic cup on a plain wooden table under soft neutral studio light. The cup remains centered while a faint reflection shifts naturally across its glaze. Quiet room tone, no speech.",
+      "target_frames": 4
+    },
+    {
+      "prompt": "The same fixed medium shot of the same small red ceramic cup centered on the same plain wooden table under identical soft neutral studio light. It begins in exactly the prior arrangement; the faint reflection continues shifting naturally. Quiet room tone, no speech.",
+      "target_frames": 4
+    }
+  ]
+}

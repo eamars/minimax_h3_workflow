@@ -1,6 +1,6 @@
 ---
 name: production-orchestrator
-description: Plan and coordinate approval-gated real-cinematic AI video production across specialist skills, MiniMax H3 prompt compilation, ComfyUI workflow jobs, editorial shots, generated segments, continuity QC, repair, and final assembly. Use for multi-shot or longer-than-10-second video requests where camera position, viewpoint, coverage, cut motivation, and character/setting continuity must all remain explicit.
+description: Plan and coordinate approval-gated real-cinematic AI video production across specialist skills, MiniMax H3 prompt compilation, ComfyUI API jobs, editorial shots, generated segments, continuity QC, repair, and final assembly. Use only when the user explicitly requests review approvals, independent jobs, formal QC/repair, or delivery provenance. Do not use for a request to convert any brief, plot, storyboard, or shot list into one ready-to-use ComfyUI workflow and final one-start render; route that directly to the comfyui skill.
 ---
 
 # Production Orchestrator
@@ -10,6 +10,20 @@ Coordinate the local AI-video production lifecycle as a thin, stateful router. P
 ## Mission
 
 Turn a user brief and seed-asset set into a traceable production plan, then—only after explicit approval—route validated MiniMax H3 and ComfyUI compilation, execution, QC, repair, and assembly stages.
+
+## Direct UI-workflow boundary
+
+If the user asks for one local UI-format workflow that can be loaded and queued
+once from any input, route directly to the `comfyui` skill's one-start H3
+seamless-chain path. Do not create a project plan, request approval, calculate
+an approval hash, build a production DAG, or emit per-segment API jobs. Do not
+claim this orchestrator's `COMPILED` state is a ready-to-click ComfyUI canvas:
+its compiler outputs API-format jobs for Render Orchestrator, not one UI graph.
+
+Use this orchestrator instead when exact unequal shot timecodes, independently
+repairable segments, human approval, endpoint QC, or delivery status is part of
+the requested contract. A source `plot.md` alone is not an approved production
+plan and cannot enter compilation or rendering through this lifecycle.
 
 ## Ownership boundary
 
