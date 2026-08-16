@@ -1,6 +1,6 @@
-version: 1
+version: 2
 encoding: UTF-8
-prompt_language: English_except_verbatim_dialogue_lyrics_visible_text
+language_style_document: docs/prompt-language-style.md
 base_family:
   fields: [integrated_multimodal_description, overall_soundscape, non_diegetic_music]
   endpoint_prefixes:

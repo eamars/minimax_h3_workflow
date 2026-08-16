@@ -13,6 +13,15 @@ Compile each generation segment into one schema-valid H3 packet and UTF-8 prompt
 
 Own H3 family selection from declared roles, H3 field syntax, reference ordering, duration/frame-grid accounting, and field provenance. Workflow Compiler owns node graphs.
 
+## Prompt language
+
+Before writing any H3 prompt prose, read the repository's single canonical
+language and cinematic terminology policy:
+[`../../../docs/prompt-language-style.md`](../../../docs/prompt-language-style.md).
+Do not duplicate or override its language rules here. Preserve the H3 field
+names, reference labels, timing notation, and control markers required by the
+selected mode while applying that document to natural-language prompt text.
+
 ## Inputs
 
 Consume the current production-plan revision, segment cards, canon/reference order, optional sound plan, and live H3 capability evidence. Require validated endpoint media only when the declared mode needs it.
@@ -67,4 +76,3 @@ For incompatible FL2VA endpoints plus an unsupported reference or an 11-second s
 - Preserve reference labels/order, dialogue, sound layers, camera, and time bounds.
 - Compute deterministic `17k+5` and effective-trim accounting.
 - Produce revision-linked outputs without ComfyUI calls or human gates.
-

@@ -14,6 +14,14 @@ directly in this skill.
 
 Choose the smallest graph that satisfies the output contract.
 
+## Prompt language
+
+When authoring any MiniMax H3 action prompt or shot script, read and follow the
+single canonical policy in
+[`../../../docs/prompt-language-style.md`](../../../docs/prompt-language-style.md).
+This skill only references that policy; it does not define a second language or
+camera-terminology guide.
+
 | Need | Graph pattern |
 | --- | --- |
 | Still image | model/CLIP/VAE loaders -> positive and negative conditioning -> latent -> sampler -> VAE decode -> save |
