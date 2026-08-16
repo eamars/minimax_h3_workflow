@@ -1,4 +1,4 @@
-version: 1
+version: 2
 cases:
   - {id: unvalidated, expect: {status: BLOCKED, failure: PLAN_NOT_READY, writes: false}}
   - {id: superseded_plan_revision, expect: {failure: PLAN_REVISION_INVALID}}
@@ -8,3 +8,10 @@ cases:
   - {id: eleven_seconds, expect: {failure: SEGMENT_TOO_LONG}}
   - {id: six_seconds, expect: {model_frames: 158, effective_frames: 144}}
   - {id: no_comfyui, expect: {api_calls: 0, creative_mutations: 0}}
+  - {id: reference_without_declared_usage, expect: {failure: H3_REFERENCE_USAGE_MISSING}}
+  - {id: one_take_with_invented_cut, expect: {failure: H3_ONE_TAKE_CUT_CONFLICT}}
+  - {id: fl2va_endpoints_only, expect: {continuous_interpolation: true, automatic_cut: false}}
+  - {id: multi_shot_projection, expect: {every_block_has: [shot_size, visible_content, camera, action, dialogue_or_speaker_state, sound, transition_out]}}
+  - {id: unspecified_style, expect: {named_style_added: false, style_capability_preserved: true}}
+  - {id: continuation_replays_completed_grab, expect: {failure: CONTINUATION_DELTA_INVALID}}
+  - {id: prompt_over_7000_characters, expect: {failure: H3_PROMPT_TOO_LONG}}

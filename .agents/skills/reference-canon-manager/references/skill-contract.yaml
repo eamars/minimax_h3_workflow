@@ -19,7 +19,7 @@ canon_rules:
   binding_id_pattern: '^BND_[0-9a-f]{12}$'
   collision_policy: fail_with_CANON_ID_COLLISION
 roles:
-  allowed: [subject_identity, environment_architecture, style_rendering, wardrobe, prop, pose_expression, camera_composition, motion_reference, audio_reference, general_reference]
+  allowed: [subject_identity, environment_architecture, style_rendering, wardrobe, prop, pose_expression, camera_composition, motion_reference, storyboard_reference, edit_rhythm_reference, audio_reference, general_reference]
   primary_role_required: true
 geography:
   confidence_values: [exact, inferred, unknown]

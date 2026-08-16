@@ -1,4 +1,4 @@
-version: 1
+version: 2
 selection:
   T2VA: no_endpoint_and_no_reference_media
   I2VA: exact_first_frame_only
@@ -9,3 +9,34 @@ forbidden_without_tested_capability: [endpoint_plus_R2VA, general_as_endpoint, e
 base_conditioner: MiniMaxH3ImageToVideo
 reference_conditioner: MiniMaxH3ReferenceToVideo
 reference_presentation: {images: first, paired_video_audio: immediately_before_video, standalone_audio: after_videos, ordinals: one_based_per_type}
+official_public_envelope:
+  output_duration_seconds: {minimum: 4, maximum: 15}
+  output_fps: 24
+  output_audio: native_stereo
+  output_aspect_ratios: ['21:9', '16:9', '4:3', '1:1', '3:4', '9:16']
+  output_resolution_modes: [768p, 1440p]
+  recommended_resolution_mode: 1440p
+  prompt_characters_maximum: 7000
+  endpoint_entry:
+    image_count: {minimum: 0, maximum: 2}
+    image_dimensions_each_axis: {minimum: 256, maximum: 5760}
+    image_aspect_ratio_range: '5:2 through 2:5'
+    zero_images_means: T2VA
+    two_images_mean: exact_first_and_last_continuous_interpolation_without_automatic_cut
+  full_reference_entry:
+    images: {maximum: 9, dimensions_each_axis: {minimum: 256, maximum: 5760}}
+    videos: {maximum: 3, each_seconds: {minimum: 2, maximum: 15}, total_seconds_maximum: 15, dimensions_each_axis: {minimum: 256, maximum: 5760}, aspect_ratio_range: '5:2 through 2:5'}
+    audio: {maximum: 3, requires_image_or_video: true, each_seconds: {minimum: 2, maximum: 15}, total_seconds_maximum: 15}
+    mixed_file_count_maximum: 12
+  accepted_input:
+    image_formats: [JPG, JPEG, PNG, WEBP, HEIC, HEIF]
+    video_codecs: [H.264/AVC, H.265/HEVC]
+    embedded_audio_codecs: [AAC, MP3]
+    audio_formats: [WAV, MP3]
+  maximum_file_size_mb: {image: 30, video: 50, audio: 15}
+  api_request_body_mb: 64
+  api_asset_transport_recommendation: URL
+local_pipeline_envelope:
+  maximum_effective_segment_seconds: 10
+  rationale: conservative verified ComfyUI multishot profile; never claim this is the H3 public-model maximum
+  live_capability_still_required: true

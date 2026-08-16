@@ -12,17 +12,22 @@ continuity:
   substitute_earlier_endpoint: forbidden
   first_frame_must_equal_bound_endpoint: true
   opening_airlock_seconds: 2
-  opening_airlock_motion: micro_motion_only
+  opening_airlock_motion: preserve_bound_endpoint_motion_vector_or_micro_motion_for_stable_tail
   settled_landing_seconds: 2
-  repeat_character_description_verbatim: true
-  repeat_environment_and_lighting_verbatim: true
-  split_spoken_line_across_shots: forbidden
+  repeat_declared_character_locks_verbatim: true
+  repeat_declared_environment_and_lighting_locks_verbatim: true
+  named_style_lock: repeat_only_when_declared
+  unspecified_style: remain_open
+  split_spoken_line_across_generation_segments: discouraged_unless_explicit_and_qc_validated
+  cross_editorial_shot_dialogue: allowed_with_explicit_j_cut_or_l_cut_and_speaker_transition
   camera_cuts_inside_shot: allowed
   scene_or_shot_transition_at_generation_boundary: forbidden
   transition_placement_ratio: {minimum: 0.4, maximum: 0.6}
   transition_segment_must_establish_destination_before_landing: true
   successor_starts_in_established_destination_context: true
   continuity_transfer_between_shots: required
+  continuation_state_vector: [action_phase, pose, gaze, left_right_limb_state, prop_ownership_and_contact, camera_pose, camera_motion_vector, focus_plane, lighting_state, active_speaker_and_dialogue_span, ambience_state, next_allowed_delta]
+  completed_action_replay_in_successor: forbidden
   long_chain_policy: restart_from_reference_at_scene_cut
 endpoint_validation:
   tail_window_frames: 12

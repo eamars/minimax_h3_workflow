@@ -10,6 +10,8 @@ roles:
   pose_expression: {controls: [declared_pose, declared_expression], binding: performance_only}
   camera_composition: {controls: [framing, viewpoint, composition, lens_appearance], binding: appearance_evidence_only, does_not_freeze_position: true}
   motion_reference: {controls: [movement_quality, temporal_pattern]}
+  storyboard_reference: {controls: [declared_shot_order, declared_coverage_examples, declared_transition_examples], binding: route_to_storyboard_without_interpretation}
+  edit_rhythm_reference: {controls: [declared_cut_rhythm, declared_transition_grammar, declared_pacing_pattern], binding: route_to_storyboard_and_animatic_without_copying_content}
   audio_reference: {controls: [voice_character, ambience, music_texture]}
 endpoint_rules:
   default: none

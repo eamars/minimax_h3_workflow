@@ -34,7 +34,7 @@ plot_handoff: {ready: true, blocking_scopes: []}
 1. Resolve every source without copying, renaming, cropping, re-encoding, or stripping metadata.
 2. Hash raw bytes and collect deterministic media metadata.
 3. Preserve prior stable IDs when the source hash is unchanged; otherwise derive deterministic asset IDs.
-4. Assign one primary role and only explicitly declared compatible secondary roles. Keep endpoint meaning separate.
+4. Assign one primary role and only explicitly declared compatible secondary roles. Preserve declared storyboard and edit-rhythm uses as routing evidence rather than interpreting them here. Keep endpoint meaning separate.
 5. Group assets into canonical subjects, worlds, styles, wardrobes, props, compositions, motions, or audio references. Extract only observable geography/landmark evidence with confidence `exact`, `inferred`, or `unknown`.
 6. For each environment architecture reference, separate the positive lock (`required_landmarks` and `allowed_features`) from negative space (`forbidden_inventions`) and unresolved space (`unknown_features`). Use `hard_reference_no_expansion` unless the user explicitly authorizes a redesign.
 7. Record observable locked anchors and non-binding pose, expression, lighting, action, or incidental content separately.
@@ -48,6 +48,7 @@ plot_handoff: {ready: true, blocking_scopes: []}
 - Treat original seed bytes as immutable.
 - Record source hashes as `sha256:` plus 64 lowercase hexadecimal characters.
 - Keep `role` and `endpoint_role` orthogonal.
+- Require a later H3 binding to expose the declared job of every reference; ordinal position alone is never a role.
 - Default endpoints to `none`; require explicit evidence for first, last, or both.
 - Separate identity/design from pose, expression, action, lighting, and incidental subjects.
 - Treat camera-composition references as evidence for appearance/framing, not as an instruction that freezes camera position across editorial shots.

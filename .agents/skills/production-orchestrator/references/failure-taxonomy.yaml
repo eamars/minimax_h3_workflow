@@ -132,6 +132,12 @@ failures:
   - {code: REQUIRED_ASSET_MISSING, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
   - {code: H3_MODE_MISMATCH, stage: compilation, severity: blocking, retryable: false, owner: minimax-h3-adapter}
   - {code: H3_REFERENCE_LABEL_MISMATCH, stage: compilation, severity: blocking, retryable: false, owner: minimax-h3-adapter}
+  - {code: H3_REFERENCE_USAGE_MISSING, stage: compilation, severity: blocking, retryable: false, owner: minimax-h3-adapter}
+  - {code: H3_PROMPT_TOO_LONG, stage: compilation, severity: blocking, retryable: false, owner: minimax-h3-adapter}
+  - {code: H3_UNDECLARED_CUT, stage: compilation, severity: blocking, retryable: false, owner: minimax-h3-adapter}
+  - {code: H3_ONE_TAKE_CUT_CONFLICT, stage: compilation, severity: blocking, retryable: false, owner: minimax-h3-adapter}
+  - {code: DIALOGUE_TIMING_MISMATCH, stage: compilation, severity: major, retryable: false, owner: minimax-h3-adapter}
+  - {code: CONTINUATION_DELTA_INVALID, stage: compilation, severity: major, retryable: false, owner: minimax-h3-adapter}
   - {code: WORKFLOW_TEMPLATE_MISSING, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
   - {code: WORKFLOW_NODE_UNAVAILABLE, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
   - {code: WORKFLOW_VALIDATION_FAILED, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
@@ -148,6 +154,7 @@ failures:
   - {code: DAG_INVALID, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
   - {code: OUTPUT_PATH_UNSAFE, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
   - {code: HANDOFF_TAIL_INVALID, stage: keyframe, severity: blocking, retryable: false, owner: keyframe-handoff-builder}
+  - {code: HANDOFF_STATE_MISMATCH, stage: keyframe, severity: blocking, retryable: false, owner: keyframe-handoff-builder}
   - {code: BRIDGE_ENDPOINT_INVALID, stage: keyframe, severity: blocking, retryable: false, owner: keyframe-handoff-builder}
   - {code: KEYFRAME_INPUT_SCHEMA_INVALID, stage: keyframe, severity: blocking, retryable: false, owner: keyframe-handoff-builder}
   - {code: KEYFRAME_SOURCE_REVISION_MISSING, stage: keyframe, severity: blocking, retryable: false, owner: keyframe-handoff-builder}
@@ -188,6 +195,7 @@ failures:
   - {code: QC_MANIFEST_CONFLICT, stage: review, severity: blocking, retryable: false, owner: continuity-qc-supervisor}
   - {code: ENVIRONMENT_DRIFT, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
   - {code: ACTION_ORDER_FAILURE, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
+  - {code: INTERACTION_CONTINUITY_FAILURE, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
   - {code: CAMERA_FAILURE, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
   - {code: CAMERA_SETUP_MISMATCH, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
   - {code: EDITORIAL_BOUNDARY_FAILURE, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}

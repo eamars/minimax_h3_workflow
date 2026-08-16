@@ -18,6 +18,16 @@ segment:
   active_motion_exit_allowed_for: [independent, reference_reestablish]
   stable_exit_forbid: [motion_blur, face_or_prop_occlusion, incomplete_expression_change, uncontrolled_water_or_smoke, unplanned_fast_pan, impossible_reflection]
   timeline: {tracks: [performance, camera, sound, edit_handoff], intervals: positive_monotonic_within_duration}
+shot_projection:
+  required_for_each_editorial_shot: [shot_size, visible_content, camera, action, dialogue_or_speaker_state, sound]
+  dialogue_timing: fit_words_to_shot_duration
+  cross_picture_cut_speech: {allowed: true, requires: [speaker_id, on_screen_or_off_screen_state, j_cut_or_l_cut_span]}
+  one_take: {internal_editorial_cuts: forbidden, downstream_shot_block_count: 1}
+  exact_first_last_frame: {default_behavior: continuous_interpolation, automatic_cut: forbidden}
+style:
+  source_precedence: [user_explicit, canon_lock, declared_style_reference, upstream_treatment]
+  unspecified_named_style: remain_open
+  adapter_default_style: forbidden
 editorial_boundaries:
   mechanisms: [cut, dissolve, fade, end]
   required_fields: [from_shot_id, to_shot_id, mechanism, motivations, audio_behavior, record_time]
@@ -32,6 +42,8 @@ continuity:
   authoritative_registry: exactly_one
   embedded_snapshot_policy: id_reference_or_exact_interactive_payload
   interactive_actions_require: [before_contact, contact_or_transfer, after_contact]
+  split_interaction_handoff: [action_phase, pose, gaze, left_right_limb_state, prop_ownership_and_contact, camera_pose, camera_motion_vector, focus_plane, lighting_state, active_speaker_and_dialogue_span, ambience_state, next_allowed_delta]
+  completed_action_replay_in_successor: forbidden
 environment_lock:
   required_fields: [environment_profile_id, source_asset_id, enforcement, required_landmarks, forbidden_inventions, unknown_regions, negative_space_rule]
   enforcement: hard_reference_no_expansion

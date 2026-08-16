@@ -2,9 +2,12 @@ version: 2
 input_validation: {required_plan_status: ready, required_plan_revision: true, dependent_jobs_require_endpoint_status: passed}
 source_policy:
   user_seed: {endpoint_explicit: true, bind_original: true, regenerate_forbidden: true}
-  predecessor_tail: {actual_decoded_output_only: true, qc_pass_required: true, maximum_effective_seconds: 10}
+  predecessor_tail: {actual_decoded_output_only: true, actual_final_frame_only: true, earlier_frame_substitution: forbidden, qc_pass_required: true, maximum_effective_seconds: 10}
   target_still_job: {create_only_if_plan_requires: true}
-selection: {tail_window: 'ceil(source_fps * 0.5)', candidate_order: descending_frame_index, choose: latest_passing, reject_if_any_unknown: true}
+selection: {tail_window: 'ceil(source_fps * 0.5)', tail_window_purpose: diagnostic_motion_and_stability_context_only, candidate: actual_final_decoded_frame, alternatives: forbidden, reject_if_any_unknown: true}
+continuation_state_match:
+  required: [action_phase, pose, gaze, left_right_limb_state, prop_ownership_and_contact, camera_pose, camera_motion_vector, focus_plane, lighting_state, active_speaker_and_dialogue_span, ambience_state, next_allowed_delta]
+  completed_action_replay: forbidden
 stability_rejection: [motion_blur, subject_or_face_occluded, off_model_identity, unstable_geometry, incomplete_expression, uncontrolled_water_or_smoke, unplanned_fast_pan, impossible_reflection, unresolved_hand_or_prop]
 normalization:
   allowed_operations: [letterbox, pad, crop]
@@ -14,7 +17,7 @@ relations:
   same_shot_continue:
     endpoint_policies:
       stable_tail: {order: [qc_predecessor, validate_stable_tail, extract, normalize, validate_endpoint, bind_successor_first_frame], parallelizable: false}
-      moving_endpoint: {order: [qc_predecessor, inspect_motion_endpoint, validate_motion_suitability, bind_successor_camera_path], parallelizable: false}
+      moving_endpoint: {order: [qc_predecessor, inspect_final_window_motion, validate_motion_suitability, extract_actual_final_frame, bind_successor_first_frame_and_camera_path], parallelizable: false}
       declared_entry_reference: {order: [verify_reference_role, validate_entry_reference, bind_successor_first_frame], parallelizable: false}
   endpoint_bridge: {order: [validate_source, validate_target, verify_fl2va_capability, compile_bridge], parallelizable: false}
   reference_reestablish: {endpoint_dependency: declared_reference_binding, parallelizable: true}

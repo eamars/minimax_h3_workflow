@@ -28,7 +28,7 @@ Write revisioned QC reports, indexed frame/audio evidence, a QC-passed media man
 3. Validate duration, FPS, dimensions, color, audio, frame order, and integrity.
 4. Sample first/last, declared boundaries, quartiles, and the final 12 frames or 0.5 seconds.
 5. Evaluate every criterion with expected/observed/result/evidence fields.
-6. Evaluate identity, environment, action, limbs/props, camera, lighting, dialogue/audio, entry/exit, and adjacency.
+6. Evaluate identity, environment, action phase, pose/gaze, left/right limbs and prop ownership/contact, camera pose/motion, focus, lighting, dialogue/speaker state, ambience, entry/exit, and adjacency. Verify that a successor continues the allowed delta instead of replaying a completed interaction.
 7. For H3 continuity, compare predecessor closing state/camera/audio to successor opening, verify the actual final-frame relay, and inspect the seam window.
 8. Apply endpoint policy: stable tail, moving endpoint, declared entry reference, or bridge endpoints.
 9. Route `FAIL` to Repair Director; route `PASS` automatically to the next dependency.
@@ -41,6 +41,7 @@ Write revisioned QC reports, indexed frame/audio evidence, a QC-passed media man
 - `PASS_WITH_EDITORIAL_FIX` cannot authorize a continuous generation handoff.
 - Require exact boundary state/camera/audio for the Joey Gambino-style frame relay.
 - Never substitute an earlier tail when the actual final frame fails.
+- Treat final-window samples as diagnostic context; the actual final decoded frame remains the only relay candidate.
 - Require no human production gate.
 
 ## Non-responsibilities
@@ -68,7 +69,7 @@ If identity/action pass but the actual final frame is blurred under `stable_tail
 - Valid segments pass with full evidence and manifest entries.
 - Identity, camera, reflection, action, environment, audio, and seam faults classify independently.
 - Invalid tail blocks continuation but preserves unrelated branches.
+- A repeated completed action, swapped hand/prop state, broken motion vector, focus jump, or dialogue-state reset fails the continuation independently.
 - Wrong FPS/dimensions/frame count/decode fails technically.
 - Repaired media always receives a new QC revision.
 - Final mode rejects edit, seam, audio, or delivery faults.
-

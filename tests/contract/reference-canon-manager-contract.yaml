@@ -8,3 +8,5 @@ cases:
   - {id: changed_source_bytes, expect: {exit_code: 1, failure: ASSET_HASH_MISMATCH}}
   - {id: aspect_ratio_mismatch, expect: {status: WARN, source_mutated: false}}
   - {id: ready_with_blocking_conflict, expect: {exit_code: 2}}
+  - {id: declared_storyboard_reference, expect: {role: storyboard_reference, interpreted_by_canon_manager: false, routed_to: storyboard-director}}
+  - {id: declared_edit_rhythm_reference, expect: {role: edit_rhythm_reference, interpreted_by_canon_manager: false, routed_to: [storyboard-director, animatic-previs-planner]}}

@@ -26,11 +26,11 @@ Emit endpoint files, `keyframe-report.yaml`, and `handoff-frame-selection.yaml` 
 1. Validate plan/segment revisions, assets, generation relationship, and endpoint policy.
 2. Resolve endpoints by stable IDs; use checksums only to verify raw media identity.
 3. Bind declared user seeds without regeneration.
-4. For `same_shot_continue`, use the predecessor's actual final decoded frame. Validate the final window but never substitute an earlier frame.
+4. For `same_shot_continue`, use the predecessor's actual final decoded frame as the only candidate. Inspect the final window for motion and stability context, but never substitute an earlier frame.
 5. Preserve motion evidence for `moving_endpoint` and bind a `declared_entry_reference` exactly as declared.
 6. Require both endpoints for a bridge.
 7. Normalize only through declared pad/crop/letterbox rules; never stretch, retouch, denoise, or redesign.
-8. Validate decode, dimensions, color, frame index, duplicate policy, transforms, and safe paths.
+8. Validate decode, dimensions, color, frame index, duplicate policy, transforms, and safe paths. For an interaction continuation, compare action phase, pose/gaze, left/right limbs, prop ownership/contact, camera pose/motion, focus, lighting, active dialogue/speaker, and ambience against the successor entry contract.
 9. Create a new revision and expose dependency order only after automated validation passes.
 
 ## Invariants
@@ -40,6 +40,7 @@ Emit endpoint files, `keyframe-report.yaml`, and `handoff-frame-selection.yaml` 
 - Extract only from effective post-trim clips of at most 10 seconds.
 - Do not impose a stable-tail rule on moving-endpoint or declared-entry-reference policies.
 - Preserve actual bytes, frame index/time, transforms, and revision IDs.
+- Treat the tail window as diagnostic evidence only; it is never a pool of replacement endpoint candidates.
 - Never queue ComfyUI or select a creative take.
 
 ## Non-responsibilities
@@ -67,7 +68,8 @@ For a blurry tail from an 11-second draft, fail the endpoint. Do not shorten, ch
 - Bind exact user endpoints without regeneration.
 - Reject general references masquerading as endpoints.
 - Use the actual final frame for continuous successors.
+- Reject any manifest or implementation that selects a nearby “better” tail frame.
+- Validate the complete split-interaction state vector before binding a successor.
 - Block invalid candidates and incompatible dimensions deterministically.
 - Require two valid endpoints for bridges.
 - Route passed endpoints automatically with no human gate.
-

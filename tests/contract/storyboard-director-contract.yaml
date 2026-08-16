@@ -14,3 +14,7 @@ cases:
   - {id: transition_matrix, expect: {all_semantics_validated: true}}
   - {id: timeline_order, expect: {failure_on_nonmonotonic: true}}
   - {id: technology_separation, expect: {failure: STORYBOARD_TECHNOLOGY_CONTAMINATION}}
+  - {id: unspecified_style, expect: {named_style_lock: absent, downstream_style_capability: open}}
+  - {id: exact_first_last_frame, expect: {automatic_editorial_cut: false, continuous_interpolation: true}}
+  - {id: split_interaction, expect: {handoff_has: [action_phase, left_right_limb_state, prop_ownership_and_contact, camera_motion_vector, focus_plane, active_speaker_and_dialogue_span, next_allowed_delta], completed_action_replay: false}}
+  - {id: cross_shot_dialogue, expect: {accepted_when: [speaker_id_declared, j_cut_or_l_cut_span_declared, screen_state_declared]}}

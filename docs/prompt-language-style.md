@@ -17,6 +17,9 @@ Apply these rules in the following order:
 2. Apply this document to all authored H3 prompt prose and camera terminology.
 3. Preserve the official H3 field names, reference labels, control tokens, and
    timing conventions even when the surrounding prose is Chinese.
+4. Preserve style provenance. An unspecified style is not permission to inject
+   a named look such as photorealism, cinematic realism, anime, advertising,
+   or documentary.
 
 This document governs prompt language. It does not change plot, performance,
 canon, shot boundaries, timing, H3 mode selection, ComfyUI graph structure, or
@@ -97,6 +100,12 @@ Do not use `zoom in` for a physical camera move. Use `dolly in / push-in` for
 camera translation and `zoom in` only for a focal-length change. This distinction
 follows the official H3 camera vocabulary.
 
+When an upstream plan calls for an orbit, do not leave the H3 prompt at the
+ambiguous phrase “环绕运镜.” Express the visible path and counter-rotation, for
+example 横移（truck left）同时反向横摇（pan right）, or the mirrored pair.
+Use 弧线环绕（arc shot）only when the storyboard already defines the spatial
+arc; still include its direction, subject relationship, and start/end view.
+
 Write the term as part of natural Chinese direction, for example:
 
 > 中近景（medium close-up）保持人物与桌面道具同框，摄影机缓慢推轨
@@ -106,7 +115,39 @@ Write the term as part of natural Chinese direction, for example:
 Do not append a loose English keyword list such as `cinematic, camera, zoom`.
 The English term must identify the same operation as the Chinese term.
 
-## 5. Dialogue and visible text
+## 5. H3 shot, reference, and style authoring
+
+- Organize authored content as **reference-material usage → core creative
+  sentence → visible process**. Do not let a style paragraph replace the
+  visible process.
+- Give every supplied asset an explicit job using its exact H3 label: identity,
+  object, environment, endpoint, storyboard, style, composition, motion,
+  camera movement, edit rhythm, voice, audio reuse, or edit-base media. Never
+  rely on upload order alone to imply meaning.
+- For a declared multi-shot segment, write each shot as its own timed block and
+  include shot size, visible content, camera behavior, subject action, dialogue
+  or speaker state, and sound. State the exact transition instead of relying on
+  H3's default cutting behavior.
+- For a declared one-take segment, use one continuous action description and
+  prohibit internal cuts. Do not manufacture `[Shot N]` blocks merely to add
+  detail.
+- Treat first-and-last-frame generation as continuous interpolation unless the
+  upstream plan explicitly assigns a transition inside the segment. Supplying
+  two endpoint images does not itself request a cut.
+- Keep dialogue length plausible for its timed shot. When a line leads into the
+  next shot or continues after the picture cut, identify the speaker and state
+  the J-cut or L-cut relationship explicitly.
+- Describe observable image changes and physical causality. Prefer “the hand
+  closes around the red handle, then the wrist turns clockwise” to a metaphor
+  that the model must interpret.
+- If style is declared, translate it into observable rendering, palette,
+  lighting, texture, motion, typography, and edit behavior while preserving
+  the declared style family. If style is unspecified, carry only upstream
+  facts and leave the named style family open.
+- Quote every required title, logo, button label, or other visible string
+  exactly. Do not invent additional readable text.
+
+## 6. Dialogue and visible text
 
 - User-provided dialogue, lyrics, and visible scene text are immutable. Do not
   translate, polish, paraphrase, or normalize them.
@@ -121,7 +162,7 @@ The English term must identify the same operation as the Chinese term.
 - Keep stable speaker IDs and the official `<d>[Language]... </d>` structure;
   the language style applies to the words inside the tag, not to the tag itself.
 
-## 6. Official Chinese H3 examples used as the reference basis
+## 7. Official Chinese H3 examples used as the reference basis
 
 These are short source notes and paraphrased patterns, not a replacement copy
 of the official documentation. They are kept here so future prompt authors can
@@ -140,13 +181,18 @@ work from the same verified basis without creating another language guide.
   aspect ratio, reference-asset roles, subject action, environment, visual
   style, camera behavior, and sound intent. See
   [H3 亮点功能示例](https://platform.minimaxi.com/docs/guides/video-prompt).
+- The official H3 model manual defines the prompt formula, per-shot contents,
+  one-take versus cut behavior, J-cut/L-cut dialogue guidance, reference roles,
+  and the rule that two endpoint images interpolate without automatically
+  adding a cut. See the
+  [MiniMax H3 模型使用手册](https://vrfi1sk8a0.feishu.cn/wiki/FIWjwgL33ipnkekzk30crmKUnIh).
 - The official open-source prompt guide remains the authority for H3 field
   order, shot timing, reference labels, speaker tags, and the semantic
   distinction between `Push In` and `Zoom In`. See the
   [official base-mode guide](https://raw.githubusercontent.com/MiniMax-AI/MiniMax-H3/main/skills/h3-prompt-writing/references/base-en.txt)
   and the [official full-reference guide](https://raw.githubusercontent.com/MiniMax-AI/MiniMax-H3/main/skills/h3-prompt-writing/references/ref-en.txt).
 
-## 7. Authoring checklist
+## 8. Authoring checklist
 
 Before accepting an H3 prompt, verify:
 
@@ -157,6 +203,11 @@ Before accepting an H3 prompt, verify:
 - Dolly/tracking movement is not mislabeled as zoom, and pan is not mislabeled
   as truck.
 - Official H3 fields, labels, timing, and control markers are unchanged.
+- Every supplied reference has one explicit purpose in the prompt.
+- Every multi-shot block contains its declared view, camera, action, dialogue
+  state, and sound; one-take prompts contain no invented internal cut.
+- Named style comes from the user, canon, or an explicit reference rather than
+  an adapter default.
 - User dialogue, lyrics, and visible text are preserved verbatim.
 - Newly authored Chinese dialogue sounds spoken and character-specific rather
   than translated or bureaucratic.

@@ -1,5 +1,5 @@
 name: continuity-qc-supervisor
-version: 0.2.0
+version: 0.3.0
 stage: review
 mode: review
 consumes: [production-plan, plan-revision, render-report, qc-intake-manifest, effective-rendered-media, diagnostic-frame-manifest, canon-lock, asset-manifest, h3-prompt-packet, comfyui-job, workflow-record, predecessor-validated-endpoint-optional, successor-validated-entry-optional, validated-media-manifest-optional, edit-decision-list-optional]
@@ -19,4 +19,4 @@ severities: [none, minor, major, critical]
 handoff_policy_requires: [verdict_PASS, effective_clip_valid, policy_specific_endpoint_suitability, no_major_or_critical_failures]
 camera_review: [setup_match, position_path_match, viewpoint_optics_composition, axis_horizon]
 independence: {qc_never_authors_repair: true, repaired_output_requires_new_revision: true, repaired_output_requires_new_qc_pass: true}
-failure_codes: [QC_INPUT_INVALID, QC_PLAN_REVISION_INVALID, QC_MEDIA_DECODE_FAILURE, QC_MEDIA_SPEC_FAILURE, QC_CRITERIA_UNTRACEABLE, QC_EVIDENCE_MISSING, QC_TAIL_VALIDATION_FAILED, QC_MANIFEST_CONFLICT, IDENTITY_DRIFT, ENVIRONMENT_DRIFT, ACTION_ORDER_FAILURE, CAMERA_FAILURE, CAMERA_SETUP_MISMATCH, EDITORIAL_BOUNDARY_FAILURE, MOVING_HANDOFF_UNSUITABLE, REFLECTION_FAILURE, AUDIO_SYNC_FAILURE, HANDOFF_MISMATCH, FINAL_EDIT_CONTINUITY_FAILURE]
+failure_codes: [QC_INPUT_INVALID, QC_PLAN_REVISION_INVALID, QC_MEDIA_DECODE_FAILURE, QC_MEDIA_SPEC_FAILURE, QC_CRITERIA_UNTRACEABLE, QC_EVIDENCE_MISSING, QC_TAIL_VALIDATION_FAILED, QC_MANIFEST_CONFLICT, IDENTITY_DRIFT, ENVIRONMENT_DRIFT, ACTION_ORDER_FAILURE, INTERACTION_CONTINUITY_FAILURE, CAMERA_FAILURE, CAMERA_SETUP_MISMATCH, EDITORIAL_BOUNDARY_FAILURE, MOVING_HANDOFF_UNSUITABLE, REFLECTION_FAILURE, AUDIO_SYNC_FAILURE, HANDOFF_MISMATCH, FINAL_EDIT_CONTINUITY_FAILURE]

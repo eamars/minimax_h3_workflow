@@ -29,22 +29,27 @@ Emit `storyboard-package.yaml`, `shot-table.md`, `segment-plan.yaml`, `editorial
 2. Establish project → sequence → scene → editorial shot → generation segment; preserve one shot ID across splits and never use a segment as a substitute for a shot.
 3. Write director treatment grounded in source intent.
 4. Bind the hard environment projection before designing coverage. Carry its required landmarks, forbidden inventions, unknown regions, negative-space rule, and profile ID into the treatment and acceptance tests.
-5. Give each shot one purpose and information/emotional change with plot/performance links.
+5. Give each shot one purpose and information/emotional change with plot/performance links. If no style source exists, do not lock a named visual style; describe only source-backed medium, world, lighting, texture, and tonal facts so downstream generation remains style-capable.
 6. Build scene geography and stage entry, action path, eyelines, landmark relations, and exit before placing the camera.
-7. Specify a structured camera setup (position, viewpoint, optics, composition, axis) separately from one motivated in-shot motion or static path. Record a motivated setup change from the previous shot; do not prohibit camera position changes.
-8. Build monotonic `SCENE_TIME | SOURCE_TIME | RECORD_TIME` plus `PERFORMANCE | CAMERA | SOUND | EDIT/HANDOFF` tracks with readable entry, action/reaction, and context-appropriate exit handling.
-9. Split when generation duration exceeds 10 seconds or risk/context/density/continuity/reference/repair needs demand it; splitting preserves the editorial shot and creates a typed generation handoff.
-10. Declare editorial boundaries bilaterally as `cut`, `dissolve`, `fade`, or terminal `end`, with motivations and audio behavior. Declare generation relationships separately as `independent`, `same_shot_continue`, `endpoint_bridge`, `reference_reestablish`, or `terminal`. When a generated chain must realize a scene/shot transition, assign it to the protected middle of one transition-bearing segment; the next segment opens only after the destination context is established.
-11. Use one authoritative continuity registry plus an exact interaction-target registry. Shots and segments reference registered snapshots; if a payload is embedded, its interactive `prop_states` and `limb_states` must exactly match the registry. A contact target may be a declared prop, fixture/surface, landmark, or subject body zone; it may never be an invented ID.
-12. Record continuity invariants, expected deltas, forbidden deltas, and moving-versus-stable handoff suitability without approving media.
-13. Generate concrete acceptance predicates and revision references.
-14. Return review-ready/blocked artifacts and affected-ID failures.
+7. Specify a structured camera setup (position, viewpoint, optics, composition, axis) separately from one motivated in-shot motion or static path. Record a motivated setup change from the previous shot; do not prohibit camera position changes. Expand an intended orbit into a spatial arc or a directional truck-plus-counter-pan pair instead of leaving the camera instruction as an opaque “orbit.”
+8. Build monotonic `SCENE_TIME | SOURCE_TIME | RECORD_TIME` plus `PERFORMANCE | CAMERA | SOUND | EDIT/HANDOFF` tracks with readable entry, action/reaction, and context-appropriate exit handling. For every editorial shot, make the downstream projection recoverable as `shot size + visible content + camera + action + dialogue/speaker state + sound`.
+9. Fit dialogue to the available shot time. Declare the actual speaker, on-screen/off-screen transition, and J-cut or L-cut span when speech begins before or continues after a picture cut.
+10. Split when generation duration exceeds 10 seconds or risk/context/density/continuity/reference/repair needs demand it; splitting preserves the editorial shot and creates a typed generation handoff.
+11. Declare editorial boundaries bilaterally as `cut`, `dissolve`, `fade`, or terminal `end`, with motivations and audio behavior. Declare generation relationships separately as `independent`, `same_shot_continue`, `endpoint_bridge`, `reference_reestablish`, or `terminal`. Never rely on H3 to invent a default cut. When a generated chain must realize a scene/shot transition, assign it to the protected middle of one transition-bearing segment; the next segment opens only after the destination context is established.
+12. Treat an exact first-plus-last-frame segment as continuous interpolation by default. Do not place an editorial cut merely because two endpoint images exist; any internal transition must be explicitly planned and timed.
+13. Use one authoritative continuity registry plus an exact interaction-target registry. Shots and segments reference registered snapshots; if a payload is embedded, its interactive `prop_states` and `limb_states` must exactly match the registry. A contact target may be a declared prop, fixture/surface, landmark, or subject body zone; it may never be an invented ID.
+14. At every split interaction, hand off the action phase, subject pose/gaze, left/right limb state, prop ownership/contact, camera pose and motion vector, focus plane, lighting, active speaker/dialogue span, ambience, and the next allowed delta. The successor continues that delta without replaying completed motion.
+15. Record continuity invariants, expected deltas, forbidden deltas, and moving-versus-stable handoff suitability without approving media.
+16. Generate concrete acceptance predicates and revision references.
+17. Return review-ready/blocked artifacts and affected-ID failures.
 
 ## Invariants
 
 - Trace every shot to plot and every segment to plot, performance, canon, shot, neighbors, and acceptance tests.
 - Require `0 < duration_seconds <= 10` without rounding before comparison.
 - Use one primary performance arc and one typed dominant in-shot camera move/static per generation segment; camera setup may change between editorial shots.
+- Do not introduce a named style family when the request, canon, and references leave style unspecified.
+- Require every editorial shot to project unambiguously to shot size, visible content, camera, action, dialogue/speaker state, and sound.
 - Establish entry before action; finish important action/reaction before a stable exit handle.
 - Reject blurred, occluded, unfinished, uncontrolled, fast-pan, or impossible-reflection exits only when that segment is declared a continuation or endpoint handoff; a motivated editorial cut may leave on active motion.
 - Preserve exact editorial boundary semantics separately from generation handoff semantics.
@@ -90,4 +95,5 @@ Reject a v1-style package that calls an opaque camera string a storyboard, puts 
 - Reject nonpositive, overloaded, inappropriate unstable, untraceable, vague, opaque-camera, unknown-geometry, or technically contaminated segments.
 - Reject a shot that introduces architecture forbidden by the environment profile or an interactive action without explicit left/right limb continuity.
 - Validate bilateral editorial boundaries, separate generation handoffs, all three time domains, camera setup/motion structure, and four-track order.
+- Reject an undeclared model-invented cut, a two-endpoint segment treated as an automatic montage, or a split interaction whose successor replays the predecessor's completed action.
 - Produce deterministic outputs and preserve immutable source revisions.

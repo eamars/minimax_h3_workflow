@@ -1,6 +1,7 @@
-version: 2
+version: 3
 encoding: UTF-8
 language_style_document: docs/prompt-language-style.md
+official_manual: https://vrfi1sk8a0.feishu.cn/wiki/FIWjwgL33ipnkekzk30crmKUnIh
 base_family:
   fields: [integrated_multimodal_description, overall_soundscape, non_diegetic_music]
   endpoint_prefixes:
@@ -10,5 +11,39 @@ base_family:
 R2VA:
   section_order: [subject_definitions, summary, retention_analysis, detailed_description, overall_soundscape, non_diegetic_music]
   labels: [Subject, Picture, Video, Audio]
-dialogue: {speaker_ids: stable_actual_vocal_order, d_tag_contains: [words, language], preserve_verbatim: true}
-construction_order: [reference_assignment, global_style_lock, character_world_lock, directorial_intent, entry_state, blocking, visible_action, camera, timed_structure, dialogue_and_diegetic_sound, exit_handoff, exclusions]
+prompt_formula: [reference_material_usage, core_creative_sentence, visible_process]
+reference_usage:
+  every_bound_asset_requires_one_declared_job: true
+  allowed_jobs: [identity, object, environment, endpoint, storyboard, style, composition, motion, camera_motion, edit_rhythm, voice, audio_reuse, partial_audio_reuse, edit_base_media]
+  ordinal_only_semantics: forbidden
+shot_structure:
+  multi_shot:
+    source: upstream_editorial_shots_only
+    every_block_requires: [shot_size, visible_content, camera, action, dialogue_or_speaker_state, sound, transition_out]
+    default_model_cut_reliance: forbidden
+  one_take:
+    timed_block_count: 1
+    invented_internal_shots: forbidden
+    internal_cuts: forbidden
+  exact_first_last_frame:
+    default: continuous_interpolation
+    automatic_cut: forbidden
+dialogue:
+  speaker_ids: stable_actual_vocal_order
+  d_tag_contains: [words, language]
+  preserve_verbatim: true
+  fit_to_declared_shot_duration: true
+  cross_shot: {allowed_when_upstream_declared: true, requires: [speaker_id, j_cut_or_l_cut_span, on_screen_or_off_screen_transition]}
+style:
+  source_precedence: [user_explicit, canon_lock, declared_style_reference, upstream_director_treatment]
+  unspecified: {named_style_family: omit, boilerplate_cinematic_or_photorealistic: forbidden}
+  declared: {preserve_family: true, express_as: [rendering, palette, lighting, texture, motion, typography, edit_behavior]}
+continuation:
+  endpoint: predecessor_actual_final_decoded_frame_only
+  repeat_only_declared_locks: true
+  entry_state_requires: [action_phase, pose, gaze, left_right_limb_state, prop_ownership_and_contact, camera_pose, camera_motion_vector, focus_plane, lighting_state, active_speaker_and_dialogue_span, ambience_state]
+  describe_only_next_allowed_delta: true
+  completed_action_replay: forbidden
+visible_text: {quote_exact_source_string: true, invent_additional_readable_text: forbidden}
+limits: {prompt_characters_maximum: 7000}
+construction_order: [reference_assignment, declared_style_or_style_open_state, character_world_lock, directorial_intent, entry_state, blocking, visible_action, camera, timed_structure, dialogue_and_diegetic_sound, exit_handoff, exclusions]
