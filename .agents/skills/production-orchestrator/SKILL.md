@@ -13,7 +13,7 @@ Turn a brief and optional seed media into a validated final video by routing eve
 
 Own lifecycle mode, dispatch order, revision tracking, dependency scheduling, and failure routing. Keep editorial shots, generated segments, editorial boundaries, and generation handoffs distinct. Delegate story, canon, performance, sound, camera, H3 syntax, graph compilation, rendering, QC, repair, and editing to their named skills.
 
-Read the [specialist registry](references/specialist-registry.yaml), [routing policy](references/routing-policy.yaml), [state machine](references/state-machine.yaml), [artifact metadata](references/artifact-metadata.yaml), [naming rules](references/naming-conventions.yaml), and [failure taxonomy](references/failure-taxonomy.yaml). Read the [serial continuation profile](references/sequential-continuation-profile.yaml) for continuous scenes.
+Read the [specialist registry](references/specialist-registry.yaml), [routing policy](references/routing-policy.yaml), [state machine](references/state-machine.yaml), [artifact metadata](references/artifact-metadata.yaml), [naming rules](references/naming-conventions.yaml), and [failure taxonomy](references/failure-taxonomy.yaml). Read the [serial continuation profile](references/sequential-continuation-profile.yaml) for continuous scenes and the [wardrobe and surface-state contract](../reference-canon-manager/references/wardrobe-surface-state.md) whenever a recurring subject is present.
 
 ## Inputs
 
@@ -34,7 +34,7 @@ Read the [specialist registry](references/specialist-registry.yaml), [routing po
 1. Default to `FULL_PIPELINE`; honor `PLAN_ONLY`, `COMPILE_PLAN`, path-test, repair, or assembly modes only when explicitly requested.
 2. Dispatch Request Normalizer, Reference/Canon Manager, Plot Architect, Scene/Performance Writer, conditional Sound/Dialogue Planner, Storyboard Director, Animatic/Previs Planner, and Production Preflight Reviewer.
 3. If preflight fails, route the smallest revision request to its owning skill and rerun affected planning stages. Continue automatically once preflight passes.
-4. Probe live ComfyUI, compile H3 prompt packets, prepare required endpoint media, compile API workflows, validate graphs, and build the production DAG.
+4. Probe live ComfyUI, compile H3 prompt packets, prepare required endpoint media, compile API workflows, validate graphs, and build the production DAG. Admit no generation job until the exact versioned wardrobe/surface contract is present and parity-checked across canon, prompts, controls, endpoints, and graph metadata.
 5. Render dependency-ready jobs. Run independent branches concurrently only when policy permits; serialize continuous handoffs.
 6. Route every generated segment through Continuity and QC Supervisor. Send failures to Repair Director and rerun only the affected dependency closure.
 7. Assemble QC-passed media through Post Editor and run final QC. Enter `DELIVERED` only after the master passes final QC.
@@ -50,6 +50,10 @@ For a direct one-start workflow, route to `$comfyui`. That path builds one UI gr
 - Keep generated segments positive and at most 10 seconds in the formal pipeline.
 - For a continuous chain, relay the predecessor's actual final decoded frame, hold the exact closing state/camera/audio at the next opening for about two seconds, add only micro-motion in that airlock, and settle action/dialogue about two seconds before the next boundary.
 - Repeat identity, wardrobe, environment, lighting, and voice anchors verbatim across connected shots.
+- Treat wardrobe/surface continuity as a versioned semantic contract, not a
+  style hint. Carry the full opening state plus an explicit typed delta into
+  every successor; occlusion preserves state, and post-render QC cannot waive a
+  missing pre-generation lock.
 - Never split one spoken line across generated shots. Put cuts, reframes, and new action after the opening airlock, inside a shot.
 - Never place a scene/shot transition at a generation boundary. Put it in the
   protected middle 40–60% of one transition-bearing segment, leave enough time
@@ -70,7 +74,7 @@ Stop only the affected scope for missing requirements/assets, unresolved canon, 
 ## Validation rules
 
 - Validate skill packages with `python scripts/validate_production_system.py`.
-- Validate schemas, stable IDs, revisions, paths, DAG acyclicity, timing, continuity state, camera mappings, generation relationships, environment projection, and limb/prop targets.
+- Validate schemas, stable IDs, revisions, paths, DAG acyclicity, timing, continuity state, wardrobe/surface contract parity, camera mappings, generation relationships, environment projection, and limb/prop targets.
 - Validate every graph against live `/object_info` immediately before submission.
 - Validate decoded frame/audio counts, seam evidence, and final delivery specs.
 - Reject any workflow path that requests a human production gate or an administrative content fingerprint.

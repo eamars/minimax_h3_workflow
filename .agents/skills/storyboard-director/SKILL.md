@@ -9,7 +9,7 @@ description: "Model-neutral feature-film storyboard direction for AI-video proje
 
 Translate valid narrative and performance artifacts into a traceable, model-neutral feature-film storyboard. Treat the editorial shot as the creative unit and the generation segment as a production unit. Specify audience view, geography, blocking, shot purpose, camera setup, in-shot motion, sound timing, editorial cut boundaries, continuity state, and independently generated segment handoffs. Carry the canon's hard environment projection into every shot and segment so a camera move changes viewpoint within the validated space rather than inventing a different room. Leave prompts, graphs, execution, QC, repair, and post downstream.
 
-Read the [segment rules](references/segment-rules.yaml), [skill contract](references/skill-contract.yaml), `schemas/storyboard-package-v2.schema.json`, and run `scripts/validate_storyboard.py` for every v2 package. When an interactive prop or fixture appears, pass the exact project interaction-target registry with `--interaction-target-registry`; the validator then checks bilateral limb semantics, target existence, prop ownership, and transfer legality. The v1 schema and validator remain available only for historical artifacts.
+Read the [segment rules](references/segment-rules.yaml), [skill contract](references/skill-contract.yaml), the [wardrobe and surface-state contract](../reference-canon-manager/references/wardrobe-surface-state.md), `schemas/storyboard-package-v2.schema.json`, and run `scripts/validate_storyboard.py` for every v2 package. When an interactive prop or fixture appears, pass the exact project interaction-target registry with `--interaction-target-registry`; the validator then checks bilateral limb semantics, target existence, prop ownership, and transfer legality. The v1 schema and validator remain available only for historical artifacts.
 
 ## Ownership boundary
 
@@ -38,8 +38,15 @@ Emit `storyboard-package.yaml`, `shot-table.md`, `segment-plan.yaml`, `editorial
 11. Declare editorial boundaries bilaterally as `cut`, `dissolve`, `fade`, or terminal `end`, with motivations and audio behavior. Declare generation relationships separately as `independent`, `same_shot_continue`, `endpoint_bridge`, `reference_reestablish`, or `terminal`. Never rely on H3 to invent a default cut. When a generated chain must realize a scene/shot transition, assign it to the protected middle of one transition-bearing segment; the next segment opens only after the destination context is established.
 12. Treat an exact first-plus-last-frame segment as continuous interpolation by default. Do not place an editorial cut merely because two endpoint images exist; any internal transition must be explicitly planned and timed.
 13. Use one authoritative continuity registry plus an exact interaction-target registry. Shots and segments reference registered snapshots; if a payload is embedded, its interactive `prop_states` and `limb_states` must exactly match the registry. A contact target may be a declared prop, fixture/surface, landmark, or subject body zone; it may never be an invented ID.
-14. At every split interaction, hand off the action phase, subject pose/gaze, left/right limb state, prop ownership/contact, camera pose and motion vector, focus plane, lighting, active speaker/dialogue span, ambience, and the next allowed delta. The successor continues that delta without replaying completed motion.
-15. Record continuity invariants, expected deltas, forbidden deltas, and moving-versus-stable handoff suitability without approving media.
+14. At every split interaction, hand off the action phase, subject pose/gaze,
+    left/right limb state, prop ownership/contact, exact wardrobe/surface
+    opening and closing snapshots, camera pose and motion vector, focus plane,
+    lighting, active speaker/dialogue span, ambience, and the next allowed
+    delta. The successor continues that delta without replaying completed
+    motion or relying on a previous prompt for omitted costume state.
+15. Record continuity invariants, expected deltas, forbidden deltas, and
+    moving-versus-stable handoff suitability without approving media. A crop or
+    occlusion preserves the wardrobe/surface binding; it is not a removal.
 16. Generate concrete acceptance predicates and revision references.
 17. Return review-ready/blocked artifacts and affected-ID failures.
 
@@ -57,7 +64,12 @@ Emit `storyboard-package.yaml`, `shot-table.md`, `segment-plan.yaml`, `editorial
   zero. A transition-bearing segment must retain the source context through its
   opening airlock, execute the declared transition in the 40–60% middle window,
   and settle in the destination context before its successor begins.
-- Require identity, wardrobe, prop, wetness, environment, and sound invariants to be explicit even when framing changes.
+- Require the versioned wardrobe/surface contract, exact garment/accessory
+  inventory, prop, region-level wetness/dirt/mud/damage map, environment, and
+  sound invariants to be explicit even when framing changes. Mark permitted
+  surface-state deltas; never replace a visible costume or clean a locked
+  surface implicitly at a shot boundary. Carry the full state, not only a
+  shorthand delta, into every successor opening.
 - Require the environment projection to survive every framing change: a new position may reveal validated landmarks or unknown negative space, but may not turn a partial counter edge into a vanity, add a tub, mirror, corridor, window, basket, or second person.
 - Require `limb_states` and prop states at every interactive entry, contact, transfer, release, and exit handoff. Preserve the same left/right allocation across independent cuts unless the performance state explicitly changes it.
 - Distinguish endpoint snapshots from micro-actions inside one generation segment: an in-shot contact may be documented in scene-performance and the target registry without inventing an extra segment, but every visible handoff must still have a legal state, target, and release/ownership path.

@@ -18,7 +18,10 @@ Own template selection, typed bindings, live capability compatibility, graph val
 - Current production-plan artifact and revision IDs.
 - H3 prompt packets, reference assets, and optional validated endpoint selections.
 - Live `/object_info`, installed-model, and `/system_stats` evidence.
-- Workflow catalog, template, mapping, bindings, and output-path policy.
+- Workflow catalog, template, mapping, bindings, and output-path policy. For
+  recurring subjects, use the canonical [wardrobe and surface-state
+  contract](../reference-canon-manager/references/wardrobe-surface-state.md) as
+  the semantic authority for the pre-generation parity check.
 
 ## Required outputs
 
@@ -30,9 +33,12 @@ Write new `compiled/workflows`, `compiled/jobs`, `production-dag.yaml`, and `com
 2. Probe live ComfyUI and treat the live schema as authority.
 3. Select only a catalog template matching job type, H3 mode, endpoint policy, timing, audio, nodes, and models.
 4. Validate the packet's pre-generation controls before graph emission: actual
-   identity binding mode/assets, per-subject instance maxima, dialogue windows
-   and visibility, signed motion path, and non-text visual-reset strategy.
-5. Expand exact placeholders and reject missing, embedded, or unknown bindings.
+   identity binding mode/assets, versioned wardrobe/surface contract parity,
+   full opening/closing state snapshots, per-subject instance maxima, dialogue
+   windows and visibility, signed motion path, and non-text visual-reset
+   strategy. Compare structured controls with prompt semantics and endpoint
+   roles; a prose-only lock or matching file hash is insufficient.
+5. Expand exact placeholders and reject missing, embedded, stale, or unknown bindings.
 6. Serialize dynamic-combo selectors in the scalar API shape exposed by live `/object_info`.
 7. Validate every node, literal, link, output slot, model, and acyclic graph.
 8. Validate target/model/effective timing, the `17k+5` H3 grid, 24 fps, post-trim duration at most 10 seconds, and dimensions divisible by 32.
@@ -49,6 +55,10 @@ Write new `compiled/workflows`, `compiled/jobs`, `production-dag.yaml`, and `com
 - Reject unresolved placeholders, unavailable nodes/models, invalid links, cycles, stale schemas, false dependencies, and unsafe paths.
 - Reject missing/self-asserted prose-only semantic controls. Require
   `PRE_GENERATION_VALIDATED` before a generation workflow is emitted.
+- Require the current `wardrobe_surface_contract` for every recurring subject,
+  with matching contract ID/revision in canon, packet, controls, endpoints, and
+  graph metadata. Reject generic labels, omitted components, undeclared
+  surface transitions, and clean/reset instructions before writing a workflow.
 - Require persistent identity to select R2VA and bind its declared canonical
   assets; require endpoint identity to select I2VA/FL2VA. Never treat a
   first-frame seed as a persistent reference.
@@ -62,7 +72,7 @@ Do not invent prompts, choose creative modes, reinterpret references, change sto
 
 ## Failure conditions
 
-Return `BLOCKED` with stable IDs and evidence for `PLAN_REVISION_INVALID`, `PREFLIGHT_BLOCKED`, `PREGEN_CONTROLS_MISSING`, `CANON_IDENTITY_BINDING_MISSING`, `DIALOGUE_WINDOW_MISSING`, `SPEAKER_VISIBILITY_UNBOUND`, `ACTOR_PATH_UNSIGNED`, `SUBJECT_MULTIPLICITY_UNBOUNDED`, `TEXT_ONLY_VISUAL_RESET_UNSAFE`, `CAPABILITY_PROBE_MISSING`, `ENVIRONMENT_PROJECTION_INVALID`, `WORKFLOW_TEMPLATE_MISSING`, `WORKFLOW_MAPPING_INVALID`, `WORKFLOW_NODE_UNAVAILABLE`, `WORKFLOW_INPUT_UNSUPPORTED`, `WORKFLOW_LINK_INVALID`, `WORKFLOW_CYCLE`, `REQUIRED_MODEL_MISSING`, `REQUIRED_ASSET_MISSING`, `SEGMENT_TOO_LONG`, `INVALID_FRAME_GRID`, `RESOLUTION_UNSUPPORTED`, `AUDIO_SPEC_UNSUPPORTED`, `HANDOFF_TAIL_INVALID`, `DAG_INVALID`, `ARTIFACT_OVERWRITE_FORBIDDEN`, or `OUTPUT_PATH_UNSAFE`.
+Return `BLOCKED` with stable IDs and evidence for `PLAN_REVISION_INVALID`, `PREFLIGHT_BLOCKED`, `PREGEN_CONTROLS_MISSING`, `CANON_IDENTITY_BINDING_MISSING`, `WARDROBE_SURFACE_STATE_UNBOUND`, `WARDROBE_SURFACE_CONTRACT_STALE`, `SURFACE_STATE_TRANSITION_UNDECLARED`, `DIALOGUE_WINDOW_MISSING`, `SPEAKER_VISIBILITY_UNBOUND`, `ACTOR_PATH_UNSIGNED`, `SUBJECT_MULTIPLICITY_UNBOUNDED`, `TEXT_ONLY_VISUAL_RESET_UNSAFE`, `CAPABILITY_PROBE_MISSING`, `ENVIRONMENT_PROJECTION_INVALID`, `WORKFLOW_TEMPLATE_MISSING`, `WORKFLOW_MAPPING_INVALID`, `WORKFLOW_NODE_UNAVAILABLE`, `WORKFLOW_INPUT_UNSUPPORTED`, `WORKFLOW_LINK_INVALID`, `WORKFLOW_CYCLE`, `REQUIRED_MODEL_MISSING`, `REQUIRED_ASSET_MISSING`, `SEGMENT_TOO_LONG`, `INVALID_FRAME_GRID`, `RESOLUTION_UNSUPPORTED`, `AUDIO_SPEC_UNSUPPORTED`, `HANDOFF_TAIL_INVALID`, `DAG_INVALID`, `ARTIFACT_OVERWRITE_FORBIDDEN`, or `OUTPUT_PATH_UNSAFE`.
 
 ## Validation rules
 

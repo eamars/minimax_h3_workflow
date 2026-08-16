@@ -23,7 +23,11 @@ Write `run-state.yaml`, per-attempt job reports, revisioned draft renders, extra
 
 ## Processing method
 
-1. Validate plan/job revisions, compiled bundle, graph API shape, timing, environment projection, interaction targets, and live `/object_info` immediately before submission.
+1. Validate plan/job revisions, compiled bundle, graph API shape, timing,
+   environment projection, interaction targets, the `PRE_GENERATION_VALIDATED`
+   status, and versioned wardrobe/surface contract parity immediately before
+   submission. A render job cannot repair a missing contract by carrying a
+   previous prompt or relying on post-render QC.
 2. Validate DAG topology and admit dependency-ready jobs only.
 3. Reconcile prior queue/history state before resuming.
 4. Schedule in stable topological order within resource limits and submit the compiled graph unchanged.
@@ -37,6 +41,10 @@ Write `run-state.yaml`, per-attempt job reports, revisioned draft renders, extra
 - Require no human gate or plan fingerprint.
 - Keep lifecycle mode truthful; a path test never claims final quality.
 - Never mutate graph, prompt, seed, model, timing, or creative fields during execution.
+- Never submit a job whose compiled metadata lacks the current wardrobe/surface
+  contract ID/revision or whose controls do not match the prompt and endpoint
+  roles. Treat contract drift as a pre-submit block, not a retryable render
+  failure.
 - Reconcile before resubmission and bound retries.
 - Serialize continuous handoffs; keep independent branches independent.
 - Keep effective duration positive and at most 10 seconds.
@@ -49,7 +57,7 @@ Do not alter creative artifacts, prompts, modes, workflows, endpoint policies, Q
 
 ## Failure conditions
 
-Return evidence for invalid plan/job revision, invalid compiled bundle/DAG, missing dependency/endpoint, ComfyUI connection/auth/queue/validation/timeout/job/output failures, exhausted retry, invalid concurrency, unsafe path, corrupt run state, prompt-ID collision, or blocked dependency.
+Return evidence for invalid plan/job revision, invalid compiled bundle/DAG, missing dependency/endpoint, missing or stale wardrobe/surface contract, ComfyUI connection/auth/queue/validation/timeout/job/output failures, exhausted retry, invalid concurrency, unsafe path, corrupt run state, prompt-ID collision, or blocked dependency.
 
 ## Validation rules
 
@@ -71,4 +79,3 @@ If a successor references draft endpoint evidence and the server returns 503, ke
 - Transient errors retry unchanged; validation/creative errors do not retry.
 - Every successful output receives complete QC intake.
 - No stage requests human sign-off.
-

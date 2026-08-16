@@ -15,7 +15,7 @@ Own asset provenance, raw-byte SHA-256 hashes, media metadata, reference roles, 
 
 ## Inputs
 
-Consume a valid project request, readable user seed media, optional declared meanings/priorities/scopes/endpoints, and an optional prior canon revision. Read [canon rules](references/canon-rules.yaml), [skill contract](references/skill-contract.yaml), and the shared artifact and failure contracts before processing.
+Consume a valid project request, readable user seed media, optional declared meanings/priorities/scopes/endpoints, and an optional prior canon revision. Read [canon rules](references/canon-rules.yaml), the [wardrobe and surface-state contract](references/wardrobe-surface-state.md), [skill contract](references/skill-contract.yaml), and the shared artifact and failure contracts before processing.
 
 ## Required outputs
 
@@ -38,10 +38,16 @@ plot_handoff: {ready: true, blocking_scopes: []}
 5. Group assets into canonical subjects, worlds, styles, wardrobes, props, compositions, motions, or audio references. Extract only observable geography/landmark evidence with confidence `exact`, `inferred`, or `unknown`.
 6. For each environment architecture reference, separate the positive lock (`required_landmarks` and `allowed_features`) from negative space (`forbidden_inventions`) and unresolved space (`unknown_features`). Use `hard_reference_no_expansion` unless the user explicitly authorizes a redesign.
 7. Record observable locked anchors and non-binding pose, expression, lighting, action, or incidental content separately.
-8. Detect role, identity, environment, endpoint, scope, priority, and aspect-ratio conflicts.
-9. Preserve explicit priority and never resolve ambiguity by filename, order, recency, confidence, or taste.
-10. Produce deterministic role-specific ordering and H3 candidate labels without encoding endpoint semantics or camera movement semantics into them.
-11. Mark handoff ready only for scopes with no unresolved blocking conflict or missing environment projection.
+8. For every recurring character or prop seed, serialize the versioned
+   `wardrobe_surface_contract`: exact observable component inventory, region-level
+   surface map, explicit transition policy, occlusion policy, and forbidden
+   implicit changes. Do not collapse a visible costume or surface into a generic
+   category such as “uniform” or “dirty.”
+9. Detect role, identity, environment, endpoint, scope, priority, costume,
+   surface-state, and aspect-ratio conflicts; reject an undeclared transition.
+10. Preserve explicit priority and never resolve ambiguity by filename, order, recency, confidence, or taste.
+11. Produce deterministic role-specific ordering and H3 candidate labels without encoding endpoint semantics or camera movement semantics into them.
+12. Mark handoff ready only for scopes with no unresolved blocking conflict, missing environment projection, or unbound wardrobe/surface-state map.
 
 ## Invariants
 
@@ -51,6 +57,10 @@ plot_handoff: {ready: true, blocking_scopes: []}
 - Require a later H3 binding to expose the declared job of every reference; ordinal position alone is never a role.
 - Default endpoints to `none`; require explicit evidence for first, last, or both.
 - Separate identity/design from pose, expression, action, lighting, and incidental subjects.
+- Treat garment inventory and observable dirt/mud/wetness/damage as canonical
+  state. Downstream shots inherit the full state by default; clean, replace,
+  recolor, remove, repair, or omit only through a typed, scoped transition. An
+  occluded region remains bound and is not silently treated as absent.
 - Treat camera-composition references as evidence for appearance/framing, not as an instruction that freezes camera position across editorial shots.
 - Preserve unknown or conflicting geography explicitly; do not fabricate coordinates, axes, or room topology.
 - Treat a hard environment projection as a negative-space lock: do not complete the room outside the supplied evidence, promote a partial edge into a full fixture, or add a neighboring room, corridor, tub, vanity, mirror, window, basket, or incidental person.
@@ -65,7 +75,7 @@ Do not invent plot, motivation, action, dialogue, blocking, camera language, sho
 
 ## Failure conditions
 
-Return a shared failure code, affected IDs/scopes, evidence, and owner. Use `REQUIRED_ASSET_MISSING`, `ASSET_HASH_MISMATCH`, or `ASSET_SOURCE_MUTATION_DETECTED` for source failures; `ASSET_ROLE_AMBIGUOUS` for incompatible roles; `ENDPOINT_ROLE_AMBIGUOUS` for ambiguous endpoint claims; `CANON_REFERENCE_CONFLICT` for unresolved overlapping canon claims; `ENVIRONMENT_PROFILE_MISSING` when an environment role has no hard projection; `ENVIRONMENT_FEATURE_FORBIDDEN` when a downstream artifact expands the locked room; and `CANON_ID_COLLISION`, `CANON_OUTPUT_INVALID`, `REFERENCE_ORDER_INVALID`, or `PROVENANCE_MISSING` for contract failures.
+Return a shared failure code, affected IDs/scopes, evidence, and owner. Use `REQUIRED_ASSET_MISSING`, `ASSET_HASH_MISMATCH`, or `ASSET_SOURCE_MUTATION_DETECTED` for source failures; `ASSET_ROLE_AMBIGUOUS` for incompatible roles; `ENDPOINT_ROLE_AMBIGUOUS` for ambiguous endpoint claims; `CANON_REFERENCE_CONFLICT` for unresolved overlapping canon claims; `WARDROBE_SURFACE_STATE_UNBOUND` when a recurring subject lacks the structured contract; `WARDROBE_CONFLICT` for incompatible component claims; `SURFACE_STATE_TRANSITION_UNDECLARED` for an unscoped change; `ENVIRONMENT_PROFILE_MISSING` when an environment role has no hard projection; `ENVIRONMENT_FEATURE_FORBIDDEN` when a downstream artifact expands the locked room; and `CANON_ID_COLLISION`, `CANON_OUTPUT_INVALID`, `REFERENCE_ORDER_INVALID`, or `PROVENANCE_MISSING` for contract failures.
 
 ## Validation rules
 
@@ -75,6 +85,12 @@ Return a shared failure code, affected IDs/scopes, evidence, and owner. Use `REQ
 - Require explicit endpoint evidence and reject audio endpoints.
 - Require `plot_handoff.ready: false` for affected blocking scopes.
 - Require every environment architecture asset to resolve to one `environment_profile` with a source asset, positive landmarks, forbidden inventions, and preserved unknown regions. Reject overlap between positive and forbidden lists.
+- Require every recurring character or prop canon to expose the complete
+  `wardrobe_surface_contract` with stable IDs, provenance, typed transitions,
+  and occlusion policy; reject a handoff whose prompt or endpoint role contains
+  only a generic clothing/surface label.
+- Treat hashes as file provenance only. Require downstream semantic parity with
+  the contract ID and canon revision; a matching hash cannot prove visual state.
 - Treat `forbidden_inventions` as validation data consumed by Storyboard Director and generation adapters, not as prompt prose that can be dropped.
 - Validate against `schemas/asset-manifest.schema.json`, `schemas/canon-lock.schema.json`, and the v2 geography/continuity bindings when a real-cinematic plan is requested.
 - Run `python scripts/validate_reference_canon.py --project-root <root> --asset-manifest <path> --canon-lock <path> --conflicts <path> --order <path> [--environment-profile <path>]`.

@@ -15,7 +15,7 @@ Own the preflight verdict, evidence, risk register, deterministic revision order
 
 ## Inputs
 
-Consume current request, asset, canon, plot, scene-performance, storyboard, animatic, and conditional sound revisions. Require one project ID, resolvable source revisions, scene/source/record time, geography, typed camera setup/motion, continuity registry, editorial boundaries, and generation handoffs.
+Consume current request, asset, canon, plot, scene-performance, storyboard, animatic, and conditional sound revisions. Read the [wardrobe and surface-state contract](../reference-canon-manager/references/wardrobe-surface-state.md) for recurring subjects. Require one project ID, resolvable source revisions, scene/source/record time, geography, typed camera setup/motion, continuity registry, editorial boundaries, and generation handoffs.
 
 ## Required outputs
 
@@ -28,6 +28,10 @@ Write `preflight-report.yaml`, `risk-register.yaml`, and `revision-requests.yaml
 3. Derive the pre-generation semantic requirements for every generation
    segment: canonical identity binding, per-subject multiplicity, dialogue
    timing/visibility, signed actor path, and destination-controlled visual reset.
+   Also import the versioned wardrobe/surface contract for every recurring
+   character or prop. Require an exact component inventory, region-level
+   surface map, explicit transition/occlusion policy, and full opening/closing
+   snapshots. Do not treat a generic clothing category as canon.
 4. Build and severity-sort the risk register.
 5. Sort revision requests by owner, stable ID, code, and request ID.
 6. Target the earliest incorrect or missing specialist-owned decision.
@@ -50,6 +54,13 @@ Write `preflight-report.yaml`, `risk-register.yaml`, and `revision-requests.yaml
   direction, forbidden reversal/exit directions, and endpoint state.
 - Require explicit maximum visible instances for each canonical subject and
   reject an undeclared duplicate, echo, reflection copy, or destination copy.
+- Require each recurring character or prop's wardrobe/surface contract to be
+  present and revision-matched in every generation segment, endpoint reference,
+  and pre-generation control. Compare structured fields and prompt semantics;
+  do not accept a prose-only lock or a hash-only match. Block clean resets,
+  alternate uniforms, recolors, missing accessories, unbound regions, and
+  undeclared transitions before compilation. A post-render check may detect
+  stochastic drift but cannot close this gate retroactively.
 - Reject a text-only scene reset. Require an endpoint bridge, reference
   re-establish, or editorial cut with a validated destination anchor before
   compilation.
@@ -61,7 +72,7 @@ Do not author or edit plot, dialogue, performance, sound, canon, blocking, camer
 
 ## Failure conditions
 
-Return `BLOCKED` for missing required artifacts, roles, sources, endpoint declarations, destination anchors, identity binding roles, or required capability evidence. Return `REVISE` for premise, playability, blocking, unsigned motion, dialogue timing/visibility, subject multiplicity, duration, handoff, dependency, text-only visual reset, or known-capability defects.
+Return `BLOCKED` for missing required artifacts, roles, sources, endpoint declarations, destination anchors, identity binding roles, or required capability evidence. Return `REVISE` for premise, playability, blocking, unsigned motion, dialogue timing/visibility, subject multiplicity, duration, handoff, dependency, text-only visual reset, unbound or stale wardrobe/surface state, undeclared surface transition, or known-capability defects.
 
 ## Validation rules
 

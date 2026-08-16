@@ -20,7 +20,7 @@ routing:
   bypass_record_required: true
 failure_contract:
   allowed_codes: [SCENE_NOT_PLAYABLE]
-  detail_codes: [missing_observable_action, missing_actor_control, missing_reaction, missing_entry_or_exit_state, invalid_timing, scene_time_phase_missing, speaker_assignment_unresolved, prop_hand_transfer_conflict, wetness_or_clothing_state_conflict, limb_state_undefined, prop_contact_snapshot_missing, hand_assignment_conflict, unknown_hardware_used_as_canon, outcome_requires_new_plot_event, camera_or_staging_leakage]
+  detail_codes: [missing_observable_action, missing_actor_control, missing_reaction, missing_entry_or_exit_state, invalid_timing, scene_time_phase_missing, speaker_assignment_unresolved, prop_hand_transfer_conflict, wetness_or_clothing_state_conflict, wardrobe_surface_state_missing, surface_state_transition_undeclared, limb_state_undefined, prop_contact_snapshot_missing, hand_assignment_conflict, unknown_hardware_used_as_canon, outcome_requires_new_plot_event, camera_or_staging_leakage]
 limb_continuity:
   required_in_continuity_snapshots: true
   stable_ids: [HAND_L, HAND_R]

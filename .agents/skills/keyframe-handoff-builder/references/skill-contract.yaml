@@ -17,3 +17,4 @@ endpoint_policies: [none, moving_endpoint, stable_tail, declared_entry_reference
 endpoint_status_values: [pending, validated, rejected, superseded]
 source_types: [user_seed, validated_tail, validated_target_still_job]
 determinism: {hash: sha256, derived_tail_selection: actual_final_decoded_frame_only, final_window: diagnostic_only, no_random_generation: true}
+wardrobe_surface_state: {contract_id_required: true, canon_revision_required: true, component_and_region_checks: required, occlusion_preserves_state: true, undeclared_transition: blocking}

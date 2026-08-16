@@ -12,6 +12,8 @@ failures:
   - {code: CANON_OUTPUT_INVALID, stage: canon, severity: blocking, retryable: false, owner: reference-canon-manager}
   - {code: REFERENCE_ORDER_INVALID, stage: canon, severity: major, retryable: false, owner: reference-canon-manager}
   - {code: PROVENANCE_MISSING, stage: canon, severity: blocking, retryable: false, owner: reference-canon-manager}
+  - {code: WARDROBE_SURFACE_STATE_UNBOUND, stage: canon, severity: blocking, retryable: false, owner: reference-canon-manager}
+  - {code: WARDROBE_CONFLICT, stage: canon, severity: blocking, retryable: false, owner: reference-canon-manager}
   - {code: PLOT_PREMISE_DRIFT, stage: plot, severity: major, retryable: false, owner: plot-architect}
   - {code: PLOT_CAUSAL_GAP, stage: plot, severity: major, retryable: false, owner: plot-architect}
   - {code: PLOT_INPUT_SCHEMA_INVALID, stage: plot, severity: major, retryable: false, owner: plot-architect}
@@ -50,6 +52,8 @@ failures:
   - {code: TIME_DOMAIN_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
   - {code: SOURCE_TIME_DURATION_MISMATCH, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
   - {code: CONTINUITY_CONTRACT_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: WARDROBE_SURFACE_STATE_MISSING, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
+  - {code: SURFACE_STATE_TRANSITION_UNDECLARED, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
   - {code: TRANSITION_SEMANTICS_INVALID, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
   - {code: EDITORIAL_GENERATION_BOUNDARY_CONFLATED, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
   - {code: EDITORIAL_BOUNDARY_BILATERAL_MISMATCH, stage: storyboard, severity: blocking, retryable: false, owner: storyboard-director}
@@ -142,6 +146,7 @@ failures:
   - {code: WORKFLOW_NODE_UNAVAILABLE, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
   - {code: WORKFLOW_VALIDATION_FAILED, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
   - {code: PREFLIGHT_BLOCKED, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
+  - {code: WARDROBE_SURFACE_CONTRACT_STALE, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
   - {code: CAPABILITY_PROBE_MISSING, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
   - {code: WORKFLOW_MAPPING_INVALID, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
   - {code: WORKFLOW_INPUT_UNSUPPORTED, stage: compilation, severity: blocking, retryable: false, owner: comfyui-workflow-compiler}
@@ -185,6 +190,8 @@ failures:
   - {code: PROMPT_ID_COLLISION, stage: execution, severity: blocking, retryable: false, owner: render-orchestrator}
   - {code: DEPENDENCY_BLOCKED, stage: execution, severity: major, retryable: false, owner: render-orchestrator}
   - {code: IDENTITY_DRIFT, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
+  - {code: WARDROBE_DRIFT, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
+  - {code: SURFACE_STATE_DRIFT, stage: review, severity: major, retryable: false, owner: continuity-qc-supervisor}
   - {code: QC_INPUT_INVALID, stage: review, severity: blocking, retryable: false, owner: continuity-qc-supervisor}
   - {code: QC_PLAN_REVISION_MISMATCH, stage: review, severity: blocking, retryable: false, owner: continuity-qc-supervisor}
   - {code: QC_MEDIA_DECODE_FAILURE, stage: review, severity: blocking, retryable: false, owner: continuity-qc-supervisor}

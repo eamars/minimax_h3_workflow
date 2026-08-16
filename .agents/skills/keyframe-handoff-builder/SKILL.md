@@ -15,7 +15,7 @@ Own endpoint source resolution, extraction, deterministic normalization, candida
 
 ## Inputs
 
-Consume the current plan revision, storyboard segment/handoff data, canon assets, exact seeds, and—when continuing—the predecessor's QC-passed effective clip. Bridges require both validated endpoints.
+Consume the current plan revision, storyboard segment/handoff data, canon assets, exact seeds, and—when continuing—the predecessor's QC-passed effective clip. Read the [wardrobe and surface-state contract](../reference-canon-manager/references/wardrobe-surface-state.md) for recurring subjects and carry its contract ID/revision into endpoint evidence. Bridges require both validated endpoints.
 
 ## Required outputs
 
@@ -31,7 +31,13 @@ Emit endpoint files, `keyframe-report.yaml`, and `handoff-frame-selection.yaml` 
 6. Require both endpoints for a bridge.
 7. Normalize only through declared pad/crop/letterbox rules; never stretch, retouch, denoise, or redesign.
 8. Validate decode, dimensions, color, frame index, duplicate policy, transforms, and safe paths. For an interaction continuation, compare action phase, pose/gaze, left/right limbs, prop ownership/contact, camera pose/motion, focus, lighting, active dialogue/speaker, and ambience against the successor entry contract.
-9. Create a new revision and expose dependency order only after automated validation passes.
+9. For every character-bearing endpoint, compare the exact versioned
+   wardrobe/surface contract (component inventory, region map, transition and
+   occlusion policy) against the canon. Mark
+   `costume_match_visual_check`, `surface_state_match_visual_check`, and
+   `wardrobe_not_cleaned`; a generic “uniform match” is insufficient. An
+   occluded component remains bound and must not be marked removed.
+10. Create a new revision and expose dependency order only after automated validation passes.
 
 ## Invariants
 
@@ -40,6 +46,10 @@ Emit endpoint files, `keyframe-report.yaml`, and `handoff-frame-selection.yaml` 
 - Extract only from effective post-trim clips of at most 10 seconds.
 - Do not impose a stable-tail rule on moving-endpoint or declared-entry-reference policies.
 - Preserve actual bytes, frame index/time, transforms, and revision IDs.
+- Preserve the contract ID/revision and declared wardrobe/surface-state locks
+  in endpoint roles; reject a destination still that cleans, changes, recolors,
+  or omits a locked garment, accessory, or surface region without a typed,
+  scoped transition.
 - Treat the tail window as diagnostic evidence only; it is never a pool of replacement endpoint candidates.
 - Never queue ComfyUI or select a creative take.
 
@@ -53,7 +63,7 @@ Return evidence for invalid revision, missing asset, invalid/unstable endpoint, 
 
 ## Validation rules
 
-Validate schema, revision linkage, endpoint role, source type, effective timing/FPS/frame index, dimensions, color, normalization, policy-specific evidence, dependency order, mode capability, and output paths.
+Validate schema, revision linkage, endpoint role, source type, effective timing/FPS/frame index, dimensions, color, normalization, exact wardrobe and surface-state checks, policy-specific evidence, dependency order, mode capability, and output paths.
 
 ## Minimal example
 

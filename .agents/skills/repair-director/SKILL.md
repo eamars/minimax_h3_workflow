@@ -15,7 +15,7 @@ Own failure classification, repair strategy, locked/changed fields, invalidation
 
 ## Inputs
 
-Consume the current plan/segment revisions, current QC FAIL with localized evidence, original prompt/job/workflow/render evidence, neighboring QC-passed media, assets, capability evidence, and prior repairs.
+Consume the current plan/segment revisions, current QC FAIL with localized evidence, original prompt/job/workflow/render evidence, neighboring QC-passed media, assets, capability evidence, and prior repairs. When the failure touches a recurring subject, also consume the current [wardrobe and surface-state contract](../reference-canon-manager/references/wardrobe-surface-state.md) and its pre-generation parity evidence.
 
 ## Required outputs
 
@@ -26,7 +26,9 @@ Write a revisioned repair plan, optional prompt delta, revised job specification
 1. Validate revisions, current QC failure, IDs, and effective duration.
 2. Route contract/infrastructure/capability defects to their owning stage.
 3. Sort failures deterministically and consider all failures on the segment.
-4. Lock plan intent, canon, camera, boundaries, handoff policy, timing, and unaffected media.
+4. Lock plan intent, canon, camera, boundaries, handoff policy, timing,
+   wardrobe/surface contract, and unaffected media. A repair may not solve a
+   drift finding by silently changing clothing, accessories, or surface state.
 5. Select the first supported minimum strategy from the repair routing rules.
 6. Declare changed/locked fields and deterministic seed behavior.
 7. Compute the smallest dependent closure.
@@ -37,6 +39,9 @@ Write a revisioned repair plan, optional prompt delta, revised job specification
 
 - Work only from a current evidence-backed QC failure.
 - Preserve unaffected media and revisions.
+- Preserve the wardrobe/surface contract ID/revision and every unaffected
+  component/region. If a creative state change is intended, route it upstream
+  as a typed transition and invalidate the affected downstream closure.
 - Never overwrite artifacts, randomize retries, select hidden takes, or expand scope silently.
 - Keep effective duration positive and at most 10 seconds.
 - Require fresh independent QC for every repaired output.
@@ -69,4 +74,3 @@ Do not convert a failed continuous handoff into an undeclared hard cut. Route th
 - Handoff repairs preserve predecessors and invalidate only successors.
 - Stale evidence, unsupported capability, malformed jobs, and overwrite attempts fail before execution.
 - Every repair receives fresh QC.
-

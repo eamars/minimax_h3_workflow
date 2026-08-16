@@ -170,6 +170,15 @@ Before authoring the graph, read and apply
   installed reference-capable Q8 checkpoint. A `start_image` or predecessor tail
   alone is not a persistent identity control. If no canonical identity reference
   exists, route the shots independently instead of declaring this chain ready.
+- Treat wardrobe and surface-state continuity as part of canon, not a style
+  suggestion. Extract an exact garment/accessory inventory and an observable
+  dirt, mud, wetness, or damage map from the canonical seed. Repeat that lock
+  in every shot prompt and control, carry the versioned contract ID/revision,
+  declare only typed, scoped changes, and reject any clean-reset,
+  alternate-uniform, missing-accessory, or dropped-region interpretation before
+  compilation. The pre-generation gate must compare structured state with
+  endpoint evidence and compiled prompts; a post-render QC check cannot make an
+  admitted prompt safe. An occluded region remains bound.
 - Default to 8–12 second generated shots. A later shot needs at least six
   seconds even for a two-second action; regroup dense 4–5 second beats into
   fewer longer generated shots while preserving story order and total runtime.

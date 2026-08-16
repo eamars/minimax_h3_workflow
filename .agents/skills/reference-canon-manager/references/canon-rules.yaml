@@ -13,6 +13,18 @@ roles:
   storyboard_reference: {controls: [declared_shot_order, declared_coverage_examples, declared_transition_examples], binding: route_to_storyboard_without_interpretation}
   edit_rhythm_reference: {controls: [declared_cut_rhythm, declared_transition_grammar, declared_pacing_pattern], binding: route_to_storyboard_and_animatic_without_copying_content}
   audio_reference: {controls: [voice_character, ambience, music_texture]}
+wardrobe_surface_state:
+  contract: .agents/skills/reference-canon-manager/references/wardrobe-surface-state.md
+  required_for: [recurring_character, recurring_prop]
+  required_fields: [contract_id, canon_revision, wardrobe_lock, surface_state_lock, transition_policy, occlusion_policy, forbidden_implicit_changes]
+  wardrobe_component_fields: [component_id, region, observable_description, material_or_texture, color_or_markings, visibility_policy]
+  surface_region_fields: [region_id, state, extent_or_intensity, confidence, source_evidence]
+  default_carry_policy: inherit
+  implicit_change_policy: forbidden
+  occlusion_policy: occluded_preserve
+  transitions_must_be: [typed, scoped, reasoned, carried_to_next_snapshot]
+  generic_labels_forbidden: [uniform, outfit, costume]
+  state_labels_requiring_region_and_extent: [dirty, wet, muddy, dusty, stained, damaged]
 endpoint_rules:
   default: none
   never_infer_from: [filename, file_order, visual_composition, apparent_start_state, apparent_end_state]

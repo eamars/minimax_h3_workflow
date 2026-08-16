@@ -33,5 +33,5 @@ lifecycle_modes:
     delivery_requires: [all_required_media_qc_pass, independent_final_qc_pass, delivery_manifest_valid]
 technical_admission:
   environment_projection: [hard_profile_id, required_landmarks, boundary_language, negated_only_forbidden_features]
-  continuity: [bilateral_limb_states, declared_interaction_targets, no_double_held_prop]
+  continuity: [bilateral_limb_states, declared_interaction_targets, wardrobe_surface_contract_parity, no_double_held_prop]
   resume: [original_admitted_job_set, plan_revision, dag_revision, capability_profile, environment_profile]

@@ -11,13 +11,27 @@ For a seamless-chain build, declare one top-level `identity_control` and one
 
 ```json
 {
-  "identity_control": {
+    "identity_control": {
     "mode": "persistent_reference",
     "subject_id": "CHARACTER_01",
     "source_path": "references/character.png",
     "input_name": "PROJECT_character.png",
     "prompt_tokens": ["<Picture 1>"],
     "use_as_start_image": true
+  },
+  "wardrobe_surface_contract": {
+    "contract_id": "WSC_CHARACTER_01_R03",
+    "canon_revision": "CANON_R03",
+    "canonical_source": "references/character.png",
+    "wardrobe_lock": [
+      {"component_id": "GARMENT_01", "region": "torso", "observable_description": "exact garment construction", "material_or_texture": "declared material", "color_or_markings": "declared color/markings", "visibility_policy": "occluded_preserve"}
+    ],
+    "surface_state_lock": [
+      {"region_id": "SURFACE_01", "region": "left_sleeve", "state": "muddy", "extent_or_intensity": "declared extent", "confidence": "exact", "source_evidence": "references/character.png"}
+    ],
+    "transition_policy": {"default": "inherit", "allowed_deltas": [{"from": "muddy", "to": "dry_muddy", "reason": "declared elapsed time", "scope": "shot_02"}]},
+    "occlusion_policy": "occluded_preserve",
+    "forbidden_implicit_changes": ["category_swap", "recolor", "missing_accessory", "clean_reset", "dropped_surface_region"]
   },
   "shots": [
     {
@@ -79,6 +93,13 @@ I2VA/FL2VA endpoint workflow.
   destination anchor is validated before generation.
 - Treat seed policy as reproducibility/stochastic control, not identity control.
   A fixed or per-shot seed never substitutes for a bound identity reference.
+- Require the versioned canonical `wardrobe_surface_contract` for every
+  recurring character or prop. Record visible garment/accessory regions and
+  region-level dirt, mud, wetness, or damage; repeat the full opening state in
+  every shot prompt, endpoint reference, and compiled graph. Later segments may
+  apply only typed, scoped transitions. Generic “uniform” wording, a clean
+  reset, recolor, alternate costume, missing accessory, dropped region, or
+  undeclared removal is a blocking semantic failure.
 
 ## Queue gate
 
@@ -94,6 +115,9 @@ Allow queueing only when the builder or workflow compiler records
 - `ACTOR_PATH_UNSIGNED`
 - `TEXT_ONLY_SCENE_RESET_UNSAFE`
 - `TEXT_ONLY_VISUAL_RESET_UNSAFE`
+- `WARDROBE_SURFACE_STATE_UNBOUND`
+- `WARDROBE_SURFACE_CONTRACT_STALE`
+- `SURFACE_STATE_TRANSITION_UNDECLARED`
 
 Post-render inspection may find stochastic failures that survive these controls,
 but it must not be used to excuse a missing pre-generation control.

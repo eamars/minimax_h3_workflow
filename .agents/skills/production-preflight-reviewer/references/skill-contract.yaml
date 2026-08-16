@@ -10,7 +10,7 @@ may_modify_upstream_decisions: false
 owner: production-preflight-reviewer
 implementation_status: invokable_milestone_3_contract
 pre_generation_semantic_gate:
-  required_dimensions: [identity_generation_binding, dialogue_onset_visibility, directed_actor_path, subject_multiplicity, destination_control]
+  required_dimensions: [identity_generation_binding, wardrobe_surface_state_parity, dialogue_onset_visibility, directed_actor_path, subject_multiplicity, destination_control]
   queue_authority: false
   downstream_required_status: PRE_GENERATION_VALIDATED
 routing:

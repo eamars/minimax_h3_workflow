@@ -17,9 +17,9 @@ camera_binding: {typed_setup_and_motion_required: true, position_changes_preserv
 environment_binding: {hard_profile_id_required: true, required_landmarks_required: true, boundary_language_required: true, forbidden_features: negated_validation_only, validator: scripts/validate_environment_projection.py}
 pre_generation_controls:
   required_status: PRE_GENERATION_VALIDATED
-  fields: [identity, subject_instances, dialogue_cues, motion, visual_reset]
+  fields: [identity, wardrobe_surface_contract, subject_instances, dialogue_cues, motion, visual_reset]
   text_only_substitution: forbidden
 routing:
   predecessor: [comfyui-live-capability-probe, freeze-capability-profile-and-workflow-catalog]
   successor: [keyframe-handoff-builder-when-triggered, comfyui-workflow-compiler]
-failure_codes: [PLAN_REVISION_INVALID, SEGMENT_TOO_LONG, H3_MODE_MISMATCH, H3_REFERENCE_LABEL_MISMATCH, H3_REFERENCE_USAGE_MISSING, CANON_IDENTITY_BINDING_MISSING, REQUIRED_ASSET_MISSING, H3_PROMPT_TOO_LONG, H3_UNDECLARED_CUT, H3_ONE_TAKE_CUT_CONFLICT, DIALOGUE_WINDOW_MISSING, DIALOGUE_TIMING_MISMATCH, DIALOGUE_SPEAKER_UNCLEAR, SPEAKER_VISIBILITY_UNBOUND, ACTOR_PATH_UNSIGNED, SUBJECT_MULTIPLICITY_UNBOUNDED, TEXT_ONLY_VISUAL_RESET_UNSAFE, ENTRY_STATE_MISSING, EXIT_STATE_UNSTABLE, CONTINUATION_DELTA_INVALID]
+failure_codes: [PLAN_REVISION_INVALID, SEGMENT_TOO_LONG, H3_MODE_MISMATCH, H3_REFERENCE_LABEL_MISMATCH, H3_REFERENCE_USAGE_MISSING, CANON_IDENTITY_BINDING_MISSING, WARDROBE_SURFACE_STATE_UNBOUND, WARDROBE_SURFACE_CONTRACT_STALE, SURFACE_STATE_TRANSITION_UNDECLARED, REQUIRED_ASSET_MISSING, H3_PROMPT_TOO_LONG, H3_UNDECLARED_CUT, H3_ONE_TAKE_CUT_CONFLICT, DIALOGUE_WINDOW_MISSING, DIALOGUE_TIMING_MISMATCH, DIALOGUE_SPEAKER_UNCLEAR, SPEAKER_VISIBILITY_UNBOUND, ACTOR_PATH_UNSIGNED, SUBJECT_MULTIPLICITY_UNBOUNDED, TEXT_ONLY_VISUAL_RESET_UNSAFE, ENTRY_STATE_MISSING, EXIT_STATE_UNSTABLE, CONTINUATION_DELTA_INVALID]

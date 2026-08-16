@@ -9,7 +9,7 @@ description: Convert schema-valid project requests, canon locks, and plot packag
 
 Turn each plot beat into behavior an actor can play and a director can cover. Preserve premise, order, and outcome while making intention, observable action, reaction, adjustment, dialogue, subtext, timing, and physical continuity explicit.
 
-Read the [skill contract](references/skill-contract.yaml), [performance rules](references/performance-rules.yaml), and `schemas/scene-performance.schema.json`.
+Read the [skill contract](references/skill-contract.yaml), [performance rules](references/performance-rules.yaml), the [wardrobe and surface-state contract](../reference-canon-manager/references/wardrobe-surface-state.md), and `schemas/scene-performance.schema.json`.
 
 ## Ownership boundary
 
@@ -30,7 +30,11 @@ Produce authoritative `scene-performance.yaml`, readable `scene-text.md`, and `p
 3. State actor/controller, intention, observable action, reaction, adjustment, and visible result.
 4. Convert internal states into observable behavior while retaining intention/subtext separately.
 5. Write or preserve required dialogue with stable speakers, positive timing, pauses, interruptions, and reaction links.
-6. Track speaker identity, prop owner, hand occupancy, transfer order, wetness, clothing, and relevant physical state as continuity invariants and expected scene-time deltas.
+6. Import the canonical `wardrobe_surface_contract` unchanged. Track speaker
+   identity, prop owner, hand occupancy, transfer order, clothing components,
+   region-level surface state, and relevant physical state as continuity
+   invariants and expected scene-time deltas. Declare every permitted change;
+   do not infer removal or cleaning from an occluded or out-of-frame region.
 7. For every interactive hand action, assign stable per-limb IDs (`HAND_L`, `HAND_R`, or a subject-qualified equivalent) and emit before-contact, contact/transfer, and after-contact snapshots. Never use an unqualified “hand” as the only state for a door, selector, towel, garment, or handheld shower action.
 8. If source material does not establish handedness or hardware geometry, declare the blocking choice in performance state without promoting it to canon; do not infer a handle side, hinge side, or swing direction from the image crop.
 9. Mark unsafe coexistence of dense obligations and offer reversible mitigation without choosing segment boundaries.
@@ -43,7 +47,9 @@ Produce authoritative `scene-performance.yaml`, readable `scene-text.md`, and `p
 - Give every interaction an actor/controller, turn order, and reaction.
 - Keep speaker IDs project-global and stable across revisions.
 - Keep positive, ordered timing; declare every overlap/interruption.
-- Prevent impossible hand/prop transfers, wetness/clothing jumps, identity swaps, or reactions before triggers.
+- Prevent impossible hand/prop transfers, wardrobe/surface-state jumps,
+  identity swaps, or reactions before triggers. Carry the full opening and
+  closing wardrobe/surface snapshots for every phase boundary.
 - Require an authoritative two-sided limb state in every continuity snapshot. A prop or fixture state may change only across an explicit contact/transfer sequence with a declared owner and adjacent snapshots.
 - Keep canon uncertainty separate from performance blocking: a declared left/right choice may control the actor, but it cannot silently canonize unknown door hardware or room geometry.
 - Create no geography, spatial staging, editorial shot, generation segment, or camera plan.
@@ -55,14 +61,15 @@ Do not rewrite outcomes, add causal beats, resolve canon, redesign assets, choos
 
 ## Failure conditions
 
-Return `SCENE_NOT_PLAYABLE` with affected IDs, evidence, detail code, blocking scope, and owner when action is unobservable, actor control/reaction/entry/exit/timing/speaker assignment is missing, a limb is undefined, a prop contact has no adjacent snapshots, continuity contradicts itself, or playability requires a new plot outcome. Pass through upstream plot/canon failures unchanged. Use detail codes `LIMB_STATE_UNDEFINED`, `PROP_CONTACT_SNAPSHOT_MISSING`, `HAND_ASSIGNMENT_CONFLICT`, or `UNKNOWN_HARDWARE_USED_AS_CANON` where applicable.
+Return `SCENE_NOT_PLAYABLE` with affected IDs, evidence, detail code, blocking scope, and owner when action is unobservable, actor control/reaction/entry/exit/timing/speaker assignment is missing, a limb is undefined, a prop contact has no adjacent snapshots, a wardrobe/surface contract is missing or changes without a declared transition, continuity contradicts itself, or playability requires a new plot outcome. Pass through upstream plot/canon failures unchanged. Use detail codes `LIMB_STATE_UNDEFINED`, `PROP_CONTACT_SNAPSHOT_MISSING`, `HAND_ASSIGNMENT_CONFLICT`, `WARDROBE_SURFACE_STATE_MISSING`, `SURFACE_STATE_TRANSITION_UNDECLARED`, or `UNKNOWN_HARDWARE_USED_AS_CANON` where applicable.
 
 ## Validation rules
 
 - Validate schema, envelope, exact source revisions, and deterministic IDs/order.
 - Require complete one-to-many plot traceability and positive timing windows.
 - Require one stable speaker per dialogue cue and explicit action/reaction links.
-- Validate adjacent hand/prop/wetness/clothing snapshots.
+- Validate adjacent hand/prop/wardrobe/surface-state snapshots, including the
+  full contract ID/revision, explicit deltas, and occlusion semantics.
 - Validate `limb_states` for stable IDs, left/right sides, legal states, explicit holding/contact targets, and no simultaneous incompatible ownership.
 - Validate before/contact/after snapshots for every interactive action, including door opening/closing at entry and exit.
 - Require scene-time phase ranges to be positive, ordered, and distinct from later source/record time.

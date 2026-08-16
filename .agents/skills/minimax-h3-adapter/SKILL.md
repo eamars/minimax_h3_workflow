@@ -26,7 +26,7 @@ selected mode while applying that document to natural-language prompt text.
 
 ## Inputs
 
-Consume the current production-plan revision, segment cards, canon/reference order, optional sound plan, and live H3 capability evidence. Require validated endpoint media only when the declared mode needs it.
+Consume the current production-plan revision, segment cards, canon/reference order, optional sound plan, and live H3 capability evidence. Read the [wardrobe and surface-state contract](../reference-canon-manager/references/wardrobe-surface-state.md) when a recurring subject is present. Require validated endpoint media only when the declared mode needs it.
 
 ## Required outputs
 
@@ -45,8 +45,15 @@ Write revisioned prompt text, `h3-prompt-packets.yaml`, and `h3-validation-repor
 9. Project a machine-readable pre-generation control document for each segment:
    identity mode and bound asset IDs, per-subject visible-instance maxima,
    dialogue windows and speaker visibility, signed motion path, and visual-reset
-   strategy. Reject prose-only substitutes.
-10. For a continuation, repeat only declared identity/environment/style locks, bind the predecessor's actual final frame, restate the full entry state, and describe only the next allowed delta. Do not replay an action already completed before the boundary.
+   strategy. Also project the exact versioned wardrobe/surface contract ID and
+   revision, component inventory, region-level surface map, occlusion policy,
+   and per-segment allowed deltas. Reject generic clothing labels and prose-only
+   surface-state substitutes.
+10. For a continuation, bind the predecessor's actual final frame, restate the
+    full wardrobe/surface entry state (not only a delta), and describe only the
+    next allowed delta. Repeat the contract ID/revision and expand the
+    observable lock in the prompt; do not rely on a previous prompt or model
+    memory and do not replay an action already completed before the boundary.
 11. If style is unspecified upstream, add no named style family or habitual “cinematic/photorealistic” boilerplate. If style is declared, express its observable rendering, palette, light, texture, motion, typography, and edit behavior without narrowing it to a different style.
 12. Compute the smallest valid `17k+5` frame count at 24 fps and explicit post-trim effective timing.
 13. Validate labels, ordering, timing, prompt length, continuity, visible text, pre-generation controls, and traceability. Enforce the official 7000-character prompt ceiling and the selected mode's public input envelope in addition to live local capability.
@@ -62,6 +69,11 @@ Write revisioned prompt text, `h3-prompt-packets.yaml`, and `h3-validation-repor
 - Require recurring canonical identity to use a mode that actually binds it:
   persistent reference for R2VA or a declared endpoint image for I2VA/FL2VA.
   A first-frame-only seed may not be described as a persistent reference.
+- Require recurring characters/props to carry the exact versioned
+  `wardrobe_surface_contract` from canon. Later prompts may inherit or apply
+  only typed, scoped transitions; a clean reset, alternate uniform, recolor,
+  missing accessory, dropped region, or undeclared transition is a blocking
+  pre-generation error. Occlusion preserves state.
 - Require every `<d>...</d>` span to resolve to a finite upstream cue and
   speaker-visibility state; add no undeclared generated speech.
 - Require signed motion and subject-instance limits to survive into the packet.
@@ -77,7 +89,7 @@ Do not rewrite plot, performance, dialogue, canon, camera, shots, segments, boun
 
 ## Failure conditions
 
-Return `BLOCKED` for invalid plan revision, overlong timing, unsupported mode, invalid reference labels, missing/ambiguous identity or reference use, missing asset, prompt over 7000 characters, undeclared cuts, one-take/cut conflict, dialogue timing/visibility ambiguity, unsigned motion, unbounded subject multiplicity, text-only visual reset, missing entry/exit state, or invalid continuation endpoint.
+Return `BLOCKED` for invalid plan revision, overlong timing, unsupported mode, invalid reference labels, missing/ambiguous identity or reference use, missing asset, stale, generic, contradictory, or unbound wardrobe/surface-state map, clean-reset or alternate-uniform instruction, prompt over 7000 characters, undeclared cuts, one-take/cut conflict, dialogue timing/visibility ambiguity, unsigned motion, unbounded subject multiplicity, text-only visual reset, missing entry/exit state, undeclared surface transition, or invalid continuation endpoint.
 
 ## Validation rules
 
