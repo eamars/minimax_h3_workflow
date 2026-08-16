@@ -61,6 +61,13 @@ Before prescribing node names or widget values, inspect the actual installation.
    through Manager when appropriate, and restart after installation.
 4. Keep model files and runtime caches outside version control. Version the
    small workflow JSON, scripts, prompts, manifests, and checksums instead.
+5. For DynamicVRAM runs, use `--vram-headroom 1` by default. This reserves a
+   one-GB safety margin that DynamicVRAM must keep completely free above its
+   normal working set, including VRAM used by other applications. Confirm the
+   setting in the launch command and runtime diagnostics before queueing. Do
+   not confuse this with `--reserve-vram`, which reserves VRAM for the OS or
+   other software; if the one-GB margin cannot be maintained, reduce the
+   workload or use supported offload before attempting a production render.
 
 ### 3. Lay out the graph as blocks
 
@@ -238,9 +245,9 @@ exact final frame" is not evidence that a boundary is valid.
    bridge, scene-reset, assembly, and boundary-QC rules.
 6. Preserve the local runtime without negotiation: RTX 4090, cuda:0 mapping,
    `UnetLoaderGGUFDynamicVRAM`, Q8 FL2VA checkpoint, installed CLIP and VAEs,
-   VRAM cap, host-memory offload, 24 fps, resolution, sampler, scheduler, and
-   step settings. Never solve a workflow error by changing this hardware or
-   memory configuration.
+   VRAM cap, one-GB `--vram-headroom`, host-memory offload, 24 fps, resolution,
+   sampler, scheduler, and step settings. Never solve a workflow error by
+   changing this hardware or memory configuration or by spending the headroom.
 7. Keep `shot_count: 0`, per-shot seeds, first-shot preview, and per-shot saves.
    Use `chain_gain_control: flatten` for chains longer than five shots. Patch
    both `widgets_values` and `properties.h3_widget_values` so the UI cannot
@@ -338,8 +345,11 @@ Use this failure map:
   then restart and reload the graph.
 - Missing model: fix the model directory or filename; do not substitute a
   similarly named checkpoint without checking architecture and VAE compatibility.
-- Out of memory: reduce resolution, frame count, batch size, or quantization
-  first; then use the runtime's supported offload/low-VRAM options.
+- Out of memory or less than one GB of DynamicVRAM headroom: reduce
+  resolution, frame count, batch size, or quantization first; then use the
+  runtime's supported offload/low-VRAM options. Keep the one-GB margin for
+  future projects unless a separately validated runtime profile explicitly
+  replaces it.
 - Invalid frame length: calculate the model's temporal grid instead of rounding
   a requested seconds value by intuition.
 - API `int`/`float` in a tensor slot: regenerate API format from the live UI or

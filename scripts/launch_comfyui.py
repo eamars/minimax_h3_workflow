@@ -12,7 +12,7 @@ is preserved:
 Usage:
   python scripts\launch_comfyui.py --single-gpu                         # first/selected GPU only
   python scripts\launch_comfyui.py --primary-gpu "GPU name" --single-gpu
-  python scripts\launch_comfyui.py -- --vram-headroom 3 --cpu-vae       # pass flags to ComfyUI
+  python scripts\launch_comfyui.py -- --vram-headroom 1 --cpu-vae       # pass flags to ComfyUI
   python scripts\launch_comfyui.py --print-devices                      # show CUDA order only
 """
 
