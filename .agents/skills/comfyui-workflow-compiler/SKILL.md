@@ -29,14 +29,17 @@ Write new `compiled/workflows`, `compiled/jobs`, `production-dag.yaml`, and `com
 1. Validate the plan revision, automated preflight, IDs, assets, and paths.
 2. Probe live ComfyUI and treat the live schema as authority.
 3. Select only a catalog template matching job type, H3 mode, endpoint policy, timing, audio, nodes, and models.
-4. Expand exact placeholders and reject missing, embedded, or unknown bindings.
-5. Serialize dynamic-combo selectors in the scalar API shape exposed by live `/object_info`.
-6. Validate every node, literal, link, output slot, model, and acyclic graph.
-7. Validate target/model/effective timing, the `17k+5` H3 grid, 24 fps, post-trim duration at most 10 seconds, and dimensions divisible by 32.
-8. Verify source paths, roles, and optional raw-file integrity checksums.
-9. Build jobs for generation, endpoint, extraction, concat, mix, upscale, and export operations.
-10. Build only real asset/handoff/post dependencies. Keep editorial mechanisms outside generation topology.
-11. Write new revisions atomically and hand off to Render Orchestrator. Never submit `/prompt`.
+4. Validate the packet's pre-generation controls before graph emission: actual
+   identity binding mode/assets, per-subject instance maxima, dialogue windows
+   and visibility, signed motion path, and non-text visual-reset strategy.
+5. Expand exact placeholders and reject missing, embedded, or unknown bindings.
+6. Serialize dynamic-combo selectors in the scalar API shape exposed by live `/object_info`.
+7. Validate every node, literal, link, output slot, model, and acyclic graph.
+8. Validate target/model/effective timing, the `17k+5` H3 grid, 24 fps, post-trim duration at most 10 seconds, and dimensions divisible by 32.
+9. Verify source paths, roles, and optional raw-file integrity checksums.
+10. Build jobs for generation, endpoint, extraction, concat, mix, upscale, and export operations.
+11. Build only real asset/handoff/post dependencies. Keep editorial mechanisms outside generation topology.
+12. Write new revisions atomically and hand off to Render Orchestrator. Never submit `/prompt`.
 
 ## Invariants
 
@@ -44,6 +47,12 @@ Write new `compiled/workflows`, `compiled/jobs`, `production-dag.yaml`, and `com
 - Preserve planned segment boundaries and creative fields.
 - Keep target/effective duration positive and at most 10 seconds.
 - Reject unresolved placeholders, unavailable nodes/models, invalid links, cycles, stale schemas, false dependencies, and unsafe paths.
+- Reject missing/self-asserted prose-only semantic controls. Require
+  `PRE_GENERATION_VALIDATED` before a generation workflow is emitted.
+- Require persistent identity to select R2VA and bind its declared canonical
+  assets; require endpoint identity to select I2VA/FL2VA. Never treat a
+  first-frame seed as a persistent reference.
+- Reject text-only visual resets and keep editorial cuts outside H3 generation.
 - Use technical checksums only for reproducibility and file integrity.
 - Never queue, render, install models, mutate the plan, or overwrite an existing artifact.
 
@@ -53,11 +62,11 @@ Do not invent prompts, choose creative modes, reinterpret references, change sto
 
 ## Failure conditions
 
-Return `BLOCKED` with stable IDs and evidence for `PLAN_REVISION_INVALID`, `PREFLIGHT_BLOCKED`, `CAPABILITY_PROBE_MISSING`, `ENVIRONMENT_PROJECTION_INVALID`, `WORKFLOW_TEMPLATE_MISSING`, `WORKFLOW_MAPPING_INVALID`, `WORKFLOW_NODE_UNAVAILABLE`, `WORKFLOW_INPUT_UNSUPPORTED`, `WORKFLOW_LINK_INVALID`, `WORKFLOW_CYCLE`, `REQUIRED_MODEL_MISSING`, `REQUIRED_ASSET_MISSING`, `SEGMENT_TOO_LONG`, `INVALID_FRAME_GRID`, `RESOLUTION_UNSUPPORTED`, `AUDIO_SPEC_UNSUPPORTED`, `HANDOFF_TAIL_INVALID`, `DAG_INVALID`, `ARTIFACT_OVERWRITE_FORBIDDEN`, or `OUTPUT_PATH_UNSAFE`.
+Return `BLOCKED` with stable IDs and evidence for `PLAN_REVISION_INVALID`, `PREFLIGHT_BLOCKED`, `PREGEN_CONTROLS_MISSING`, `CANON_IDENTITY_BINDING_MISSING`, `DIALOGUE_WINDOW_MISSING`, `SPEAKER_VISIBILITY_UNBOUND`, `ACTOR_PATH_UNSIGNED`, `SUBJECT_MULTIPLICITY_UNBOUNDED`, `TEXT_ONLY_VISUAL_RESET_UNSAFE`, `CAPABILITY_PROBE_MISSING`, `ENVIRONMENT_PROJECTION_INVALID`, `WORKFLOW_TEMPLATE_MISSING`, `WORKFLOW_MAPPING_INVALID`, `WORKFLOW_NODE_UNAVAILABLE`, `WORKFLOW_INPUT_UNSUPPORTED`, `WORKFLOW_LINK_INVALID`, `WORKFLOW_CYCLE`, `REQUIRED_MODEL_MISSING`, `REQUIRED_ASSET_MISSING`, `SEGMENT_TOO_LONG`, `INVALID_FRAME_GRID`, `RESOLUTION_UNSUPPORTED`, `AUDIO_SPEC_UNSUPPORTED`, `HANDOFF_TAIL_INVALID`, `DAG_INVALID`, `ARTIFACT_OVERWRITE_FORBIDDEN`, or `OUTPUT_PATH_UNSAFE`.
 
 ## Validation rules
 
-Validate schemas, plan/job revision linkage, live graph shape, model/assets, timing/grid/resolution, safe paths, DAG acyclicity, camera/time traceability, and boundary/handoff separation. Run the bundled probe, compiler, live-graph validator, and contract tests. Validation must never submit `/prompt`.
+Validate schemas, plan/job revision linkage, pre-generation semantic controls, live graph shape, model/assets, timing/grid/resolution, safe paths, DAG acyclicity, camera/time traceability, and boundary/handoff separation. Run the bundled probe, compiler, live-graph validator, and contract tests. Validation must never submit `/prompt`.
 
 ## Minimal example
 
@@ -71,7 +80,8 @@ Reject an 11-second segment, unavailable model, dynamic-combo object value, unre
 
 - A current plan revision and live capability profile compile without a sidecar gate.
 - Missing node/model/asset, bad binding/link/type/range, invalid timing/grid, unsafe path, and graph cycle fail deterministically.
+- Missing identity/dialogue/motion/multiplicity/reset controls, identity-mode
+  mismatch, and text-only visual reset fail before output files are written.
 - Independent jobs have no false edge; continuation and bridge jobs serialize correctly.
 - Outputs trace to plan/segment/acceptance revision IDs.
 - Compilation performs no queue, download, render, plan mutation, or overwrite calls.
-

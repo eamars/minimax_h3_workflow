@@ -42,10 +42,14 @@ Write revisioned prompt text, `h3-prompt-packets.yaml`, and `h3-validation-repor
 6. Project a declared multi-shot segment into one timed block per upstream editorial shot. Each block must carry shot size, visible content, camera, action, dialogue/speaker state, and sound plus the exact declared transition. Never rely on H3's default cut behavior.
 7. Compile a declared one-take segment as one continuous action description with no invented internal `[Shot N]` structure or cut. Treat FL2VA endpoint pairs as continuous interpolation unless the upstream plan explicitly times a transition.
 8. Preserve dialogue verbatim, fit its word span to upstream timing, identify on-screen/off-screen speakers, encode declared J-cuts/L-cuts, and separate dialogue, ambience/effects, and score.
-9. For a continuation, repeat only declared identity/environment/style locks, bind the predecessor's actual final frame, restate the full entry state, and describe only the next allowed delta. Do not replay an action already completed before the boundary.
-10. If style is unspecified upstream, add no named style family or habitual “cinematic/photorealistic” boilerplate. If style is declared, express its observable rendering, palette, light, texture, motion, typography, and edit behavior without narrowing it to a different style.
-11. Compute the smallest valid `17k+5` frame count at 24 fps and explicit post-trim effective timing.
-12. Validate labels, ordering, timing, prompt length, continuity, visible text, and traceability. Enforce the official 7000-character prompt ceiling and the selected mode's public input envelope in addition to live local capability.
+9. Project a machine-readable pre-generation control document for each segment:
+   identity mode and bound asset IDs, per-subject visible-instance maxima,
+   dialogue windows and speaker visibility, signed motion path, and visual-reset
+   strategy. Reject prose-only substitutes.
+10. For a continuation, repeat only declared identity/environment/style locks, bind the predecessor's actual final frame, restate the full entry state, and describe only the next allowed delta. Do not replay an action already completed before the boundary.
+11. If style is unspecified upstream, add no named style family or habitual “cinematic/photorealistic” boilerplate. If style is declared, express its observable rendering, palette, light, texture, motion, typography, and edit behavior without narrowing it to a different style.
+12. Compute the smallest valid `17k+5` frame count at 24 fps and explicit post-trim effective timing.
+13. Validate labels, ordering, timing, prompt length, continuity, visible text, pre-generation controls, and traceability. Enforce the official 7000-character prompt ceiling and the selected mode's public input envelope in addition to live local capability.
 
 ## Invariants
 
@@ -55,6 +59,14 @@ Write revisioned prompt text, `h3-prompt-packets.yaml`, and `h3-validation-repor
 - Preserve declared shot/cut structure exactly; do not add shots, cuts, montage beats, or transitions.
 - Preserve style latitude when no style source is declared.
 - Require every reference binding to have a prompt-visible purpose.
+- Require recurring canonical identity to use a mode that actually binds it:
+  persistent reference for R2VA or a declared endpoint image for I2VA/FL2VA.
+  A first-frame-only seed may not be described as a persistent reference.
+- Require every `<d>...</d>` span to resolve to a finite upstream cue and
+  speaker-visibility state; add no undeclared generated speech.
+- Require signed motion and subject-instance limits to survive into the packet.
+- Reject text-only scene resets. Use an endpoint bridge, reference re-establish,
+  or editorial cut outside the unsafe generation segment.
 - Preserve the environment profile and reject forbidden architectural inventions.
 - Never reinterpret endpoint/general-reference roles.
 - Produce filesystem artifacts only.
@@ -65,11 +77,11 @@ Do not rewrite plot, performance, dialogue, canon, camera, shots, segments, boun
 
 ## Failure conditions
 
-Return `BLOCKED` for invalid plan revision, overlong timing, unsupported mode, invalid reference labels, missing/ambiguous reference use, missing asset, prompt over 7000 characters, undeclared cuts, one-take/cut conflict, dialogue timing or speaker ambiguity, missing entry/exit state, or invalid continuation endpoint.
+Return `BLOCKED` for invalid plan revision, overlong timing, unsupported mode, invalid reference labels, missing/ambiguous identity or reference use, missing asset, prompt over 7000 characters, undeclared cuts, one-take/cut conflict, dialogue timing/visibility ambiguity, unsigned motion, unbounded subject multiplicity, text-only visual reset, missing entry/exit state, or invalid continuation endpoint.
 
 ## Validation rules
 
-Validate packet schema, revision linkage, live capability, deterministic relative paths, exact H3 field order, timestamps, camera binding, reference order and purpose, shot structure, style provenance, dialogue span, audio layers, continuation delta, visible text, character count, and frame-grid/trim counts.
+Validate packet schema, revision linkage, live capability, deterministic relative paths, exact H3 field order, timestamps, camera binding, reference order and purpose, shot structure, style provenance, dialogue span and visibility, audio layers, signed motion, subject multiplicity, visual-reset strategy, continuation delta, visible text, character count, and frame-grid/trim counts. Emit `PRE_GENERATION_VALIDATED` only after every control passes.
 
 ## Minimal example
 
@@ -86,5 +98,8 @@ For incompatible FL2VA endpoints plus an unsupported reference or an 11-second s
 - Preserve one-take versus multi-shot semantics, declared cuts, and FL2VA interpolation behavior.
 - Keep an unspecified style unnamed while accepting explicit live-action, animation, MG, UI, AR, fashion, documentary, or other style families without adapter bias.
 - Reject a continuation that substitutes an earlier tail frame or repeats a completed interaction.
+- Reject recurring identity without an actual reference/endpoint binding,
+  dialogue without a timed visibility cue, actor travel without a signed path,
+  unbounded subject duplication, and text-only scene reset.
 - Compute deterministic `17k+5` and effective-trim accounting.
 - Produce revision-linked outputs without ComfyUI calls or human gates.

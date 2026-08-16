@@ -3,6 +3,17 @@ video_vae: minimax_h3_video_vae_fp16.safetensors
 audio_vae: minimax_h3_audio_vae_fp32.safetensors
 diffusion_model: minimax_h3_fl2va_pruned_fp8_Q8_CR.gguf
 prompt: "A calm observational shot with synchronized natural ambience."
+pre_generation_controls:
+  identity:
+    mode: not_applicable
+    reason: No recurring canonical subject is present in this compiler fixture.
+  subject_instances: []
+  dialogue_cues: []
+  motion:
+    mode: none
+    reason: The fixture contains no actor translation.
+  visual_reset:
+    mode: no_reset
 width: 1344
 height: 768
 model_frame_count: 243

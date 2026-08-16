@@ -1,4 +1,4 @@
-version: 1
+version: 2
 status: capability_probe_required
 rules:
   - Treat live ComfyUI /object_info, /models, and /system_stats as authority.
@@ -36,35 +36,35 @@ templates:
     mapping: mappings/h3_t2va_api.mapping.yaml
     supported_modes: [T2VA]
     required_nodes: [CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ImageToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
-    input_bindings: [prompt, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+    input_bindings: [prompt, pre_generation_controls, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
   - <<: *h3_defaults
     template_id: h3-i2va-v1
     file: templates/h3_i2va_api.json
     mapping: mappings/h3_i2va_api.mapping.yaml
     supported_modes: [I2VA]
     required_nodes: [LoadImage, CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ImageToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
-    input_bindings: [prompt, first_frame_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+    input_bindings: [prompt, pre_generation_controls, first_frame_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
   - <<: *h3_defaults
     template_id: h3-fl2va-v1
     file: templates/h3_fl2va_api.json
     mapping: mappings/h3_fl2va_api.mapping.yaml
     supported_modes: [FL2VA]
     required_nodes: [LoadImage, CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ImageToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
-    input_bindings: [prompt, first_frame_path, last_frame_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+    input_bindings: [prompt, pre_generation_controls, first_frame_path, last_frame_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
   - <<: *h3_defaults
     template_id: h3-l2va-v1
     file: templates/h3_l2va_api.json
     mapping: mappings/h3_l2va_api.mapping.yaml
     supported_modes: [L2VA]
     required_nodes: [LoadImage, CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ImageToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
-    input_bindings: [prompt, last_frame_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+    input_bindings: [prompt, pre_generation_controls, last_frame_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
   - <<: *h3_defaults
     template_id: h3-r2va-v1
     file: templates/h3_r2va_api.json
     mapping: mappings/h3_r2va_api.mapping.yaml
     supported_modes: [R2VA]
     required_nodes: [LoadImage, CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ReferenceToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
-    input_bindings: [prompt, ordered_reference_assets, reference_image_size, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+    input_bindings: [prompt, pre_generation_controls, ordered_reference_assets, reference_image_size, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
   - <<: *utility_defaults
     template_id: still-keyframe-v1
     file: templates/still_keyframe_api.json
@@ -89,7 +89,7 @@ templates:
     job_type: bridge
     supported_modes: [FL2VA]
     required_nodes: [LoadImage, CLIPLoader, VAELoader, UnetLoaderGGUFDynamicVRAM, MiniMaxH3ImageToVideo, RandomNoise, BasicScheduler, KSamplerSelect, BasicGuider, SamplerCustomAdvanced, VAEDecode, VAEDecodeAudio, ImageFromBatch, TrimAudioDuration, CreateVideo, SaveVideo]
-    input_bindings: [prompt, validated_source_tail_path, validated_target_head_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
+    input_bindings: [prompt, pre_generation_controls, validated_source_tail_path, validated_target_head_path, width, height, model_frame_count, effective_frame_count, effective_duration_seconds, seed, steps, sampler_name, scheduler, diffusion_model, text_encoder, video_vae, audio_vae, output_prefix]
   - <<: *utility_defaults
     template_id: concat-v1
     file: templates/concat_api.json

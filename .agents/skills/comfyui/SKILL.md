@@ -134,6 +134,8 @@ and saves the final muxed video after one Queue Prompt action.
 Treat the Joey Gambino H3 Seamless Chain boundary rules as executable
 requirements, not optional prompting advice. The phrase "continue from the
 exact final frame" is not evidence that a boundary is valid.
+Before authoring the graph, read and apply
+[pre-generation-controls.md](references/pre-generation-controls.md).
 
 - Repeat one byte-identical style, identity, environment, lighting, and
   optional voice lock in every generated shot.
@@ -144,18 +146,30 @@ exact final frame" is not evidence that a boundary is valid.
 - Put at most one dominant action and one camera idea in the action budget.
   Camera changes and editorial cuts must happen after the airlock, inside the
   shot, never at a generation boundary.
-- Treat a scene change, shot cut, lens/setup reset, or other visual-context
-  change as a time-coded mid-segment event. Declare exact `opening_scene` and
-  `closing_scene` values plus a `transition` object. Place `transition.at_seconds`
-  inside the protected 40–60% middle window, after the opening airlock and
-  before the settled landing. The next segment must open in the preceding
-  segment's already-established closing scene and camera; it must never perform
-  the transition at frame zero.
+- Never ask the simple `H3MultishotSampler` seamless-chain builder to invent a
+  scene change, shot cut, match cut, or dissolve from text. Route that topology
+  to an endpoint bridge, reference re-establish, or deterministic editorial
+  assembly graph with a validated destination anchor. A continuous camera move
+  may remain inside the simple chain when its scene does not change and its
+  midpoint timing is explicit.
 - Finish all action and dialogue before a final settled landing of at least two
   seconds. Begin no new action in the landing. Its state, camera, and audio
   descriptions become the next shot's opening fields verbatim.
 - Never split a spoken line across shots or begin speech in the airlock. Fit
   dialogue plus four quiet boundary seconds within the declared duration.
+- Require a machine-readable dialogue window for every `<d>...</d>` line,
+  including speaker ID, onset/end, and on-screen/off-screen/J-cut/L-cut state.
+  Require an explicit empty cue list when no speech is intended. Reject
+  on-screen speech whose speaker is not visible by its declared onset.
+- Require a signed actor path for every translational move: origin zone,
+  destination zone, direction, forbidden reversal/exit directions, and endpoint
+  state. Require a per-subject visible-instance maximum to prevent duplicate
+  identity during transitions.
+- For every seamless multishot chain, connect an actual persistent identity
+  reference to `reference_images`, bind `<Picture 1>` in every shot, and use the
+  installed reference-capable Q8 checkpoint. A `start_image` or predecessor tail
+  alone is not a persistent identity control. If no canonical identity reference
+  exists, route the shots independently instead of declaring this chain ready.
 - Default to 8–12 second generated shots. A later shot needs at least six
   seconds even for a two-second action; regroup dense 4–5 second beats into
   fewer longer generated shots while preserving story order and total runtime.
@@ -163,8 +177,9 @@ exact final frame" is not evidence that a boundary is valid.
   marking the workflow ready.
 - A multishot build is fail-closed. It may report
   `READY_TO_LOAD_AND_QUEUE` only when the builder returns
-  `continuity.status: STRICT_BOUNDARY_VALIDATED`. A keyword-presence audit or a
-  manifest that declares its own PASS is insufficient.
+  `continuity.status: STRICT_BOUNDARY_VALIDATED` and
+  `pre_generation.status: PRE_GENERATION_VALIDATED`. A keyword-presence audit
+  or a manifest that declares its own PASS is insufficient.
 
 1. Read every supplied input. Infer only missing production details needed to
    make it executable: ordered shots, duration, camera, action, sound, opening
@@ -182,17 +197,37 @@ exact final frame" is not evidence that a boundary is valid.
 
    ```json
    {
-     "continuity_locks": {
+    "continuity_locks": {
        "style": "fixed visual style",
        "identity": "fixed subject and wardrobe description",
        "environment": "fixed geography and prop layout",
        "lighting": "fixed light sources, direction, color and exposure",
        "voice": "optional fixed voice description"
      },
+     "identity_control": {
+       "mode": "persistent_reference",
+       "subject_id": "canonical recurring subject",
+       "source_path": "relative path to the immutable canon image",
+       "input_name": "safe staged ComfyUI input filename",
+       "prompt_tokens": ["<Picture 1>"],
+       "use_as_start_image": false
+     },
      "shots": [
        {
          "prompt": "one dominant action and any internal camera move",
          "duration_seconds": 8.0,
+         "quality_controls": {
+           "subject_instances": [
+             {"subject_id": "CHARACTER_01", "max_visible_instances": 1}
+           ],
+           "dialogue_cues": [],
+           "motion": {
+             "mode": "static",
+             "subject_id": "CHARACTER_01",
+             "zone": "declared opening zone"
+           },
+           "visual_reset": {"mode": "no_reset"}
+         },
          "continuity": {
            "opening_scene": "exact initial scene and visual context",
            "opening_state": "exact initial subject and prop arrangement",
@@ -209,6 +244,22 @@ exact final frame" is not evidence that a boundary is valid.
        {
          "prompt": "the next dominant action after the airlock",
          "duration_seconds": 8.0,
+         "quality_controls": {
+           "subject_instances": [
+             {"subject_id": "CHARACTER_01", "max_visible_instances": 1}
+           ],
+           "dialogue_cues": [],
+           "motion": {
+             "mode": "path",
+             "subject_id": "CHARACTER_01",
+             "from_zone": "start zone",
+             "to_zone": "destination zone",
+             "direction": "one signed direction",
+             "forbidden_directions": ["reverse to the source zone"],
+             "endpoint_state": "declared settled destination state"
+           },
+           "visual_reset": {"mode": "no_reset"}
+         },
          "continuity": {
            "opening_scene": "exactly copy the previous closing_scene",
            "opening_state": "exactly copy the previous closing_state",
@@ -222,7 +273,7 @@ exact final frame" is not evidence that a boundary is valid.
            "closing_hold_seconds": 2
          },
          "transition": {
-           "kind": "shot_cut | scene_change | continuous_camera_move | match_cut | dissolve",
+           "kind": "continuous_camera_move",
            "at_seconds": 4.0,
            "description": "one precise transition from the opening context to the closing context"
          }
@@ -240,15 +291,18 @@ exact final frame" is not evidence that a boundary is valid.
      --output-prefix <output-name>
    ```
 
-   The builder embeds the script and exact timing into one
+   The builder validates semantic controls, stages and binds a persistent
+   identity reference when declared, selects the installed reference-capable
+   Q8 checkpoint for that mode, and embeds the script and exact timing into one
    `H3MultishotSampler`. The node generates each shot on the H3 `17k+5` model
    grid, trims decoded video/audio to its declared duration, relays the final
    frame into the next shot, removes the duplicated boundary frame, and returns
    one exact-length master to `SaveVideo`. For multishot input, the builder also
    checks the boundary budget, rejects mismatched state/camera/audio fields,
-   rejects scene/camera changes without a protected midpoint transition,
-   repeats the locks verbatim, and compiles the opening airlock, transition,
-   and settled landing into each H3 prompt.
+   rejects model-invented scene resets, untimed dialogue, unsigned paths,
+   unbounded subject multiplicity, and missing identity bindings; repeats the
+   locks verbatim; and compiles the opening airlock, validated controls,
+   continuous transition, and settled landing into each H3 prompt.
    See [video-stitching.md](references/video-stitching.md) for serial endpoint,
    bridge, scene-reset, assembly, and boundary-QC rules.
 6. Preserve the local runtime without negotiation: RTX 4090, cuda:0 mapping,
@@ -257,14 +311,19 @@ exact final frame" is not evidence that a boundary is valid.
    sampler, scheduler, and step settings. Never solve a workflow error by
    changing this hardware or memory configuration or by spending the headroom.
 7. Keep `shot_count: 0`, per-shot seeds, first-shot preview, and per-shot saves.
+   Treat the seed policy as stochastic/reproducibility control, never as an
+   identity lock; identity must remain reference-conditioned.
    Use `chain_gain_control: flatten` for chains longer than five shots. Patch
    both `widgets_values` and `properties.h3_widget_values` so the UI cannot
    restore stale values over the generated script.
-8. Validate before delivery: require `STRICT_BOUNDARY_VALIDATED`; parse the UI
+8. Validate before delivery: require `STRICT_BOUNDARY_VALIDATED` and
+   `PRE_GENERATION_VALIDATED`; parse the UI
    JSON; verify every node/link and output node; confirm no placeholder remains;
-   confirm prompt count, summed duration, lock repetition, boundary equality,
+   confirm prompt count, summed duration, identity-reference binding, dialogue
+   windows, signed paths, subject-instance limits, boundary equality,
    airlock/landing budgets, and the protected runtime fingerprint; load against
-   live `/object_info`; and run a minimal two-shot proof after runtime changes.
+   live `/object_info`. A minimal proof after runtime changes is supplementary
+   and never substitutes for these pre-generation gates.
 
 Return the workflow path and the final output prefix. The user should only need
 to load the workflow and click Queue Prompt. If execution is requested, monitor
@@ -276,6 +335,9 @@ the queue and logs, use the first-shot preview to catch a bad route early, and
 Queue a low-resolution, short-duration, low-step render with a fixed seed. Check
 the console and node error state before spending GPU hours. Then increase one
 variable at a time. Record the successful settings beside the workflow.
+Run this only after the semantic pre-generation controls pass. Do not use a
+proof render as the first mechanism for detecting a known identity, dialogue,
+motion-direction, subject-duplication, or scene-reset risk.
 
 Use the UI for exploration: Queue/Run, History, node previews, and workflow
 save. Use the local API for repeatable batches: `POST /prompt`, capture the

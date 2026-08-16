@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "h3-prompt-packet-v2.schema.json",
   "type": "object",
-  "required": ["artifact", "planning_model_version", "segment_id", "shot_id", "production_plan", "mode", "duration_seconds", "scene_time", "source_time", "record_time", "timing", "reference_bindings", "camera_intent", "continuity_contract", "fields", "traceability"],
+  "required": ["artifact", "planning_model_version", "segment_id", "shot_id", "production_plan", "mode", "duration_seconds", "scene_time", "source_time", "record_time", "timing", "reference_bindings", "camera_intent", "continuity_contract", "pre_generation_controls", "fields", "traceability"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
     "planning_model_version": {"const": 2},
@@ -18,6 +18,91 @@
     "reference_bindings": {"type": "array", "items": {"type": "object", "required": ["label", "asset_id", "role", "order"]}},
     "camera_intent": {"$ref": "common-defs.schema.json#/$defs/cameraPlan"},
     "continuity_contract": {"type": "object", "required": ["invariants", "expected_deltas", "forbidden_deltas"]},
+    "pre_generation_controls": {
+      "type": "object",
+      "required": ["status", "identity", "subject_instances", "dialogue_cues", "motion", "visual_reset"],
+      "properties": {
+        "status": {"const": "PRE_GENERATION_VALIDATED"},
+        "identity": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["mode", "subject_id", "reference_asset_ids", "prompt_tokens"],
+              "properties": {
+                "mode": {"const": "persistent_reference"},
+                "subject_id": {"type": "string", "minLength": 1},
+                "reference_asset_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+                "prompt_tokens": {"type": "array", "contains": {"const": "<Picture 1>"}}
+              },
+              "additionalProperties": true
+            },
+            {
+              "type": "object",
+              "required": ["mode", "subject_id", "endpoint_asset_id"],
+              "properties": {
+                "mode": {"const": "endpoint_image"},
+                "subject_id": {"type": "string", "minLength": 1},
+                "endpoint_asset_id": {"type": "string", "minLength": 1}
+              },
+              "additionalProperties": true
+            },
+            {
+              "type": "object",
+              "required": ["mode", "reason"],
+              "properties": {
+                "mode": {"const": "not_applicable"},
+                "reason": {"type": "string", "minLength": 1}
+              },
+              "additionalProperties": true
+            }
+          ]
+        },
+        "subject_instances": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["subject_id", "max_visible_instances"],
+            "properties": {
+              "subject_id": {"type": "string", "minLength": 1},
+              "max_visible_instances": {"type": "integer", "minimum": 1}
+            },
+            "additionalProperties": false
+          }
+        },
+        "dialogue_cues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["speaker_id", "start_seconds", "end_seconds", "visibility"],
+            "properties": {
+              "speaker_id": {"type": "string", "minLength": 1},
+              "start_seconds": {"type": "number", "minimum": 0},
+              "end_seconds": {"type": "number", "exclusiveMinimum": 0},
+              "visibility": {"enum": ["on_screen", "off_screen", "j_cut", "l_cut"]},
+              "visible_from_seconds": {"type": "number", "minimum": 0}
+            },
+            "additionalProperties": false
+          }
+        },
+        "motion": {
+          "oneOf": [
+            {"type": "object", "required": ["mode", "reason"], "properties": {"mode": {"const": "none"}, "reason": {"type": "string", "minLength": 1}}, "additionalProperties": false},
+            {"type": "object", "required": ["mode", "subject_id", "zone"], "properties": {"mode": {"const": "static"}, "subject_id": {"type": "string", "minLength": 1}, "zone": {"type": "string", "minLength": 1}}, "additionalProperties": false},
+            {"type": "object", "required": ["mode", "subject_id", "from_zone", "to_zone", "direction", "forbidden_directions", "endpoint_state"], "properties": {"mode": {"const": "path"}, "subject_id": {"type": "string", "minLength": 1}, "from_zone": {"type": "string", "minLength": 1}, "to_zone": {"type": "string", "minLength": 1}, "direction": {"type": "string", "minLength": 1}, "forbidden_directions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}, "endpoint_state": {"type": "string", "minLength": 1}}, "additionalProperties": false}
+          ]
+        },
+        "visual_reset": {
+          "type": "object",
+          "required": ["mode"],
+          "properties": {
+            "mode": {"enum": ["no_reset", "endpoint_bridge", "reference_reestablish", "editorial_cut"]},
+            "anchor_asset_id": {"type": "string", "minLength": 1}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "fields": {"type": "object", "required": ["visual", "action", "camera", "audio"]},
     "traceability": {"type": "object", "required": ["plan_revision", "shot_id", "plot_beat_ids", "performance_beat_id"]}
   },

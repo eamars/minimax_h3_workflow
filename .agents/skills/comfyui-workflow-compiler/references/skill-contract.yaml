@@ -1,5 +1,5 @@
 name: comfyui-workflow-compiler
-version: 0.2.0
+version: 0.3.0
 stage: compilation
 mode: compilation
 consumes: [production-plan-v2, plan-revision, h3-prompt-packet-manifest-v2, asset-manifest, canon-lock, generation-handoff-selection-optional, keyframe-report-optional, frozen-comfyui-capability-profile, versioned-workflow-catalog, output-path-policy]
@@ -14,6 +14,10 @@ requires:
   capability_profile: {object_info_evidence: true, installed_model_evidence: true, system_stats_evidence: true, revision_id: required}
   catalog: {declared_revision: required, template_mapping_validation: required, dynamic_combo_selector_serialization: scalar_required}
   final_graph_validation: {object_info_revalidation: required, dynamic_combo_object_form: forbidden, prompt_post_forbidden: true}
+  pre_generation_controls:
+    status: PRE_GENERATION_VALIDATED
+    fields: [identity, subject_instances, dialogue_cues, motion, visual_reset]
+    prose_only: forbidden
   execution: {queue: forbidden, render: forbidden, model_download: forbidden}
 topology: {editorial_boundaries_not_generation_edges: true, generation_relationships: [independent, same_shot_continue, endpoint_bridge, reference_reestablish, terminal], time_domains: [scene_time, source_time, record_time]}
 limits:
@@ -26,4 +30,4 @@ routing:
   conditional_predecessor: keyframe-handoff-builder
   successor: render-orchestrator
   forbidden_successors: [comfyui-prompt-queue, model-downloader]
-failure_codes: [PLAN_REVISION_INVALID, PLAN_REVISION_INVALID, PREFLIGHT_BLOCKED, CAPABILITY_PROBE_MISSING, WORKFLOW_TEMPLATE_MISSING, WORKFLOW_MAPPING_INVALID, WORKFLOW_NODE_UNAVAILABLE, WORKFLOW_INPUT_UNSUPPORTED, WORKFLOW_LINK_INVALID, WORKFLOW_CYCLE, REQUIRED_MODEL_MISSING, REQUIRED_ASSET_MISSING, SEGMENT_TOO_LONG, INVALID_FRAME_GRID, RESOLUTION_UNSUPPORTED, AUDIO_SPEC_UNSUPPORTED, HANDOFF_TAIL_INVALID, DAG_INVALID, ARTIFACT_OVERWRITE_FORBIDDEN, OUTPUT_PATH_UNSAFE]
+failure_codes: [PLAN_REVISION_INVALID, PREFLIGHT_BLOCKED, PREGEN_CONTROLS_MISSING, CANON_IDENTITY_BINDING_MISSING, DIALOGUE_WINDOW_MISSING, DIALOGUE_TIMING_MISMATCH, SPEAKER_VISIBILITY_UNBOUND, ACTOR_PATH_UNSIGNED, SUBJECT_MULTIPLICITY_UNBOUNDED, TEXT_ONLY_VISUAL_RESET_UNSAFE, CAPABILITY_PROBE_MISSING, WORKFLOW_TEMPLATE_MISSING, WORKFLOW_MAPPING_INVALID, WORKFLOW_NODE_UNAVAILABLE, WORKFLOW_INPUT_UNSUPPORTED, WORKFLOW_LINK_INVALID, WORKFLOW_CYCLE, REQUIRED_MODEL_MISSING, REQUIRED_ASSET_MISSING, SEGMENT_TOO_LONG, INVALID_FRAME_GRID, RESOLUTION_UNSUPPORTED, AUDIO_SPEC_UNSUPPORTED, HANDOFF_TAIL_INVALID, DAG_INVALID, ARTIFACT_OVERWRITE_FORBIDDEN, OUTPUT_PATH_UNSAFE]

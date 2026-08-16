@@ -1,4 +1,4 @@
-version: 3
+version: 4
 encoding: UTF-8
 language_style_document: docs/prompt-language-style.md
 official_manual: https://vrfi1sk8a0.feishu.cn/wiki/FIWjwgL33ipnkekzk30crmKUnIh
@@ -34,6 +34,17 @@ dialogue:
   preserve_verbatim: true
   fit_to_declared_shot_duration: true
   cross_shot: {allowed_when_upstream_declared: true, requires: [speaker_id, j_cut_or_l_cut_span, on_screen_or_off_screen_transition]}
+  generated_speech_without_cue: forbidden
+  on_screen_onset_requires_visible_speaker: true
+pre_generation_controls:
+  required_status: PRE_GENERATION_VALIDATED
+  identity_modes: [persistent_reference, endpoint_image, not_applicable]
+  recurring_canon_not_applicable: forbidden
+  persistent_reference_requires: [subject_id, reference_asset_ids, prompt_tokens]
+  subject_instances: {per_subject_maximum_required: true}
+  motion_path_requires: [subject_id, from_zone, to_zone, direction, forbidden_directions, endpoint_state]
+  visual_reset_modes: [no_reset, endpoint_bridge, reference_reestablish, editorial_cut]
+  text_only_visual_reset: forbidden
 style:
   source_precedence: [user_explicit, canon_lock, declared_style_reference, upstream_director_treatment]
   unspecified: {named_style_family: omit, boilerplate_cinematic_or_photorealistic: forbidden}

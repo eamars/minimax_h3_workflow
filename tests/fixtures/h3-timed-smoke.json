@@ -5,10 +5,20 @@
     "environment": "The same plain wooden table in the same neutral studio.",
     "lighting": "The same soft neutral studio light from camera left."
   },
+  "identity_control": {
+    "mode": "not_applicable",
+    "reason": "The smoke fixture contains no supplied canonical person reference."
+  },
   "shots": [
     {
       "prompt": "A faint reflection travels slowly across the cup's glaze.",
       "duration_seconds": 7,
+      "quality_controls": {
+        "subject_instances": [{"subject_id": "red-cup", "max_visible_instances": 1}],
+        "dialogue_cues": [],
+        "motion": {"mode": "static", "subject_id": "red-cup", "zone": "table-center"},
+        "visual_reset": {"mode": "no_reset"}
+      },
       "continuity": {
         "opening_scene": "The same neutral studio.",
         "opening_state": "The red cup is centered and motionless on the wooden table.",
@@ -25,6 +35,12 @@
     {
       "prompt": "A second faint reflection shifts naturally across the glaze.",
       "duration_seconds": 7,
+      "quality_controls": {
+        "subject_instances": [{"subject_id": "red-cup", "max_visible_instances": 1}],
+        "dialogue_cues": [],
+        "motion": {"mode": "static", "subject_id": "red-cup", "zone": "table-center"},
+        "visual_reset": {"mode": "no_reset"}
+      },
       "continuity": {
         "opening_scene": "The same neutral studio.",
         "opening_state": "The red cup remains centered and motionless after the reflection settles.",

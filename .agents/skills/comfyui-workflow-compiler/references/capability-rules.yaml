@@ -1,4 +1,4 @@
-version: 1
+version: 2
 authority:
   endpoints: {object_info: 'GET /object_info', object_info_node: 'GET /object_info/{node_class}', model_types: 'GET /models', models: 'GET /models/{folder}', system_stats: 'GET /system_stats'}
   reject_without: [object_info, installed_model_listing, system_stats]
@@ -18,4 +18,9 @@ resolution:
   fps: {h3: 24}
   h3_frame_grid: {formula: 'model_frame_count % 17 == 5', effective_positive: true, effective_le_model: true, effective_seconds_max: 10}
 assets: {require_path_exists: true, require_declared_asset_id_and_role: true, require_sha256_match: true, source_assets_read_only: true}
+pre_generation_controls:
+  validator: ../../comfyui/scripts/pre_generation_controls.py
+  persistent_identity: {required_mode: R2VA, bound_reference_assets_required: true}
+  endpoint_identity: {allowed_modes: [I2VA, FL2VA]}
+  text_only_visual_reset: forbidden
 outputs: {deterministic_root_required: true, validated_path_overwrite: forbidden, queue_or_render: forbidden}

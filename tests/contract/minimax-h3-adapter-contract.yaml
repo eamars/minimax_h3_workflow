@@ -1,4 +1,4 @@
-version: 2
+version: 3
 cases:
   - {id: unvalidated, expect: {status: BLOCKED, failure: PLAN_NOT_READY, writes: false}}
   - {id: superseded_plan_revision, expect: {failure: PLAN_REVISION_INVALID}}
@@ -15,3 +15,9 @@ cases:
   - {id: unspecified_style, expect: {named_style_added: false, style_capability_preserved: true}}
   - {id: continuation_replays_completed_grab, expect: {failure: CONTINUATION_DELTA_INVALID}}
   - {id: prompt_over_7000_characters, expect: {failure: H3_PROMPT_TOO_LONG}}
+  - {id: recurring_identity_first_frame_only, expect: {failure: CANON_IDENTITY_BINDING_MISSING}}
+  - {id: dialogue_without_timed_visibility, expect: {failure: DIALOGUE_WINDOW_MISSING}}
+  - {id: on_screen_dialogue_before_visibility, expect: {failure: SPEAKER_VISIBILITY_UNBOUND}}
+  - {id: actor_travel_without_signed_path, expect: {failure: ACTOR_PATH_UNSIGNED}}
+  - {id: unbounded_subject_instances, expect: {failure: SUBJECT_MULTIPLICITY_UNBOUNDED}}
+  - {id: text_only_scene_reset, expect: {failure: TEXT_ONLY_VISUAL_RESET_UNSAFE}}

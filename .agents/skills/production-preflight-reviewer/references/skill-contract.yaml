@@ -1,14 +1,18 @@
 name: production-preflight-reviewer
-version: 0.1.0
+version: 0.2.0
 stage: preflight
 mode: review
 consumes: [project-request, asset-manifest, canon-lock, plot-package, scene-performance, sound-plan-when-triggered, sound-bypass-otherwise, storyboard-package, animatic-plan, optional-capability-profile, optional-workflow-catalog]
 produces: [preflight-report, risk-register, revision-requests]
 side_effects: filesystem
-validation_required: false
+validation_required: plan_validation
 may_modify_upstream_decisions: false
 owner: production-preflight-reviewer
 implementation_status: invokable_milestone_3_contract
+pre_generation_semantic_gate:
+  required_dimensions: [identity_generation_binding, dialogue_onset_visibility, directed_actor_path, subject_multiplicity, destination_control]
+  queue_authority: false
+  downstream_required_status: PRE_GENERATION_VALIDATED
 routing:
   planning_position: 8
   upstream: [request-normalizer, reference-canon-manager, plot-architect, scene-performance-writer, sound-dialogue-planner-conditional, storyboard-director, animatic-previs-planner]

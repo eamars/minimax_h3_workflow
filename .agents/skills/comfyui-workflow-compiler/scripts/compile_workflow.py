@@ -178,6 +178,76 @@ def validate_bindings(bindings: dict, entry: dict, profile: dict):
                 raise AssertionError(f"REQUIRED_ASSET_MISSING: hash mismatch for {asset['asset_id']}")
 
 
+def validate_pre_generation_bindings(bindings: dict, entry: dict) -> dict:
+    """Fail before graph emission when semantic generation controls are absent."""
+    helper_path = (
+        Path(__file__).resolve().parents[2]
+        / "comfyui"
+        / "scripts"
+        / "pre_generation_controls.py"
+    )
+    spec = importlib.util.spec_from_file_location("pre_generation_controls", helper_path)
+    if spec is None or spec.loader is None:
+        raise AssertionError("PREGEN_CONTROL_VALIDATOR_MISSING")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    controls = bindings.get("pre_generation_controls")
+    reset_mode = (
+        controls.get("visual_reset", {}).get("mode")
+        if isinstance(controls, dict)
+        else None
+    )
+    try:
+        normalized = module.validate_pre_generation_controls(
+            controls,
+            duration=float(bindings.get("effective_duration_seconds", 0)),
+            prompt=str(bindings.get("prompt", "")),
+            scene_changed=reset_mode not in {None, "no_reset"},
+            context=str(bindings.get("segment_id") or entry.get("template_id") or "segment"),
+        )
+    except module.PreGenerationControlError as exc:
+        raise AssertionError(str(exc)) from exc
+
+    identity = normalized["identity"]
+    supported_modes = set(entry.get("supported_modes", []))
+    if identity["mode"] == "persistent_reference":
+        if "R2VA" not in supported_modes:
+            raise AssertionError(
+                "H3_MODE_MISMATCH: persistent_reference identity requires an R2VA workflow."
+            )
+        declared = set(identity.get("reference_asset_ids", []))
+        bound = {
+            str(item.get("asset_id"))
+            for item in bindings.get("ordered_reference_assets", [])
+            if isinstance(item, dict)
+        }
+        if not declared or not declared <= bound:
+            raise AssertionError(
+                "CANON_IDENTITY_BINDING_MISSING: persistent identity assets are not "
+                "bound in ordered_reference_assets."
+            )
+    elif identity["mode"] == "endpoint_image" and not supported_modes.intersection(
+        {"I2VA", "FL2VA"}
+    ):
+        raise AssertionError(
+            "H3_MODE_MISMATCH: endpoint_image identity requires I2VA or FL2VA."
+        )
+
+    if reset_mode == "endpoint_bridge" and entry.get("job_type") != "bridge":
+        raise AssertionError(
+            "TEXT_ONLY_VISUAL_RESET_UNSAFE: endpoint_bridge control requires the bridge workflow."
+        )
+    if reset_mode == "reference_reestablish" and "R2VA" not in supported_modes:
+        raise AssertionError(
+            "TEXT_ONLY_VISUAL_RESET_UNSAFE: reference_reestablish requires R2VA."
+        )
+    if reset_mode == "editorial_cut":
+        raise AssertionError(
+            "TEXT_ONLY_VISUAL_RESET_UNSAFE: an editorial cut must be assembled outside an H3 generation segment."
+        )
+    return normalized
+
+
 def expand_ordered_reference_assets(graph: dict, bindings: dict, object_info: dict) -> None:
     """Expand R2VA image references from the live autogrow declaration."""
     assets = bindings.get("ordered_reference_assets")
@@ -252,6 +322,7 @@ def main() -> int:
     if not (profile.get("evidence", {}).get("object_info") or profile.get("object_info")):
         raise AssertionError("CAPABILITY_PROBE_MISSING")
     validate_bindings(bindings, entry, profile)
+    pre_generation_controls = validate_pre_generation_bindings(bindings, entry)
     template_path = args.catalog_root / entry["file"]
     if not template_path.is_file():
         raise AssertionError(f"WORKFLOW_TEMPLATE_MISSING: {template_path}")
@@ -279,6 +350,7 @@ def main() -> int:
         "effective_frame_count": int(bindings["effective_frame_count"]),
         "effective_duration_seconds": float(bindings["effective_duration_seconds"]),
         "output": args.output.as_posix(),
+        "pre_generation_controls": pre_generation_controls,
     }
     if environment_profile_id is not None:
         report["environment_profile_id"] = environment_profile_id

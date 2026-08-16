@@ -161,6 +161,35 @@ class CinematicContracts(unittest.TestCase):
         self.assertIn("MOVING_ENDPOINT_CAPABILITY_UNPROVEN", str(capability_failure.exception))
         compile_workflow.validate_cinematic_plan(plan, moving_bindings, {"capabilities": {"moving_endpoint_continuation": True}})
 
+    def test_compiler_blocks_missing_or_unsafe_pre_generation_controls(self):
+        bindings = yaml.safe_load(
+            (ROOT / "tests/fixtures/h3-t2va-bindings.yaml").read_text(encoding="utf-8")
+        )
+        catalog = yaml.safe_load(
+            (ROOT / "workflow-catalog/catalog.yaml").read_text(encoding="utf-8")
+        )
+        entry = next(item for item in catalog["templates"] if item["template_id"] == "h3-t2va-v1")
+        normalized = compile_workflow.validate_pre_generation_bindings(bindings, entry)
+        self.assertEqual(normalized["status"], "PRE_GENERATION_VALIDATED")
+
+        missing = copy.deepcopy(bindings)
+        missing.pop("pre_generation_controls")
+        with self.assertRaises(AssertionError) as missing_failure:
+            compile_workflow.validate_pre_generation_bindings(missing, entry)
+        self.assertIn("PREGEN_CONTROLS_MISSING", str(missing_failure.exception))
+
+        untimed_dialogue = copy.deepcopy(bindings)
+        untimed_dialogue["prompt"] = "The speaker says <d>[English]Go.</d>"
+        with self.assertRaises(AssertionError) as dialogue_failure:
+            compile_workflow.validate_pre_generation_bindings(untimed_dialogue, entry)
+        self.assertIn("DIALOGUE_WINDOW_MISSING", str(dialogue_failure.exception))
+
+        unsafe_reset = copy.deepcopy(bindings)
+        unsafe_reset["pre_generation_controls"]["visual_reset"] = {"mode": "editorial_cut"}
+        with self.assertRaises(AssertionError) as reset_failure:
+            compile_workflow.validate_pre_generation_bindings(unsafe_reset, entry)
+        self.assertIn("TEXT_ONLY_VISUAL_RESET_UNSAFE", str(reset_failure.exception))
+
     def test_v1_to_v2_migration_is_explicitly_blocked_for_creative_completion(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             temp = Path(temp_dir)
@@ -250,11 +279,18 @@ class CinematicContracts(unittest.TestCase):
         job = json.loads((schema_dir / "comfyui-job-v2.schema.json").read_text(encoding="utf-8"))
         dag = json.loads((schema_dir / "production-dag-v2.schema.json").read_text(encoding="utf-8"))
         qc = json.loads((schema_dir / "qc-report-v2.schema.json").read_text(encoding="utf-8"))
+        h3_packet = json.loads((schema_dir / "h3-prompt-packet-v2.schema.json").read_text(encoding="utf-8"))
         self.assertEqual(job["properties"]["planning_model_version"]["const"], 2)
         self.assertIn("camera_interval_map", job["required"])
+        self.assertIn("pre_generation_controls_status", job["required"])
         self.assertNotIn("edges", dag["properties"])
         self.assertNotIn("continue", dag["properties"]["generation_edges"]["items"]["properties"]["relation"]["enum"])
         self.assertIn("camera_path", qc["properties"]["mode"]["enum"])
+        self.assertIn("pre_generation_controls", h3_packet["required"])
+        self.assertEqual(
+            h3_packet["properties"]["pre_generation_controls"]["properties"]["status"]["const"],
+            "PRE_GENERATION_VALIDATED",
+        )
 
 
 if __name__ == "__main__":

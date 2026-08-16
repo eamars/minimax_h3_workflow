@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "comfyui-job-v2.schema.json",
   "type": "object",
-  "required": ["artifact", "planning_model_version", "job_id", "job_type", "production_plan", "shot_id", "segment_id", "generation_relationship", "endpoint_policy", "scene_time", "source_time", "record_time", "camera_interval_map", "continuity_contract", "h3_prompt_packet_id", "workflow", "dependencies", "output"],
+  "required": ["artifact", "planning_model_version", "job_id", "job_type", "production_plan", "shot_id", "segment_id", "generation_relationship", "endpoint_policy", "scene_time", "source_time", "record_time", "camera_interval_map", "continuity_contract", "pre_generation_controls_status", "h3_prompt_packet_id", "workflow", "dependencies", "output"],
   "properties": {
     "artifact": {"$ref": "common-defs.schema.json#/$defs/artifact"},
     "planning_model_version": {"const": 2},
@@ -18,6 +18,7 @@
     "record_time": {"$ref": "common-defs.schema.json#/$defs/cinematicTimeRange"},
     "camera_interval_map": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["start_seconds", "end_seconds", "camera_setup_id", "motion"]}},
     "continuity_contract": {"type": "object", "required": ["invariants", "expected_deltas", "forbidden_deltas"]},
+    "pre_generation_controls_status": {"const": "PRE_GENERATION_VALIDATED"},
     "h3_prompt_packet_id": {"type": "string", "minLength": 1},
     "workflow": {"type": "object", "required": ["template_id", "template_version", "workflow_hash"]},
     "dependencies": {"type": "array", "items": {"type": "string"}},

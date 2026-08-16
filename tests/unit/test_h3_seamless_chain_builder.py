@@ -23,6 +23,21 @@ LOCKS = {
     "lighting": "The same soft window light from camera left.",
 }
 
+IDENTITY_REFERENCE = {
+    "mode": "persistent_reference",
+    "subject_id": "subject",
+    "source_path": "canonical.png",
+    "input_name": "canonical.png",
+    "prompt_tokens": ["<Picture 1>"],
+    "use_as_start_image": False,
+}
+
+
+def write_test_png(directory: Path) -> None:
+    (directory / "canonical.png").write_bytes(
+        b"\x89PNG\r\n\x1a\n" + b"contract-test"
+    )
+
 
 def continuity_shot(
     prompt,
@@ -42,6 +57,18 @@ def continuity_shot(
     shot = {
         "prompt": prompt,
         "duration_seconds": duration,
+        "quality_controls": {
+            "subject_instances": [
+                {"subject_id": "subject", "max_visible_instances": 1}
+            ],
+            "dialogue_cues": [],
+            "motion": {
+                "mode": "static",
+                "subject_id": "subject",
+                "zone": opening_scene,
+            },
+            "visual_reset": {"mode": "no_reset"},
+        },
         "continuity": {
             "opening_scene": opening_scene,
             "opening_state": opening_state,
@@ -106,10 +133,12 @@ class H3SeamlessChainBuilderTests(unittest.TestCase):
             shot_input = temp_path / "shots.json"
             output = temp_path / "ready.ui.json"
             manifest = temp_path / "ready.manifest.json"
+            write_test_png(temp_path)
             shot_input.write_text(
                 json.dumps(
                     {
                         "continuity_locks": LOCKS,
+                        "identity_control": IDENTITY_REFERENCE,
                         "shots": [
                             continuity_shot(
                                 "The subject crosses to the table.", 4,
@@ -145,7 +174,10 @@ class H3SeamlessChainBuilderTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            builder.build(TEMPLATE, shot_input, output, manifest, "tests/exact-master")
+            builder.build(
+                TEMPLATE, shot_input, output, manifest, "tests/exact-master",
+                temp_path / "comfy-input",
+            )
 
             workflow = json.loads(output.read_text(encoding="utf-8"))
             report = json.loads(manifest.read_text(encoding="utf-8"))
@@ -172,6 +204,8 @@ class H3SeamlessChainBuilderTests(unittest.TestCase):
             self.assertIn("MID-SEGMENT TRANSITION — at 3.5 seconds", embedded["shots"][1]["prompt"])
             self.assertIn("Never perform this transition at frame zero", embedded["shots"][1]["prompt"])
             self.assertIn("SETTLED LANDING — final 2.0 seconds", embedded["shots"][1]["prompt"])
+            self.assertIn("主体数量锁", embedded["shots"][1]["prompt"])
+            self.assertIn("对白门控", embedded["shots"][1]["prompt"])
             for value in LOCKS.values():
                 self.assertIn(value, embedded["shots"][1]["prompt"])
             self.assertEqual(
@@ -182,11 +216,14 @@ class H3SeamlessChainBuilderTests(unittest.TestCase):
             self.assertTrue(
                 sampler["properties"]["h3_widget_values"]["save_every_shot"]
             )
-            self.assertEqual(model["widgets_values"], [builder.LOCKED_MODEL])
+            self.assertEqual(model["widgets_values"], [builder.LOCKED_REFERENCE_MODEL])
             self.assertIn("Final duration: 19.000s", ready_note["widgets_values"][0])
             self.assertEqual(report["status"], "READY_TO_LOAD_AND_QUEUE")
             self.assertEqual(
                 report["continuity"]["status"], "STRICT_BOUNDARY_VALIDATED"
+            )
+            self.assertEqual(
+                report["pre_generation"]["status"], "PRE_GENERATION_VALIDATED"
             )
             self.assertEqual(
                 report["timing"],
@@ -224,10 +261,12 @@ class H3SeamlessChainBuilderTests(unittest.TestCase):
             shot_input = temp_path / "shots.json"
             output = temp_path / "ready.ui.json"
             manifest = temp_path / "ready.manifest.json"
+            write_test_png(temp_path)
             shot_input.write_text(
                 json.dumps(
                     {
                         "continuity_locks": LOCKS,
+                        "identity_control": IDENTITY_REFERENCE,
                         "shots": [
                             continuity_shot(
                                 f"The subject performs action {i}.", 7,
@@ -246,7 +285,10 @@ class H3SeamlessChainBuilderTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            builder.build(TEMPLATE, shot_input, output, manifest, "tests/long-master")
+            builder.build(
+                TEMPLATE, shot_input, output, manifest, "tests/long-master",
+                temp_path / "comfy-input",
+            )
 
             workflow = json.loads(output.read_text(encoding="utf-8"))
             report = json.loads(manifest.read_text(encoding="utf-8"))
@@ -298,6 +340,43 @@ class H3SeamlessChainBuilderTests(unittest.TestCase):
                     "tests/invalid",
                 )
 
+    def test_builder_rejects_multishot_without_persistent_identity_reference(self):
+        builder = load_module("h3_seamless_builder_identity_gate_test", BUILDER_PATH)
+        first = continuity_shot(
+            "The subject waits.", 7,
+            "The subject stands at center.",
+            "The subject stands at center.",
+            "A fixed medium frame faces the subject.",
+            "A fixed medium frame faces the subject.",
+            "Quiet room tone.",
+            "Quiet room tone.",
+            first=True,
+        )
+        second = continuity_shot(
+            "The subject continues waiting.", 7,
+            "The subject stands at center.",
+            "The subject stands at center.",
+            "A fixed medium frame faces the subject.",
+            "A fixed medium frame faces the subject.",
+            "Quiet room tone.",
+            "Quiet room tone.",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "unanchored-identity.json"
+            path.write_text(
+                json.dumps({
+                    "continuity_locks": LOCKS,
+                    "identity_control": {
+                        "mode": "not_applicable",
+                        "reason": "No reference was supplied.",
+                    },
+                    "shots": [first, second],
+                }),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(builder.WorkflowError, "CANON_IDENTITY_BINDING_MISSING"):
+                builder.load_shots(path)
+
     def test_builder_rejects_boundary_mismatch_and_short_action_budget(self):
         builder = load_module("h3_seamless_builder_boundary_test", BUILDER_PATH)
         first = continuity_shot(
@@ -326,7 +405,7 @@ class H3SeamlessChainBuilderTests(unittest.TestCase):
             mismatch["continuity"]["opening_camera"] = "An unrelated close-up."
             mismatch_input = temp_path / "mismatch.json"
             mismatch_input.write_text(
-                json.dumps({"continuity_locks": LOCKS, "shots": [first, mismatch]}),
+                json.dumps({"continuity_locks": LOCKS, "identity_control": IDENTITY_REFERENCE, "shots": [first, mismatch]}),
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(builder.WorkflowError, "camera mismatch"):
@@ -336,13 +415,13 @@ class H3SeamlessChainBuilderTests(unittest.TestCase):
             too_short["duration_seconds"] = 5
             short_input = temp_path / "short.json"
             short_input.write_text(
-                json.dumps({"continuity_locks": LOCKS, "shots": [first, too_short]}),
+                json.dumps({"continuity_locks": LOCKS, "identity_control": IDENTITY_REFERENCE, "shots": [first, too_short]}),
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(builder.WorkflowError, "only 1.00s"):
                 builder.load_shots(short_input)
 
-    def test_builder_rejects_scene_or_camera_transition_at_segment_boundary(self):
+    def test_builder_rejects_text_only_scene_reset_and_camera_transition_at_boundary(self):
         builder = load_module("h3_seamless_builder_transition_test", BUILDER_PATH)
         first = continuity_shot(
             "The subject crosses to the table.", 8,
@@ -372,21 +451,194 @@ class H3SeamlessChainBuilderTests(unittest.TestCase):
             missing.pop("transition")
             missing_path = temp_path / "missing-transition.json"
             missing_path.write_text(
-                json.dumps({"continuity_locks": LOCKS, "shots": [first, missing]}),
+                json.dumps({"continuity_locks": LOCKS, "identity_control": IDENTITY_REFERENCE, "shots": [first, missing]}),
                 encoding="utf-8",
             )
-            with self.assertRaisesRegex(builder.WorkflowError, "mid-segment transition"):
+            with self.assertRaisesRegex(builder.WorkflowError, "TEXT_ONLY_SCENE_RESET_UNSAFE"):
                 builder.load_shots(missing_path)
 
             boundary = json.loads(json.dumps(second))
+            boundary["continuity"]["closing_scene"] = boundary["continuity"]["opening_scene"]
+            boundary["transition"]["kind"] = "continuous_camera_move"
+            boundary["quality_controls"]["visual_reset"] = {"mode": "no_reset"}
             boundary["transition"]["at_seconds"] = 0
             boundary_path = temp_path / "boundary-transition.json"
             boundary_path.write_text(
-                json.dumps({"continuity_locks": LOCKS, "shots": [first, boundary]}),
+                json.dumps({"continuity_locks": LOCKS, "identity_control": IDENTITY_REFERENCE, "shots": [first, boundary]}),
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(builder.WorkflowError, "protected middle window"):
                 builder.load_shots(boundary_path)
+
+    def test_builder_rejects_untimed_and_previsibility_dialogue(self):
+        builder = load_module("h3_seamless_builder_dialogue_test", BUILDER_PATH)
+        first = continuity_shot(
+            "The officer says <d>[English]Go now.</d>", 7,
+            "The subject waits beside the door.",
+            "The subject remains beside the door.",
+            "A fixed medium frame faces the door.",
+            "A fixed medium frame faces the door.",
+            "Quiet room tone.",
+            "Quiet room tone.",
+            first=True,
+        )
+        second = continuity_shot(
+            "The subject remains still.", 7,
+            "The subject remains beside the door.",
+            "The subject remains beside the door.",
+            "A fixed medium frame faces the door.",
+            "A fixed medium frame faces the door.",
+            "Quiet room tone.",
+            "Quiet room tone.",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            temp_path = Path(directory)
+            missing_path = temp_path / "missing-dialogue-cue.json"
+            missing_path.write_text(
+                json.dumps({
+                    "continuity_locks": LOCKS,
+                    "identity_control": IDENTITY_REFERENCE,
+                    "shots": [first, second],
+                }),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(builder.WorkflowError, "DIALOGUE_WINDOW_MISSING"):
+                builder.load_shots(missing_path)
+
+            early = json.loads(json.dumps(first))
+            early["quality_controls"]["dialogue_cues"] = [{
+                "speaker_id": "officer",
+                "start_seconds": 1.0,
+                "end_seconds": 2.0,
+                "visibility": "on_screen",
+                "visible_from_seconds": 1.5,
+            }]
+            early_path = temp_path / "early-dialogue.json"
+            early_path.write_text(
+                json.dumps({
+                    "continuity_locks": LOCKS,
+                    "identity_control": IDENTITY_REFERENCE,
+                    "shots": [early, second],
+                }),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(builder.WorkflowError, "SPEAKER_VISIBILITY_UNBOUND"):
+                builder.load_shots(early_path)
+
+    def test_builder_rejects_unsigned_motion_path(self):
+        builder = load_module("h3_seamless_builder_motion_test", BUILDER_PATH)
+        first = continuity_shot(
+            "The subject enters the room.", 7,
+            "The subject stands at the doorway.",
+            "The subject stands beside the table.",
+            "A fixed wide frame faces the doorway.",
+            "A fixed wide frame faces the doorway.",
+            "Quiet room tone.",
+            "Quiet room tone.",
+            first=True,
+        )
+        first["quality_controls"]["motion"] = {
+            "mode": "path",
+            "subject_id": "subject",
+            "from_zone": "doorway",
+            "to_zone": "table",
+            "direction": "inward",
+            "endpoint_state": "standing beside the table",
+        }
+        second = continuity_shot(
+            "The subject remains still.", 7,
+            "The subject stands beside the table.",
+            "The subject stands beside the table.",
+            "A fixed wide frame faces the doorway.",
+            "A fixed wide frame faces the doorway.",
+            "Quiet room tone.",
+            "Quiet room tone.",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "unsigned-path.json"
+            path.write_text(
+                json.dumps({
+                    "continuity_locks": LOCKS,
+                    "identity_control": IDENTITY_REFERENCE,
+                    "shots": [first, second],
+                }),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(builder.WorkflowError, "forbidden_directions"):
+                builder.load_shots(path)
+
+    def test_builder_wires_and_stages_persistent_identity_reference(self):
+        builder = load_module("h3_seamless_builder_identity_test", BUILDER_PATH)
+        with tempfile.TemporaryDirectory() as directory:
+            temp_path = Path(directory)
+            source = temp_path / "canonical.png"
+            source.write_bytes(b"\x89PNG\r\n\x1a\n" + b"contract-test")
+            input_root = temp_path / "comfy-input"
+            shot_input = temp_path / "shots.json"
+            output = temp_path / "ready.ui.json"
+            manifest = temp_path / "ready.manifest.json"
+            first = continuity_shot(
+                "The subject raises one hand.", 7,
+                "The subject stands at center.",
+                "The subject stands at center with one hand raised.",
+                "A fixed medium frame faces the subject.",
+                "A fixed medium frame faces the subject.",
+                "Quiet room tone.",
+                "Quiet room tone.",
+                first=True,
+            )
+            second = continuity_shot(
+                "The subject lowers the hand.", 7,
+                "The subject stands at center with one hand raised.",
+                "The subject stands at center with both hands lowered.",
+                "A fixed medium frame faces the subject.",
+                "A fixed medium frame faces the subject.",
+                "Quiet room tone.",
+                "Quiet room tone.",
+            )
+            shot_input.write_text(
+                json.dumps({
+                    "continuity_locks": LOCKS,
+                    "identity_control": {
+                        "mode": "persistent_reference",
+                        "subject_id": "subject",
+                        "source_path": "canonical.png",
+                        "input_name": "canonical-staged.png",
+                        "prompt_tokens": ["<Picture 1>"],
+                        "use_as_start_image": True,
+                    },
+                    "shots": [first, second],
+                }),
+                encoding="utf-8",
+            )
+
+            builder.build(
+                TEMPLATE,
+                shot_input,
+                output,
+                manifest,
+                "tests/identity-master",
+                input_root,
+            )
+
+            workflow = json.loads(output.read_text(encoding="utf-8"))
+            report = json.loads(manifest.read_text(encoding="utf-8"))
+            sampler = next(node for node in workflow["nodes"] if node["type"] == "H3MultishotSampler")
+            model = next(node for node in workflow["nodes"] if node["type"] == "UnetLoaderGGUFDynamicVRAM")
+            loader = next(node for node in workflow["nodes"] if node["type"] == "LoadImage")
+            inputs = {item["name"]: item for item in sampler["inputs"]}
+            embedded = json.loads(sampler["properties"]["h3_widget_values"]["script"])
+
+            self.assertEqual(model["widgets_values"], [builder.LOCKED_REFERENCE_MODEL])
+            self.assertIsNotNone(inputs["reference_images"]["link"])
+            self.assertIsNotNone(inputs["start_image"]["link"])
+            self.assertEqual(loader["widgets_values"][0], "canonical-staged.png")
+            self.assertTrue((input_root / "canonical-staged.png").is_file())
+            self.assertIn("<Picture 1>", embedded["shots"][1]["prompt"])
+            self.assertEqual(
+                report["pre_generation"]["identity_binding"]["mode"],
+                "persistent_reference",
+            )
 
 
 if __name__ == "__main__":

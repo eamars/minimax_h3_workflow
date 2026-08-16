@@ -1,4 +1,4 @@
-version: 1
+version: 2
 typed_bindings:
   scalar: {allowed_types: [string, integer, number, boolean, enum, path], exact_placeholder_only: true, embedded_forbidden: true}
   path: {must_exist: true, must_be_validated_or_generated: true, traversal_forbidden: true}
@@ -20,3 +20,11 @@ mapping_invariants:
   template_nodes_subset_of_live_classes: true
   required_model_categories_resolve_to_installed_filenames: true
   no_plan_segment_boundary_mutation: true
+  h3_pre_generation_controls_binding_required: true
+pre_generation_controls:
+  required_fields: [identity, subject_instances, dialogue_cues, motion, visual_reset]
+  required_status: PRE_GENERATION_VALIDATED
+  text_only_visual_reset: forbidden
+  identity_mode_template_match:
+    persistent_reference: R2VA
+    endpoint_image: [I2VA, FL2VA]

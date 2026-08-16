@@ -18,3 +18,10 @@ checks:
   - {id: independent_cut, expect: no_false_edge}
   - {id: continuation_before_tail, expect: HANDOFF_TAIL_INVALID}
   - {id: compile_only, expect: [workflows, jobs, dag, checksums], prompt_post_count: 0, render_count: 0}
+  - {id: missing_pre_generation_controls, expect: PREGEN_CONTROLS_MISSING, writes: false}
+  - {id: persistent_identity_on_t2va, expect: H3_MODE_MISMATCH, writes: false}
+  - {id: dialogue_without_window, expect: DIALOGUE_WINDOW_MISSING, writes: false}
+  - {id: on_screen_dialogue_before_visibility, expect: SPEAKER_VISIBILITY_UNBOUND, writes: false}
+  - {id: unsigned_actor_path, expect: ACTOR_PATH_UNSIGNED, writes: false}
+  - {id: unbounded_subject_instances, expect: SUBJECT_MULTIPLICITY_UNBOUNDED, writes: false}
+  - {id: text_only_visual_reset, expect: TEXT_ONLY_VISUAL_RESET_UNSAFE, writes: false}

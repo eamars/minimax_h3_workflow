@@ -1,4 +1,4 @@
-version: 1
+version: 2
 cases:
   - {id: valid, expect: {verdict: PASS, next_state: PLAN_READY}}
   - {id: eleven_seconds, expect: {verdict: REVISE, failure: SEGMENT_TOO_LONG, target: storyboard-package}}
@@ -7,3 +7,8 @@ cases:
   - {id: dependency_cycle, expect: {failure: DEPENDENCY_CYCLE, graph_changed: false}}
   - {id: unknown_capability, expect: {status: warn}}
   - {id: deterministic_repeat, expect: {byte_identical: true}}
+  - {id: recurring_identity_first_frame_only, expect: {verdict: BLOCKED, failure: CANON_IDENTITY_BINDING_MISSING}}
+  - {id: dialogue_before_visible_speaker, expect: {verdict: REVISE, failure: SPEAKER_VISIBILITY_UNBOUND}}
+  - {id: actor_path_without_signed_destination, expect: {verdict: REVISE, failure: ACTOR_PATH_UNSIGNED}}
+  - {id: unbounded_subject_duplicate, expect: {verdict: REVISE, failure: SUBJECT_MULTIPLICITY_UNBOUNDED}}
+  - {id: text_only_scene_reset, expect: {verdict: REVISE, failure: TEXT_ONLY_SCENE_RESET_UNSAFE}}
